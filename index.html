@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Polska Adventure Ultra</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#2E7D32">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Ekran logowania (PIN zapisany lokalnie na telefonie) -->
+<div id="loginScreen" class="login-screen">
+  <img src="icons/icon-192.png" width="70" height="70" style="border-radius:16px" alt="logo">
+  <h2>Polska Adventure Ultra</h2>
+  <p id="loginError" class="error-text"></p>
+  <input id="pinInput" type="password" inputmode="numeric" placeholder="PIN" autofocus>
+  <button class="primary" id="pinSubmit">Zaloguj</button>
+</div>
+
+<!-- Główna apka (pokazywana po zalogowaniu) -->
+<div id="mainApp" style="display:none">
+
+  <div class="card logo-row">
+    <img src="icons/icon-192.png" alt="logo">
+    <div class="total" id="totalLbl">🏅 Łącznie: 0.0 km</div>
+  </div>
+
+  <div class="tabs">
+    <button id="tabTrainBtn" class="active">Trening</button>
+    <button id="tabHistoryBtn">Historia</button>
+  </div>
+
+  <div id="tabTrain" class="tab-content active">
+    <div class="card">
+      <label>Dyscyplina</label>
+      <select id="discipline">
+        <option value="Bieg">Bieg</option>
+        <option value="Rower">Rower</option>
+        <option value="Kajak">Kajak</option>
+      </select>
+
+      <label>Data</label>
+      <input id="date" type="date">
+
+      <label>Dystans (km)</label>
+      <input id="dist" type="number" step="0.01" inputmode="decimal">
+
+      <label>Czas (min)</label>
+      <input id="time" type="number" step="0.1" inputmode="decimal">
+
+      <label>Śr. tętno (bpm)</label>
+      <input id="hr" type="number" inputmode="numeric">
+
+      <label>Pułap tlenowy VO2max</label>
+      <input id="vo2max" type="number" step="0.1" inputmode="decimal">
+
+      <label>Waga (kg)</label>
+      <input id="weight" type="number" step="0.1" inputmode="decimal">
+
+      <label>Notatki / Samopoczucie</label>
+      <textarea id="notes" rows="2"></textarea>
+
+      <button class="primary" id="saveBtn">ZAPISZ TRENING</button>
+      <button id="paceBtn">OBLICZ TEMPO</button>
+      <button id="chartBtn">POKAŻ WYKRES PROGRESU</button>
+      <button id="exportBtn">EKSPORTUJ DO CSV</button>
+    </div>
+
+    <div class="card" id="chartCard" style="display:none">
+      <h2>Progres dystansu</h2>
+      <canvas id="chartCanvas" width="600" height="300"></canvas>
+    </div>
+  </div>
+
+  <div id="tabHistory" class="tab-content">
+    <div class="card">
+      <h2>Historia treningów</h2>
+      <div id="historyList"></div>
+    </div>
+  </div>
+
+  <div class="bottom-row">
+    <button id="themeBtn">Zmień motyw</button>
+    <button id="pinChangeBtn">Zmień PIN</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
