@@ -241,6 +241,124 @@ function exportCsv() {
   URL.revokeObjectURL(url);
 }
 
+// --- Import treningów z Garmin/Suunto/Polar (pliki GPX/TCX, parsowane lokalnie) ---
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const toRad = (d) => (d * Math.PI) / 180;
+  const R = 6371;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+function parseGpx(xml) {
+  const trkpts = Array.from(xml.getElementsByTagName("trkpt"));
+  if (trkpts.length < 2) throw new Error("Brak punktów trasy w pliku GPX.");
+
+  let distKm = 0;
+  const hrValues = [];
+
+  for (let i = 0; i < trkpts.length; i++) {
+    const pt = trkpts[i];
+    const lat = parseFloat(pt.getAttribute("lat"));
+    const lon = parseFloat(pt.getAttribute("lon"));
+    if (i > 0) {
+      const prevLat = parseFloat(trkpts[i - 1].getAttribute("lat"));
+      const prevLon = parseFloat(trkpts[i - 1].getAttribute("lon"));
+      distKm += haversineKm(prevLat, prevLon, lat, lon);
+    }
+    Array.from(pt.getElementsByTagName("*")).forEach((el) => {
+      if (el.localName.toLowerCase() === "hr") hrValues.push(parseFloat(el.textContent));
+    });
+  }
+
+  const firstTimeEl = trkpts[0].getElementsByTagName("time")[0];
+  const lastTimeEl = trkpts[trkpts.length - 1].getElementsByTagName("time")[0];
+  let timeMin = 0;
+  let date = new Date().toISOString().slice(0, 10);
+  if (firstTimeEl && lastTimeEl) {
+    timeMin = (new Date(lastTimeEl.textContent) - new Date(firstTimeEl.textContent)) / 60000;
+    date = firstTimeEl.textContent.slice(0, 10);
+  }
+
+  const avgHr = hrValues.length ? hrValues.reduce((a, b) => a + b, 0) / hrValues.length : 0;
+
+  return {
+    date,
+    dist: distKm.toFixed(2),
+    time: timeMin.toFixed(1),
+    hr: avgHr ? String(Math.round(avgHr)) : "0",
+    disc: "Bieg",
+  };
+}
+
+function parseTcx(xml) {
+  const laps = Array.from(xml.getElementsByTagName("Lap"));
+  if (laps.length === 0) throw new Error("Brak danych treningu w pliku TCX.");
+
+  let distM = 0;
+  let timeS = 0;
+  const hrValues = [];
+  const startTimeAttr = laps[0].getAttribute("StartTime");
+  const date = startTimeAttr ? startTimeAttr.slice(0, 10) : new Date().toISOString().slice(0, 10);
+
+  laps.forEach((lap) => {
+    const distEl = lap.getElementsByTagName("DistanceMeters")[0];
+    const timeEl = lap.getElementsByTagName("TotalTimeSeconds")[0];
+    const hrEl = lap.getElementsByTagName("AverageHeartRateBpm")[0];
+    if (distEl) distM += parseFloat(distEl.textContent) || 0;
+    if (timeEl) timeS += parseFloat(timeEl.textContent) || 0;
+    if (hrEl) {
+      const valueEl = hrEl.getElementsByTagName("Value")[0];
+      if (valueEl) hrValues.push(parseFloat(valueEl.textContent));
+    }
+  });
+
+  const activityEl = xml.getElementsByTagName("Activity")[0];
+  const sport = activityEl ? activityEl.getAttribute("Sport") : "";
+  const discMap = { Running: "Bieg", Biking: "Rower" };
+  const avgHr = hrValues.length ? hrValues.reduce((a, b) => a + b, 0) / hrValues.length : 0;
+
+  return {
+    date,
+    dist: (distM / 1000).toFixed(2),
+    time: (timeS / 60).toFixed(1),
+    hr: avgHr ? String(Math.round(avgHr)) : "0",
+    disc: discMap[sport] || "Bieg",
+  };
+}
+
+function importTrainingFile(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const xml = new DOMParser().parseFromString(reader.result, "application/xml");
+      if (xml.getElementsByTagName("parsererror").length > 0) {
+        throw new Error("Nie udało się odczytać pliku (nieprawidłowy XML).");
+      }
+
+      const isTcx = xml.getElementsByTagName("TrainingCenterDatabase").length > 0;
+      const parsed = isTcx ? parseTcx(xml) : parseGpx(xml);
+
+      document.getElementById("date").value = parsed.date;
+      document.getElementById("dist").value = parsed.dist;
+      document.getElementById("time").value = parsed.time;
+      document.getElementById("hr").value = parsed.hr;
+      document.getElementById("discipline").value = parsed.disc;
+
+      alert(
+        `Wczytano trening z pliku:\nData: ${parsed.date}\nDystans: ${parsed.dist} km\n` +
+        `Czas: ${parsed.time} min\nŚr. tętno: ${parsed.hr} bpm\n\nSprawdź dane i kliknij "ZAPISZ TRENING".`
+      );
+    } catch (e) {
+      alert("Błąd importu: " + e.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
 // --- Zmiana PIN-u ---
 function changePin() {
   const newPin = prompt("Podaj nowy PIN:");
@@ -269,6 +387,14 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("paceBtn").addEventListener("click", calcPace);
   document.getElementById("chartBtn").addEventListener("click", showChart);
   document.getElementById("exportBtn").addEventListener("click", exportCsv);
+  document.getElementById("importBtn").addEventListener("click", () => {
+    document.getElementById("importFile").click();
+  });
+  document.getElementById("importFile").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) importTrainingFile(file);
+    e.target.value = "";
+  });
   document.getElementById("themeBtn").addEventListener("click", toggleTheme);
   document.getElementById("pinChangeBtn").addEventListener("click", changePin);
 
