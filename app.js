@@ -406,44 +406,37 @@ function exportCsv() {
 
 // --- Trasa (z importu GPX/TCX) ---
 let pendingRoute = null;
+let routeMapInstance = null;
+let routeLayerGroup = null;
 
 function drawRoute(points) {
   const card = document.getElementById("routeCard");
-  const canvas = document.getElementById("routeCanvas");
   card.style.display = "block";
 
-  const ctx = canvas.getContext("2d");
-  const w = canvas.width, h = canvas.height;
-  const padding = 20;
-  ctx.clearRect(0, 0, w, h);
+  if (!routeMapInstance) {
+    routeMapInstance = L.map("routeMap");
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(routeMapInstance);
+    routeLayerGroup = L.layerGroup().addTo(routeMapInstance);
+  }
 
-  const avgLat = points.reduce((s, p) => s + p.lat, 0) / points.length;
-  const cosLat = Math.cos((avgLat * Math.PI) / 180);
-  const xs = points.map((p) => p.lon * cosLat);
-  const ys = points.map((p) => p.lat);
-  const minX = Math.min(...xs), maxX = Math.max(...xs);
-  const minY = Math.min(...ys), maxY = Math.max(...ys);
-  const spanX = maxX - minX || 1;
-  const spanY = maxY - minY || 1;
+  routeLayerGroup.clearLayers();
 
-  const availW = w - 2 * padding, availH = h - 2 * padding;
-  const scale = Math.min(availW / spanX, availH / spanY);
-  const offsetX = padding + (availW - spanX * scale) / 2;
-  const offsetY = padding + (availH - spanY * scale) / 2;
+  const latlngs = points.map((p) => [p.lat, p.lon]);
+  const polyline = L.polyline(latlngs, { color: "#2E7D32", weight: 4 }).addTo(routeLayerGroup);
+  L.circleMarker(latlngs[0], { radius: 6, color: "#2E7D32", fillColor: "#2E7D32", fillOpacity: 1 }).addTo(routeLayerGroup);
+  L.circleMarker(latlngs[latlngs.length - 1], { radius: 6, color: "#c62828", fillColor: "#c62828", fillOpacity: 1 }).addTo(routeLayerGroup);
 
-  const isDark = document.body.classList.contains("dark");
-  ctx.strokeStyle = isDark ? "#00FF7F" : "#2E7D32";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  points.forEach((p, i) => {
-    const x = offsetX + (p.lon * cosLat - minX) * scale;
-    const y = offsetY + (maxY - p.lat) * scale;
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
+  // Kontener był ukryty (display:none), więc Leaflet potrzebuje przeliczenia
+  // rozmiaru po tym, jak przeglądarka faktycznie odłoży layout.
+  requestAnimationFrame(() => {
+    routeMapInstance.invalidateSize();
+    routeMapInstance.fitBounds(polyline.getBounds(), { padding: [20, 20] });
   });
-  ctx.stroke();
 
-  canvas.scrollIntoView({ behavior: "smooth" });
+  card.scrollIntoView({ behavior: "smooth" });
 }
 
 function showRoute(index) {
