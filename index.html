@@ -8,6 +8,7 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#2E7D32">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -87,7 +88,7 @@
 
     <div class="card" id="routeCard" style="display:none">
       <h2 data-i18n="routeTitle">Trasa</h2>
-      <canvas id="routeCanvas" width="600" height="300"></canvas>
+      <div id="routeMap"></div>
     </div>
   </div>
 
@@ -98,6 +99,7 @@
   </div>
 </div>
 
+<script src="vendor/leaflet/leaflet.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
