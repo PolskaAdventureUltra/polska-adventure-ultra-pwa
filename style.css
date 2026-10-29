@@ -93,10 +93,23 @@ button.primary { background: var(--accent); color: white; }
 .tab-content.active { display: block; }
 
 .history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   font-size: 13px;
   border-bottom: 1px solid var(--border);
   padding: 6px 0;
-  word-break: break-word;
+}
+.history-item span { word-break: break-word; }
+.history-item .delete-btn {
+  width: auto;
+  flex-shrink: 0;
+  padding: 4px 10px;
+  margin-top: 0;
+  font-size: 15px;
+  background: var(--subtle-bg);
+  color: #c62828;
 }
 
 .bottom-row { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }

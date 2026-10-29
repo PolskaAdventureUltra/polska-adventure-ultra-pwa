@@ -96,18 +96,36 @@ function refreshTotalLabel() {
 // --- Historia ---
 function refreshHistoryList() {
   const list = document.getElementById("historyList");
-  const history = getHistory().slice().reverse();
+  const history = getHistory();
   if (history.length === 0) {
     list.innerHTML = "<p>Brak zapisanych treningów.</p>";
     return;
   }
   list.innerHTML = history
-    .map((item) => {
+    .map((item, index) => ({ item, index }))
+    .reverse()
+    .map(({ item, index }) => {
       const notes = item.notes ? `, Notes: ${item.notes}` : "";
-      return `<div class="history-item">Date: ${item.date}, Disc: ${item.disc}, Dist: ${item.dist} km, ` +
-             `Weight: ${item.weight} kg, HR: ${item.hr} bpm, VO2max: ${item.vo2max}${notes}</div>`;
+      return `<div class="history-item">` +
+             `<span>Date: ${item.date}, Disc: ${item.disc}, Dist: ${item.dist} km, ` +
+             `Weight: ${item.weight} kg, HR: ${item.hr} bpm, VO2max: ${item.vo2max}${notes}</span>` +
+             `<button class="delete-btn" data-index="${index}" title="Usuń wpis">🗑</button>` +
+             `</div>`;
     })
     .join("");
+
+  list.querySelectorAll(".delete-btn").forEach((btn) => {
+    btn.addEventListener("click", () => deleteTraining(parseInt(btn.dataset.index, 10)));
+  });
+}
+
+function deleteTraining(index) {
+  if (!confirm("Usunąć ten wpis z historii?")) return;
+  const history = getHistory();
+  history.splice(index, 1);
+  saveHistory(history);
+  refreshTotalLabel();
+  refreshHistoryList();
 }
 
 // --- Zapis treningu ---
