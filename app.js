@@ -5,7 +5,136 @@
 const PIN_KEY = "pau_pin";
 const HISTORY_KEY = "pau_history";
 const THEME_KEY = "pau_theme";
+const LANG_KEY = "pau_lang";
 const DEFAULT_PIN = "1234";
+
+// --- Tłumaczenia (PL/EN) ---
+const TRANSLATIONS = {
+  pl: {
+    loginBtn: "Zaloguj",
+    invalidPin: "Nieprawidłowy PIN",
+    tabTrain: "Trening",
+    tabHistory: "Historia",
+    labelDiscipline: "Dyscyplina",
+    optBieg: "Bieg",
+    optRower: "Rower",
+    optKajak: "Kajak",
+    labelDate: "Data",
+    labelDist: "Dystans (km)",
+    labelTime: "Czas (min)",
+    labelHr: "Śr. tętno (bpm)",
+    labelVo2max: "Pułap tlenowy VO2max",
+    labelWeight: "Waga (kg)",
+    labelNotes: "Notatki / Samopoczucie",
+    saveBtn: "ZAPISZ TRENING",
+    paceBtn: "OBLICZ TEMPO",
+    chartBtn: "POKAŻ WYKRES PROGRESU",
+    exportBtn: "EKSPORTUJ DO CSV",
+    importBtn: "IMPORTUJ Z GARMIN / SUUNTO / POLAR",
+    importHint: "Wyeksportuj trening z Garmin Connect, Suunto app lub Polar Flow jako plik GPX lub TCX, a następnie wczytaj go tutaj.",
+    chartTitle: "Progres dystansu",
+    historyTitle: "Historia treningów",
+    themeBtn: "Zmień motyw",
+    pinChangeBtn: "Zmień PIN",
+    langBtnTarget: "EN",
+    totalLabel: (km) => `🏅 Łącznie: ${km} km`,
+    noHistory: "Brak zapisanych treningów.",
+    deleteTitle: "Usuń wpis",
+    confirmDelete: "Usunąć ten wpis z historii?",
+    alertDistRequired: "Podaj dystans większy od 0.",
+    alertSaved: "Zapisano trening!",
+    alertDistTimeRequired: "Podaj dystans i czas.",
+    paceResult: (min, sec) => `Tempo: ${min}:${sec} min/km`,
+    speedResult: (v) => `Prędkość: ${v} km/h`,
+    alertNoHistoryChart: "Brak danych historycznych.",
+    alertNoHistoryExport: "Brak danych do eksportu.",
+    importSuccess: (p) =>
+      `Wczytano trening z pliku:\nData: ${p.date}\nDystans: ${p.dist} km\n` +
+      `Czas: ${p.time} min\nŚr. tętno: ${p.hr} bpm\n\nSprawdź dane i kliknij "ZAPISZ TRENING".`,
+    importError: (msg) => `Błąd importu: ${msg}`,
+    errNoGpxPoints: "Brak punktów trasy w pliku GPX.",
+    errNoTcxData: "Brak danych treningu w pliku TCX.",
+    errBadXml: "Nie udało się odczytać pliku (nieprawidłowy XML).",
+    promptNewPin: "Podaj nowy PIN:",
+    pinChanged: "PIN zmieniony.",
+    historyLabels: { date: "Data", disc: "Dyscyplina", dist: "Dystans", weight: "Waga", hr: "Tętno", vo2max: "VO2max", notes: "Notatki" },
+    discNames: { Bieg: "Bieg", Rower: "Rower", Kajak: "Kajak" },
+  },
+  en: {
+    loginBtn: "Log in",
+    invalidPin: "Invalid PIN",
+    tabTrain: "Training",
+    tabHistory: "History",
+    labelDiscipline: "Discipline",
+    optBieg: "Running",
+    optRower: "Cycling",
+    optKajak: "Kayaking",
+    labelDate: "Date",
+    labelDist: "Distance (km)",
+    labelTime: "Time (min)",
+    labelHr: "Avg. heart rate (bpm)",
+    labelVo2max: "VO2max",
+    labelWeight: "Weight (kg)",
+    labelNotes: "Notes / How you felt",
+    saveBtn: "SAVE TRAINING",
+    paceBtn: "CALCULATE PACE",
+    chartBtn: "SHOW PROGRESS CHART",
+    exportBtn: "EXPORT TO CSV",
+    importBtn: "IMPORT FROM GARMIN / SUUNTO / POLAR",
+    importHint: "Export your training from Garmin Connect, Suunto app or Polar Flow as a GPX or TCX file, then load it here.",
+    chartTitle: "Distance progress",
+    historyTitle: "Training history",
+    themeBtn: "Switch theme",
+    pinChangeBtn: "Change PIN",
+    langBtnTarget: "PL",
+    totalLabel: (km) => `🏅 Total: ${km} km`,
+    noHistory: "No saved trainings yet.",
+    deleteTitle: "Delete entry",
+    confirmDelete: "Delete this entry from history?",
+    alertDistRequired: "Enter a distance greater than 0.",
+    alertSaved: "Training saved!",
+    alertDistTimeRequired: "Enter distance and time.",
+    paceResult: (min, sec) => `Pace: ${min}:${sec} min/km`,
+    speedResult: (v) => `Speed: ${v} km/h`,
+    alertNoHistoryChart: "No historical data.",
+    alertNoHistoryExport: "No data to export.",
+    importSuccess: (p) =>
+      `Training loaded from file:\nDate: ${p.date}\nDistance: ${p.dist} km\n` +
+      `Time: ${p.time} min\nAvg. HR: ${p.hr} bpm\n\nCheck the data and click "SAVE TRAINING".`,
+    importError: (msg) => `Import error: ${msg}`,
+    errNoGpxPoints: "No track points found in the GPX file.",
+    errNoTcxData: "No training data found in the TCX file.",
+    errBadXml: "Could not read the file (invalid XML).",
+    promptNewPin: "Enter new PIN:",
+    pinChanged: "PIN changed.",
+    historyLabels: { date: "Date", disc: "Discipline", dist: "Distance", weight: "Weight", hr: "HR", vo2max: "VO2max", notes: "Notes" },
+    discNames: { Bieg: "Running", Rower: "Cycling", Kajak: "Kayaking" },
+  },
+};
+
+function getLang() {
+  return localStorage.getItem(LANG_KEY) || "pl";
+}
+
+function t() {
+  return TRANSLATIONS[getLang()];
+}
+
+function applyLanguage() {
+  const dict = t();
+  document.documentElement.lang = getLang();
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    el.textContent = dict[el.dataset.i18n];
+  });
+  document.getElementById("langBtn").textContent = dict.langBtnTarget;
+}
+
+function toggleLanguage() {
+  localStorage.setItem(LANG_KEY, getLang() === "pl" ? "en" : "pl");
+  applyLanguage();
+  refreshTotalLabel();
+  refreshHistoryList();
+}
 
 // --- Rejestracja Service Workera (offline) ---
 if ("serviceWorker" in navigator) {
@@ -74,7 +203,7 @@ function tryLogin() {
     errorEl.textContent = "";
     showMainApp();
   } else {
-    errorEl.textContent = "Nieprawidłowy PIN";
+    errorEl.textContent = t().invalidPin;
     input.value = "";
   }
 }
@@ -90,26 +219,29 @@ function showTab(tabName) {
 // --- Licznik motywacyjny ---
 function refreshTotalLabel() {
   const total = getTotalDistance();
-  document.getElementById("totalLbl").textContent = `🏅 Łącznie: ${total.toFixed(1)} km`;
+  document.getElementById("totalLbl").textContent = t().totalLabel(total.toFixed(1));
 }
 
 // --- Historia ---
 function refreshHistoryList() {
   const list = document.getElementById("historyList");
   const history = getHistory();
+  const dict = t();
   if (history.length === 0) {
-    list.innerHTML = "<p>Brak zapisanych treningów.</p>";
+    list.innerHTML = `<p>${dict.noHistory}</p>`;
     return;
   }
   list.innerHTML = history
     .map((item, index) => ({ item, index }))
     .reverse()
     .map(({ item, index }) => {
-      const notes = item.notes ? `, Notes: ${item.notes}` : "";
+      const l = dict.historyLabels;
+      const discName = dict.discNames[item.disc] || item.disc;
+      const notes = item.notes ? `, ${l.notes}: ${item.notes}` : "";
       return `<div class="history-item">` +
-             `<span>Date: ${item.date}, Disc: ${item.disc}, Dist: ${item.dist} km, ` +
-             `Weight: ${item.weight} kg, HR: ${item.hr} bpm, VO2max: ${item.vo2max}${notes}</span>` +
-             `<button class="delete-btn" data-index="${index}" title="Usuń wpis">🗑</button>` +
+             `<span>${l.date}: ${item.date}, ${l.disc}: ${discName}, ${l.dist}: ${item.dist} km, ` +
+             `${l.weight}: ${item.weight} kg, ${l.hr}: ${item.hr} bpm, ${l.vo2max}: ${item.vo2max}${notes}</span>` +
+             `<button class="delete-btn" data-index="${index}" title="${dict.deleteTitle}">🗑</button>` +
              `</div>`;
     })
     .join("");
@@ -120,7 +252,7 @@ function refreshHistoryList() {
 }
 
 function deleteTraining(index) {
-  if (!confirm("Usunąć ten wpis z historii?")) return;
+  if (!confirm(t().confirmDelete)) return;
   const history = getHistory();
   history.splice(index, 1);
   saveHistory(history);
@@ -132,7 +264,7 @@ function deleteTraining(index) {
 function saveTraining() {
   const dist = document.getElementById("dist").value;
   if (!dist || parseFloat(dist) <= 0) {
-    alert("Podaj dystans większy od 0.");
+    alert(t().alertDistRequired);
     return;
   }
 
@@ -156,7 +288,7 @@ function saveTraining() {
 
   refreshTotalLabel();
   refreshHistoryList();
-  alert("Zapisano trening!");
+  alert(t().alertSaved);
 }
 
 // --- Tempo / prędkość ---
@@ -166,7 +298,7 @@ function calcPace() {
   const disc = document.getElementById("discipline").value;
 
   if (!dist || !time || dist <= 0 || time <= 0) {
-    alert("Podaj dystans i czas.");
+    alert(t().alertDistTimeRequired);
     return;
   }
 
@@ -174,10 +306,10 @@ function calcPace() {
     const pace = time / dist;
     const min = Math.floor(pace);
     const sec = Math.round((pace - min) * 60);
-    alert(`Tempo: ${min}:${String(sec).padStart(2, "0")} min/km`);
+    alert(t().paceResult(min, String(sec).padStart(2, "0")));
   } else {
     const speed = dist / (time / 60);
-    alert(`Prędkość: ${speed.toFixed(1)} km/h`);
+    alert(t().speedResult(speed.toFixed(1)));
   }
 }
 
@@ -188,7 +320,7 @@ function showChart() {
   const canvas = document.getElementById("chartCanvas");
 
   if (history.length === 0) {
-    alert("Brak danych historycznych.");
+    alert(t().alertNoHistoryChart);
     return;
   }
 
@@ -242,7 +374,7 @@ function showChart() {
 function exportCsv() {
   const history = getHistory();
   if (history.length === 0) {
-    alert("Brak danych do eksportu.");
+    alert(t().alertNoHistoryExport);
     return;
   }
   let csv = "Date;Discipline;Distance;Weight;HeartRate;VO2max;Notes\n";
@@ -273,7 +405,7 @@ function haversineKm(lat1, lon1, lat2, lon2) {
 
 function parseGpx(xml) {
   const trkpts = Array.from(xml.getElementsByTagName("trkpt"));
-  if (trkpts.length < 2) throw new Error("Brak punktów trasy w pliku GPX.");
+  if (trkpts.length < 2) throw new Error(t().errNoGpxPoints);
 
   let distKm = 0;
   const hrValues = [];
@@ -314,7 +446,7 @@ function parseGpx(xml) {
 
 function parseTcx(xml) {
   const laps = Array.from(xml.getElementsByTagName("Lap"));
-  if (laps.length === 0) throw new Error("Brak danych treningu w pliku TCX.");
+  if (laps.length === 0) throw new Error(t().errNoTcxData);
 
   let distM = 0;
   let timeS = 0;
@@ -354,7 +486,7 @@ function importTrainingFile(file) {
     try {
       const xml = new DOMParser().parseFromString(reader.result, "application/xml");
       if (xml.getElementsByTagName("parsererror").length > 0) {
-        throw new Error("Nie udało się odczytać pliku (nieprawidłowy XML).");
+        throw new Error(t().errBadXml);
       }
 
       const isTcx = xml.getElementsByTagName("TrainingCenterDatabase").length > 0;
@@ -366,12 +498,9 @@ function importTrainingFile(file) {
       document.getElementById("hr").value = parsed.hr;
       document.getElementById("discipline").value = parsed.disc;
 
-      alert(
-        `Wczytano trening z pliku:\nData: ${parsed.date}\nDystans: ${parsed.dist} km\n` +
-        `Czas: ${parsed.time} min\nŚr. tętno: ${parsed.hr} bpm\n\nSprawdź dane i kliknij "ZAPISZ TRENING".`
-      );
+      alert(t().importSuccess(parsed));
     } catch (e) {
-      alert("Błąd importu: " + e.message);
+      alert(t().importError(e.message));
     }
   };
   reader.readAsText(file);
@@ -379,16 +508,17 @@ function importTrainingFile(file) {
 
 // --- Zmiana PIN-u ---
 function changePin() {
-  const newPin = prompt("Podaj nowy PIN:");
+  const newPin = prompt(t().promptNewPin);
   if (newPin && newPin.trim().length > 0) {
     localStorage.setItem(PIN_KEY, newPin.trim());
-    alert("PIN zmieniony.");
+    alert(t().pinChanged);
   }
 }
 
 // --- Inicjalizacja ---
 document.addEventListener("DOMContentLoaded", () => {
   applyTheme();
+  applyLanguage();
 
   document.getElementById("pinSubmit").addEventListener("click", tryLogin);
   document.getElementById("pinInput").addEventListener("keydown", (e) => {
@@ -415,6 +545,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   document.getElementById("themeBtn").addEventListener("click", toggleTheme);
   document.getElementById("pinChangeBtn").addEventListener("click", changePin);
+  document.getElementById("langBtn").addEventListener("click", toggleLanguage);
 
   // Sesja logowania trwa do zamknięcia karty przeglądarki (sessionStorage).
   // Dzięki temu nie trzeba podawać PIN-u za każdym odświeżeniem, ale po
