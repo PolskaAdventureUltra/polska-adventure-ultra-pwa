@@ -93,11 +93,27 @@ button.primary { background: var(--accent); color: white; }
 .tab-content.active { display: block; }
 
 .history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   font-size: 13px;
   border-bottom: 1px solid var(--border);
   padding: 6px 0;
-  word-break: break-word;
 }
+.history-item span { word-break: break-word; }
+.history-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.history-item .delete-btn,
+.history-item .route-btn {
+  width: auto;
+  flex-shrink: 0;
+  padding: 4px 10px;
+  margin-top: 0;
+  font-size: 15px;
+  background: var(--subtle-bg);
+}
+.history-item .delete-btn { color: #c62828; }
+.history-item .route-btn { color: var(--accent); }
 
 .bottom-row { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
 .bottom-row button {
@@ -121,3 +137,5 @@ button.primary { background: var(--accent); color: white; }
 .error-text { color: #c62828; font-weight: bold; }
 
 canvas { width: 100%; height: auto; background: var(--card); border-radius: 8px; }
+
+.hint-text { font-size: 12px; color: var(--subtle-fg); margin: 4px 0 0; }
