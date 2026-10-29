@@ -59,6 +59,8 @@ const TRANSLATIONS = {
     pinChanged: "PIN zmieniony.",
     historyLabels: { date: "Data", disc: "Dyscyplina", dist: "Dystans", weight: "Waga", hr: "Tętno", vo2max: "VO2max", notes: "Notatki" },
     discNames: { Bieg: "Bieg", Rower: "Rower", Kajak: "Kajak" },
+    routeTitle: "Trasa",
+    showRouteTitle: "Pokaż trasę",
   },
   en: {
     loginBtn: "Log in",
@@ -109,6 +111,8 @@ const TRANSLATIONS = {
     pinChanged: "PIN changed.",
     historyLabels: { date: "Date", disc: "Discipline", dist: "Distance", weight: "Weight", hr: "HR", vo2max: "VO2max", notes: "Notes" },
     discNames: { Bieg: "Running", Rower: "Cycling", Kajak: "Kayaking" },
+    routeTitle: "Route",
+    showRouteTitle: "Show route",
   },
 };
 
@@ -238,16 +242,23 @@ function refreshHistoryList() {
       const l = dict.historyLabels;
       const discName = dict.discNames[item.disc] || item.disc;
       const notes = item.notes ? `, ${l.notes}: ${item.notes}` : "";
+      const routeBtn = item.route && item.route.length >= 2
+        ? `<button class="route-btn" data-index="${index}" title="${dict.showRouteTitle}">🗺</button>`
+        : "";
       return `<div class="history-item">` +
              `<span>${l.date}: ${item.date}, ${l.disc}: ${discName}, ${l.dist}: ${item.dist} km, ` +
              `${l.weight}: ${item.weight} kg, ${l.hr}: ${item.hr} bpm, ${l.vo2max}: ${item.vo2max}${notes}</span>` +
-             `<button class="delete-btn" data-index="${index}" title="${dict.deleteTitle}">🗑</button>` +
+             `<div class="history-actions">${routeBtn}` +
+             `<button class="delete-btn" data-index="${index}" title="${dict.deleteTitle}">🗑</button></div>` +
              `</div>`;
     })
     .join("");
 
   list.querySelectorAll(".delete-btn").forEach((btn) => {
     btn.addEventListener("click", () => deleteTraining(parseInt(btn.dataset.index, 10)));
+  });
+  list.querySelectorAll(".route-btn").forEach((btn) => {
+    btn.addEventListener("click", () => showRoute(parseInt(btn.dataset.index, 10)));
   });
 }
 
@@ -278,6 +289,7 @@ function saveTraining() {
     weight: document.getElementById("weight").value || "0",
     notes: document.getElementById("notes").value.trim(),
   };
+  if (pendingRoute) entry.route = pendingRoute;
 
   const history = getHistory();
   history.push(entry);
@@ -285,6 +297,7 @@ function saveTraining() {
 
   document.getElementById("dist").value = "";
   document.getElementById("notes").value = "";
+  pendingRoute = null;
 
   refreshTotalLabel();
   refreshHistoryList();
@@ -391,6 +404,54 @@ function exportCsv() {
   URL.revokeObjectURL(url);
 }
 
+// --- Trasa (z importu GPX/TCX) ---
+let pendingRoute = null;
+
+function drawRoute(points) {
+  const card = document.getElementById("routeCard");
+  const canvas = document.getElementById("routeCanvas");
+  card.style.display = "block";
+
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width, h = canvas.height;
+  const padding = 20;
+  ctx.clearRect(0, 0, w, h);
+
+  const avgLat = points.reduce((s, p) => s + p.lat, 0) / points.length;
+  const cosLat = Math.cos((avgLat * Math.PI) / 180);
+  const xs = points.map((p) => p.lon * cosLat);
+  const ys = points.map((p) => p.lat);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+  const spanX = maxX - minX || 1;
+  const spanY = maxY - minY || 1;
+
+  const availW = w - 2 * padding, availH = h - 2 * padding;
+  const scale = Math.min(availW / spanX, availH / spanY);
+  const offsetX = padding + (availW - spanX * scale) / 2;
+  const offsetY = padding + (availH - spanY * scale) / 2;
+
+  const isDark = document.body.classList.contains("dark");
+  ctx.strokeStyle = isDark ? "#00FF7F" : "#2E7D32";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  points.forEach((p, i) => {
+    const x = offsetX + (p.lon * cosLat - minX) * scale;
+    const y = offsetY + (maxY - p.lat) * scale;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  canvas.scrollIntoView({ behavior: "smooth" });
+}
+
+function showRoute(index) {
+  const entry = getHistory()[index];
+  if (!entry || !entry.route || entry.route.length < 2) return;
+  drawRoute(entry.route);
+}
+
 // --- Import treningów z Garmin/Suunto/Polar (pliki GPX/TCX, parsowane lokalnie) ---
 function haversineKm(lat1, lon1, lat2, lon2) {
   const toRad = (d) => (d * Math.PI) / 180;
@@ -403,17 +464,25 @@ function haversineKm(lat1, lon1, lat2, lon2) {
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
+function downsampleRoute(points, maxPoints) {
+  if (points.length <= maxPoints) return points;
+  const step = (points.length - 1) / (maxPoints - 1);
+  return Array.from({ length: maxPoints }, (_, i) => points[Math.round(i * step)]);
+}
+
 function parseGpx(xml) {
   const trkpts = Array.from(xml.getElementsByTagName("trkpt"));
   if (trkpts.length < 2) throw new Error(t().errNoGpxPoints);
 
   let distKm = 0;
   const hrValues = [];
+  const route = [];
 
   for (let i = 0; i < trkpts.length; i++) {
     const pt = trkpts[i];
     const lat = parseFloat(pt.getAttribute("lat"));
     const lon = parseFloat(pt.getAttribute("lon"));
+    route.push({ lat, lon });
     if (i > 0) {
       const prevLat = parseFloat(trkpts[i - 1].getAttribute("lat"));
       const prevLon = parseFloat(trkpts[i - 1].getAttribute("lon"));
@@ -441,6 +510,7 @@ function parseGpx(xml) {
     time: timeMin.toFixed(1),
     hr: avgHr ? String(Math.round(avgHr)) : "0",
     disc: "Bieg",
+    route: downsampleRoute(route, 200),
   };
 }
 
@@ -451,6 +521,7 @@ function parseTcx(xml) {
   let distM = 0;
   let timeS = 0;
   const hrValues = [];
+  const route = [];
   const startTimeAttr = laps[0].getAttribute("StartTime");
   const date = startTimeAttr ? startTimeAttr.slice(0, 10) : new Date().toISOString().slice(0, 10);
 
@@ -464,6 +535,14 @@ function parseTcx(xml) {
       const valueEl = hrEl.getElementsByTagName("Value")[0];
       if (valueEl) hrValues.push(parseFloat(valueEl.textContent));
     }
+
+    Array.from(lap.getElementsByTagName("Trackpoint")).forEach((tp) => {
+      const posEl = tp.getElementsByTagName("Position")[0];
+      if (!posEl) return;
+      const latEl = posEl.getElementsByTagName("LatitudeDegrees")[0];
+      const lonEl = posEl.getElementsByTagName("LongitudeDegrees")[0];
+      if (latEl && lonEl) route.push({ lat: parseFloat(latEl.textContent), lon: parseFloat(lonEl.textContent) });
+    });
   });
 
   const activityEl = xml.getElementsByTagName("Activity")[0];
@@ -477,6 +556,7 @@ function parseTcx(xml) {
     time: (timeS / 60).toFixed(1),
     hr: avgHr ? String(Math.round(avgHr)) : "0",
     disc: discMap[sport] || "Bieg",
+    route: route.length >= 2 ? downsampleRoute(route, 200) : undefined,
   };
 }
 
@@ -497,6 +577,7 @@ function importTrainingFile(file) {
       document.getElementById("time").value = parsed.time;
       document.getElementById("hr").value = parsed.hr;
       document.getElementById("discipline").value = parsed.disc;
+      pendingRoute = parsed.route && parsed.route.length >= 2 ? parsed.route : null;
 
       alert(t().importSuccess(parsed));
     } catch (e) {
