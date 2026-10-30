@@ -164,6 +164,8 @@ canvas { width: 100%; height: auto; background: var(--card); border-radius: 8px;
 .activity-nick { font-weight: bold; }
 .privacy-text { font-size: 13px; line-height: 1.45; }
 .privacy-text ul { padding-left: 18px; }
+.contact-box { background: var(--bg); border-left: 4px solid var(--accent); border-radius: 6px; padding: 8px 10px; font-size: 14px; }
+.contact-box a { color: var(--accent); font-weight: bold; word-break: break-all; }
 .help-text details { border-bottom: 1px solid var(--border); padding: 8px 0; }
 .help-text summary { font-weight: bold; font-size: 14px; cursor: pointer; }
 .help-text details p, .help-text details ul { margin: 6px 0; }

@@ -103,7 +103,8 @@ const TRANSLATIONS = {
     helpBtn: "Pomoc",
     helpTitle: "Pomoc i instrukcja",
     helpPrivacyBtn: "PEŁNA INFORMACJA O PRYWATNOŚCI (RODO)",
-    helpHtml: (community) => `
+    helpHtml: (community, contact) => `
+      ${contact ? `<p class="contact-box">✉️ Kontakt: <a href="mailto:${contact}">${contact}</a> — pytania, zgłoszenia błędów, prośby o usunięcie danych, zgłaszanie niestosownych treści.</p>` : ""}
       <details open><summary>🚀 Pierwsze kroki</summary>
         <ul>
           <li>Domyślny PIN to <b>1234</b> — zmień go od razu przyciskiem „Zmień PIN” na dole ekranu.</li>
@@ -162,7 +163,7 @@ const TRANSLATIONS = {
           <li>Nie używaj jako PIN-u kodu do karty, banku ani telefonu.</li>
           ${community ? `<li>Udostępnione treningi widzi <b>każdy</b> użytkownik aplikacji. Jeśli nie chcesz być rozpoznany, nie używaj imienia i nazwiska jako nicku.</li>
           <li>Przy udostępnianiu aplikacja obcina pierwsze i ostatnie 300 m trasy, ale jeśli trening zaczynasz i kończysz pod domem w małej miejscowości, rozważ udostępnienie go bez trasy (np. trening wpisany ręcznie).</li>
-          <li>Treści obraźliwe lub naruszające prywatność zgłoś administratorowi (kontakt w „Prywatność”).</li>` : ""}
+          <li>Treści obraźliwe lub naruszające prywatność zgłoś administratorowi (adres na górze Pomocy).</li>` : ""}
           <li>Aplikacja nigdy nie prosi o hasło do Garmin, Suunto ani Polar — pliki importujesz sam.</li>
         </ul>
       </details>
@@ -213,6 +214,7 @@ const TRANSLATIONS = {
     noShares: "Nie masz udostępnionych aktywności.",
     mineLabel: "(Ty)",
     privacyHtml: (contact, community) => `
+      ${contact ? `<p class="contact-box">✉️ Administrator danych / kontakt: <a href="mailto:${contact}">${contact}</a></p>` : ""}
       <p>Aplikacja domyślnie trzyma wszystkie dane (treningi, trasy, PIN) <b>tylko na Twoim telefonie</b>.</p>
       <p><b>Usługi zewnętrzne:</b> podczas oglądania map telefon pobiera kafelki z serwerów OpenStreetMap, a przy wyznaczaniu trasy po drogach wysyła współrzędne klikniętych punktów do darmowego serwisu BRouter (brouter.de). Serwery te, jak każda strona internetowa, widzą adres IP Twojego urządzenia. Nie są im przekazywane żadne inne dane.</p>
       ${community ? `<p>Na serwer aplikacji trafiają wyłącznie dane, na które się zgodzisz:</p>
@@ -222,7 +224,7 @@ const TRANSLATIONS = {
       </ul>
       <p>Podstawa prawna: Twoja zgoda (art. 6 ust. 1 lit. a RODO) — możesz ją wycofać w dowolnym momencie poniżej. Dane są przechowywane w usłudze Supabase w Unii Europejskiej; dostawca, jak każdy serwer, technicznie rejestruje adresy IP w logach.</p>
       ` : ""}
-      <p>Masz prawo dostępu do danych, ich usunięcia i wniesienia skargi do Prezesa UODO.${contact ? ` Kontakt z administratorem: <b>${contact}</b>.` : ""}</p>`,
+      <p>Masz prawo dostępu do danych, ich usunięcia i wniesienia skargi do Prezesa UODO.${contact ? ` W tych sprawach napisz na adres podany na górze.` : ""}</p>`,
   },
   en: {
     loginBtn: "Log in",
@@ -303,7 +305,8 @@ const TRANSLATIONS = {
     helpBtn: "Help",
     helpTitle: "Help and guide",
     helpPrivacyBtn: "FULL PRIVACY INFORMATION (GDPR)",
-    helpHtml: (community) => `
+    helpHtml: (community, contact) => `
+      ${contact ? `<p class="contact-box">✉️ Contact: <a href="mailto:${contact}">${contact}</a> — questions, bug reports, data deletion requests, reporting inappropriate content.</p>` : ""}
       <details open><summary>🚀 Getting started</summary>
         <ul>
           <li>The default PIN is <b>1234</b> — change it right away with “Change PIN” at the bottom of the screen.</li>
@@ -362,7 +365,7 @@ const TRANSLATIONS = {
           <li>Don't use your card, bank or phone code as the PIN.</li>
           ${community ? `<li>Shared trainings are visible to <b>every</b> app user. If you don't want to be recognised, don't use your full name as a nickname.</li>
           <li>When sharing, the app cuts the first and last 300 m of the route, but if you start and finish at home in a small town, consider sharing without a route (e.g. a manually entered training).</li>
-          <li>Report offensive content or privacy violations to the administrator (contact in “Privacy”).</li>` : ""}
+          <li>Report offensive content or privacy violations to the administrator (address at the top of Help).</li>` : ""}
           <li>The app never asks for your Garmin, Suunto or Polar password — you import files yourself.</li>
         </ul>
       </details>
@@ -413,6 +416,7 @@ const TRANSLATIONS = {
     noShares: "You have no shared activities.",
     mineLabel: "(you)",
     privacyHtml: (contact, community) => `
+      ${contact ? `<p class="contact-box">✉️ Data controller / contact: <a href="mailto:${contact}">${contact}</a></p>` : ""}
       <p>By default the app keeps all data (trainings, routes, PIN) <b>only on your phone</b>.</p>
       <p><b>External services:</b> when viewing maps the phone downloads tiles from OpenStreetMap servers, and when routing along roads it sends the coordinates of tapped points to the free BRouter service (brouter.de). Like any website, these servers see your device's IP address. No other data is shared with them.</p>
       ${community ? `<p>Only data you agree to is sent to the app's server:</p>
@@ -422,7 +426,7 @@ const TRANSLATIONS = {
       </ul>
       <p>Legal basis: your consent (Art. 6(1)(a) GDPR) — you can withdraw it at any time below. Data is stored with Supabase in the European Union; like any server, the provider technically records IP addresses in logs.</p>
       ` : ""}
-      <p>You have the right to access and delete your data and to lodge a complaint with the supervisory authority (UODO).${contact ? ` Contact the data controller: <b>${contact}</b>.` : ""}</p>`,
+      <p>You have the right to access and delete your data and to lodge a complaint with the supervisory authority (UODO).${contact ? ` For these matters, write to the address at the top.` : ""}</p>`,
   },
 };
 
@@ -1172,7 +1176,7 @@ function refreshPrivacyText() {
 
 function refreshHelpText() {
   const el = document.getElementById("helpText");
-  if (el) el.innerHTML = t().helpHtml(isCommunityConfigured());
+  if (el) el.innerHTML = t().helpHtml(isCommunityConfigured(), escapeXml(ADMIN_CONTACT));
 }
 
 function showHelp() {
