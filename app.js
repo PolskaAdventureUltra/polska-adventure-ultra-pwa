@@ -16,8 +16,8 @@ const NICK_KEY = "pau_nick";
 // --- Społeczność (Supabase) ---
 // Klucz "publishable"/"anon" jest z założenia publiczny - bezpieczeństwo zapewniają RLS
 // i funkcje w supabase/schema.sql. Puste wartości = funkcje społeczności wyłączone.
-const SUPABASE_URL = "";
-const SUPABASE_KEY = "";
+const SUPABASE_URL = "https://ldzpelsvqtqoxhenbbsv.supabase.co";
+const SUPABASE_KEY = "sb_publishable_D_2syaer9pzsc6nzKdY0xQ_8sIcmn_r";
 // Kontakt do administratora danych (wymagany w informacji RODO).
 const ADMIN_CONTACT = "";
 const DEFAULT_PIN = "1234";
