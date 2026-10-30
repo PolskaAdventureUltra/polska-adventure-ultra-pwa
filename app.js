@@ -12,6 +12,7 @@ const DEVICE_ID_KEY = "pau_device_id";
 const LAST_PING_KEY = "pau_last_ping";
 const SHARE_TOKENS_KEY = "pau_share_tokens";     // { idAktywności: tokenUsuwania }
 const NICK_KEY = "pau_nick";
+const ROUTE_SHARE_TOKENS_KEY = "pau_route_share_tokens"; // { idTrasy: tokenUsuwania }
 
 // --- Społeczność (Supabase) ---
 // Klucz "publishable"/"anon" jest z założenia publiczny - bezpieczeństwo zapewniają RLS
@@ -146,7 +147,8 @@ const TRANSLATIONS = {
         <ul>
           <li>Zakładka <b>Aktywność</b> pokazuje statystyki społeczności i treningi udostępnione przez innych użytkowników.</li>
           <li>Udostępniasz tylko wtedy, gdy sam klikniesz 📤 przy treningu. Wybierasz dowolny nick (1–30 znaków).</li>
-          <li>Swój wpis usuniesz przyciskiem 🗑 w Aktywności, przyciskiem 🌍 w Historii albo wszystkie naraz w oknie „Prywatność”.</li>
+          <li><b>Trasy społeczności:</b> zaplanowaną trasę udostępnisz przyciskiem 📤 przy zapisanej trasie w zakładce Trasy. Przy trasach innych osób: 🗺 — podgląd na mapie, GPX — pobranie do zegarka, ➕ — kopia do Twoich tras (możesz ją dalej edytować).</li>
+          <li>Swój wpis usuniesz przyciskiem 🗑 w Aktywności, przyciskiem 🌍 w Historii lub w Trasach albo wszystkie naraz w oknie „Prywatność”.</li>
           <li>Możliwość usunięcia wpisu jest zapisana na tym telefonie — po wyczyszczeniu danych przeglądarki lub zmianie telefonu usuniesz go już tylko przez kontakt z administratorem.</li>
         </ul>
       </details>` : ""}
@@ -162,7 +164,8 @@ const TRANSLATIONS = {
           <li>PIN chroni przed przypadkowym podejrzeniem aplikacji na Twoim telefonie, ale nie szyfruje danych — zabezpieczaj też sam telefon (blokada ekranu).</li>
           <li>Nie używaj jako PIN-u kodu do karty, banku ani telefonu.</li>
           ${community ? `<li>Udostępnione treningi widzi <b>każdy</b> użytkownik aplikacji. Jeśli nie chcesz być rozpoznany, nie używaj imienia i nazwiska jako nicku.</li>
-          <li>Przy udostępnianiu aplikacja obcina pierwsze i ostatnie 300 m trasy, ale jeśli trening zaczynasz i kończysz pod domem w małej miejscowości, rozważ udostępnienie go bez trasy (np. trening wpisany ręcznie).</li>
+          <li>Udostępniona zaplanowana trasa jest widoczna <b>w całości</b> (żeby inni mogli z niej nawigować) — jeśli zaczyna się pod Twoim domem, przesuń start przed udostępnieniem.</li>
+          <li>Przy udostępnianiu treningu aplikacja obcina pierwsze i ostatnie 300 m trasy, ale jeśli trening zaczynasz i kończysz pod domem w małej miejscowości, rozważ udostępnienie go bez trasy (np. trening wpisany ręcznie).</li>
           <li>Treści obraźliwe lub naruszające prywatność zgłoś administratorowi (adres na górze Pomocy).</li>` : ""}
           <li>Aplikacja nigdy nie prosi o hasło do Garmin, Suunto ani Polar — pliki importujesz sam.</li>
         </ul>
@@ -175,6 +178,21 @@ const TRANSLATIONS = {
           <li>Szczegóły — przycisk poniżej.</li>
         </ul>
       </details>`,
+    communityRoutesTitle: "Trasy społeczności",
+    communityRoutesHint: "Swoją zaplanowaną trasę udostępnisz przyciskiem 📤 w zakładce Trasy.",
+    noCommunityRoutes: "Nikt jeszcze nie udostępnił trasy.",
+    statRoutes: "udostępnionych tras",
+    shareRouteTitle: "Udostępnij trasę społeczności",
+    unshareRouteTitle: "Udostępniona — kliknij, aby przestać udostępniać",
+    copyRouteTitle: "Kopiuj do moich tras",
+    shareRouteConfirm:
+      "Udostępnić tę trasę wszystkim użytkownikom aplikacji?\n\n" +
+      "Widoczne będą: Twój nick, nazwa trasy, dystans i CAŁA trasa na mapie (inni mogą ją pobrać do zegarka).\n" +
+      "Jeśli trasa zaczyna się lub kończy pod Twoim domem, najpierw przesuń start/metę. Możesz to w każdej chwili usunąć.",
+    routeSharedMsg: "Trasa udostępniona! Zobaczysz ją w zakładce Aktywność.",
+    confirmUnshareRoute: "Przestać udostępniać tę trasę?",
+    routeCopied: (name) => `Skopiowano „${name}” do Twoich tras (zakładka Trasy).`,
+    modeNames: { "hiking-mountain": "pieszo", trekking: "rower", straight: "linia prosta" },
     tabActivity: "Aktywność",
     consentText: "Czy możemy anonimowo liczyć, ile osób korzysta z aplikacji? Wysyłamy tylko losowy identyfikator urządzenia — bez imienia, treningów i lokalizacji.",
     consentYes: "Zgadzam się",
@@ -183,7 +201,7 @@ const TRANSLATIONS = {
     privacyBtn: "Prywatność",
     privacyTitle: "Prywatność",
     statsToggle: "Anonimowe liczenie użytkowników",
-    deleteMySharesBtn: "USUŃ WSZYSTKIE MOJE UDOSTĘPNIONE AKTYWNOŚCI",
+    deleteMySharesBtn: "USUŃ WSZYSTKIE MOJE UDOSTĘPNIENIA (AKTYWNOŚCI I TRASY)",
     closeBtn: "Zamknij",
     communityTitle: "Społeczność",
     activityTitle: "Udostępnione aktywności",
@@ -209,9 +227,9 @@ const TRANSLATIONS = {
     confirmUnshare: "Usunąć to udostępnienie z zakładki Aktywność?",
     unshared: "Usunięto z Aktywności.",
     deleteFailed: "Nie udało się usunąć (sprawdź internet i spróbuj ponownie).",
-    confirmDeleteAllShares: "Usunąć wszystkie Twoje udostępnione aktywności z serwera?",
+    confirmDeleteAllShares: "Usunąć wszystkie Twoje udostępnione aktywności i trasy z serwera?",
     deletedAllShares: (n) => `Usunięto udostępnienia: ${n}.`,
-    noShares: "Nie masz udostępnionych aktywności.",
+    noShares: "Nie masz nic udostępnionego.",
     mineLabel: "(Ty)",
     privacyHtml: (contact, community) => `
       ${contact ? `<p class="contact-box">✉️ Administrator danych / kontakt: <a href="mailto:${contact}">${contact}</a></p>` : ""}
@@ -221,6 +239,7 @@ const TRANSLATIONS = {
       <ul>
         <li><b>Statystyki użytkowników</b> (tylko za zgodą): losowy identyfikator urządzenia i data ostatniego uruchomienia. Cel: policzenie, ile osób korzysta z aplikacji. Usuwany po 13 miesiącach braku aktywności lub od razu po wyłączeniu zgody.</li>
         <li><b>Udostępnione aktywności</b> (tylko te, które sam udostępnisz): nick, dyscyplina, data, dystans, czas i trasa bez pierwszych/ostatnich 300 m. Nie są powiązane z identyfikatorem urządzenia. Przechowywane do czasu, aż je usuniesz. Widoczne dla wszystkich użytkowników aplikacji.</li>
+        <li><b>Udostępnione trasy</b> (tylko te, które sam udostępnisz): nick, nazwa trasy, rodzaj, dystans i cała trasa. Nie są powiązane z identyfikatorem urządzenia. Przechowywane do czasu, aż je usuniesz. Widoczne dla wszystkich i możliwe do pobrania przez innych użytkowników.</li>
       </ul>
       <p>Podstawa prawna: Twoja zgoda (art. 6 ust. 1 lit. a RODO) — możesz ją wycofać w dowolnym momencie poniżej. Dane są przechowywane w usłudze Supabase w Unii Europejskiej; dostawca, jak każdy serwer, technicznie rejestruje adresy IP w logach.</p>
       ` : ""}
@@ -348,7 +367,8 @@ const TRANSLATIONS = {
         <ul>
           <li>The <b>Activity</b> tab shows community statistics and trainings shared by other users.</li>
           <li>You share only when you tap 📤 next to a training yourself. Choose any nickname (1–30 characters).</li>
-          <li>Delete your entry with 🗑 in Activity, 🌍 in History, or all at once in the “Privacy” window.</li>
+          <li><b>Community routes:</b> share a planned route with the 📤 button next to a saved route in the Routes tab. For other people's routes: 🗺 — map preview, GPX — download to your watch, ➕ — copy to your routes (you can edit it further).</li>
+          <li>Delete your entry with 🗑 in Activity, 🌍 in History or Routes, or all at once in the “Privacy” window.</li>
           <li>The ability to delete an entry is stored on this phone — after clearing browser data or changing phones, it can only be removed by contacting the administrator.</li>
         </ul>
       </details>` : ""}
@@ -364,7 +384,8 @@ const TRANSLATIONS = {
           <li>The PIN protects against someone casually opening the app on your phone, but it does not encrypt data — also lock your phone itself.</li>
           <li>Don't use your card, bank or phone code as the PIN.</li>
           ${community ? `<li>Shared trainings are visible to <b>every</b> app user. If you don't want to be recognised, don't use your full name as a nickname.</li>
-          <li>When sharing, the app cuts the first and last 300 m of the route, but if you start and finish at home in a small town, consider sharing without a route (e.g. a manually entered training).</li>
+          <li>A shared planned route is visible <b>in full</b> (so others can navigate it) — if it starts at your home, move the start before sharing.</li>
+          <li>When sharing a training, the app cuts the first and last 300 m of the route, but if you start and finish at home in a small town, consider sharing without a route (e.g. a manually entered training).</li>
           <li>Report offensive content or privacy violations to the administrator (address at the top of Help).</li>` : ""}
           <li>The app never asks for your Garmin, Suunto or Polar password — you import files yourself.</li>
         </ul>
@@ -377,6 +398,21 @@ const TRANSLATIONS = {
           <li>Details — button below.</li>
         </ul>
       </details>`,
+    communityRoutesTitle: "Community routes",
+    communityRoutesHint: "Share your planned route with the 📤 button in the Routes tab.",
+    noCommunityRoutes: "Nobody has shared a route yet.",
+    statRoutes: "shared routes",
+    shareRouteTitle: "Share route with the community",
+    unshareRouteTitle: "Shared — click to stop sharing",
+    copyRouteTitle: "Copy to my routes",
+    shareRouteConfirm:
+      "Share this route with all app users?\n\n" +
+      "Visible: your nickname, route name, distance and the WHOLE route on a map (others can download it to their watch).\n" +
+      "If the route starts or ends at your home, move the start/finish first. You can delete it at any time.",
+    routeSharedMsg: "Route shared! You'll see it in the Activity tab.",
+    confirmUnshareRoute: "Stop sharing this route?",
+    routeCopied: (name) => `Copied “${name}” to your routes (Routes tab).`,
+    modeNames: { "hiking-mountain": "on foot", trekking: "bike", straight: "straight line" },
     tabActivity: "Activity",
     consentText: "May we anonymously count how many people use the app? We only send a random device ID — no name, trainings or location.",
     consentYes: "I agree",
@@ -385,7 +421,7 @@ const TRANSLATIONS = {
     privacyBtn: "Privacy",
     privacyTitle: "Privacy",
     statsToggle: "Anonymous user counting",
-    deleteMySharesBtn: "DELETE ALL MY SHARED ACTIVITIES",
+    deleteMySharesBtn: "DELETE ALL MY SHARES (ACTIVITIES AND ROUTES)",
     closeBtn: "Close",
     communityTitle: "Community",
     activityTitle: "Shared activities",
@@ -411,9 +447,9 @@ const TRANSLATIONS = {
     confirmUnshare: "Remove this from the Activity tab?",
     unshared: "Removed from Activity.",
     deleteFailed: "Could not delete (check your internet and try again).",
-    confirmDeleteAllShares: "Delete all your shared activities from the server?",
+    confirmDeleteAllShares: "Delete all your shared activities and routes from the server?",
     deletedAllShares: (n) => `Deleted shares: ${n}.`,
-    noShares: "You have no shared activities.",
+    noShares: "You have nothing shared.",
     mineLabel: "(you)",
     privacyHtml: (contact, community) => `
       ${contact ? `<p class="contact-box">✉️ Data controller / contact: <a href="mailto:${contact}">${contact}</a></p>` : ""}
@@ -423,6 +459,7 @@ const TRANSLATIONS = {
       <ul>
         <li><b>User statistics</b> (only with consent): a random device ID and the date of last use. Purpose: counting how many people use the app. Deleted after 13 months of inactivity or immediately when you withdraw consent.</li>
         <li><b>Shared activities</b> (only those you share yourself): nickname, discipline, date, distance, time and the route without the first/last 300 m. Not linked to the device ID. Kept until you delete them. Visible to all app users.</li>
+        <li><b>Shared routes</b> (only those you share yourself): nickname, route name, type, distance and the whole route. Not linked to the device ID. Kept until you delete them. Visible to and downloadable by all app users.</li>
       </ul>
       <p>Legal basis: your consent (Art. 6(1)(a) GDPR) — you can withdraw it at any time below. Data is stored with Supabase in the European Union; like any server, the provider technically records IP addresses in logs.</p>
       ` : ""}
@@ -952,6 +989,7 @@ function savePlannedRoute() {
     waypoints: planWaypoints,
     segments: planSegments,
   };
+  if (existing && existing.sharedId) route.sharedId = existing.sharedId;
   if (existing) routes[planEditingIndex] = route;
   else {
     routes.push(route);
@@ -965,6 +1003,7 @@ function savePlannedRoute() {
 function loadPlannedRoute(index) {
   const route = getPlannedRoutes()[index];
   if (!route) return;
+  initPlanMap();
   planWaypoints = route.waypoints;
   planSegments = route.segments;
   planEditingIndex = index;
@@ -1044,12 +1083,16 @@ function exportCurrentPlan() {
   downloadGpx(name, getPlanTrack());
 }
 
+function plannedRouteTrack(route) {
+  const track = [];
+  route.segments.forEach((seg, i) => track.push(...(i === 0 ? seg : seg.slice(1))));
+  return track;
+}
+
 function exportPlannedRoute(index) {
   const route = getPlannedRoutes()[index];
   if (!route) return;
-  const track = [];
-  route.segments.forEach((seg, i) => track.push(...(i === 0 ? seg : seg.slice(1))));
-  downloadGpx(route.name, track);
+  downloadGpx(route.name, plannedRouteTrack(route));
 }
 
 function refreshSavedRoutesList() {
@@ -1067,6 +1110,9 @@ function refreshSavedRoutesList() {
       `<div class="history-actions">` +
       `<button class="route-btn" data-index="${index}" title="${dict.editRouteTitle}">🗺</button>` +
       `<button class="gpx-btn" data-index="${index}" title="${dict.exportRouteTitle}">GPX</button>` +
+      (isCommunityConfigured()
+        ? `<button class="share-btn" data-index="${index}" title="${r.sharedId ? dict.unshareRouteTitle : dict.shareRouteTitle}">${r.sharedId ? "🌍" : "📤"}</button>`
+        : "") +
       `<button class="delete-btn" data-index="${index}" title="${dict.deleteTitle}">🗑</button></div>` +
       `</div>`)
     .join("");
@@ -1076,6 +1122,9 @@ function refreshSavedRoutesList() {
   });
   list.querySelectorAll(".gpx-btn").forEach((btn) => {
     btn.addEventListener("click", () => exportPlannedRoute(parseInt(btn.dataset.index, 10)));
+  });
+  list.querySelectorAll(".share-btn").forEach((btn) => {
+    btn.addEventListener("click", () => toggleShareRoute(parseInt(btn.dataset.index, 10)));
   });
   list.querySelectorAll(".delete-btn").forEach((btn) => {
     btn.addEventListener("click", () => deletePlannedRoute(parseInt(btn.dataset.index, 10)));
@@ -1088,6 +1137,7 @@ const SHARE_TRIM_KM = 0.3; // obcinamy początek i koniec trasy, żeby nie zdrad
 let activityMapInstance = null;
 let activityLayerGroup = null;
 let activityCache = [];
+let communityRoutesCache = [];
 
 function isCommunityConfigured() {
   return Boolean(SUPABASE_URL && SUPABASE_KEY);
@@ -1280,7 +1330,8 @@ async function deleteSharedActivity(id) {
 
 async function deleteAllMyShares() {
   const ids = Object.keys(getShareTokens());
-  if (ids.length === 0) {
+  const routeIds = Object.keys(getRouteShareTokens());
+  if (ids.length === 0 && routeIds.length === 0) {
     alert(t().noShares);
     return;
   }
@@ -1297,13 +1348,17 @@ async function deleteAllMyShares() {
       console.warn("delete failed", id, e);
     }
   }
+  for (const id of routeIds) {
+    if (await deleteSharedRoute(id, true)) deleted++;
+  }
   const history = getHistory();
   history.forEach((item) => {
     if (item.sharedId && !getShareTokens()[item.sharedId]) delete item.sharedId;
   });
   saveHistory(history);
   refreshHistoryList();
-  alert(deleted === ids.length ? t().deletedAllShares(deleted) : t().deleteFailed);
+  refreshSavedRoutesList();
+  alert(deleted === ids.length + routeIds.length ? t().deletedAllShares(deleted) : t().deleteFailed);
 }
 
 function statTile(value, label) {
@@ -1326,11 +1381,20 @@ async function refreshActivityTab() {
       statTile(stats.users_total, dict.statUsers) +
       statTile(stats.users_active_7d, dict.statActive) +
       statTile(stats.activities_total, dict.statActivities) +
-      statTile(Number(stats.km_total).toFixed(1), dict.statKm);
+      statTile(Number(stats.km_total).toFixed(1), dict.statKm) +
+      statTile(stats.routes_total || 0, dict.statRoutes);
     activityCache = activities || [];
     renderActivityList();
   } catch (e) {
     listEl.innerHTML = `<p>${dict.communityError}</p>`;
+  }
+  // Osobno, żeby błąd tras nie psuł listy aktywności.
+  const routesEl = document.getElementById("communityRoutesList");
+  try {
+    communityRoutesCache = (await rpc("list_routes", { p_limit: 50 })) || [];
+    renderCommunityRoutesList();
+  } catch (e) {
+    routesEl.innerHTML = `<p>${dict.communityError}</p>`;
   }
 }
 
@@ -1384,9 +1448,13 @@ function showActivityRoute(index) {
     .map((p) => [p[0], p[1]]);
   if (latlngs.length < 2) return;
 
+  drawOnActivityMap(`${a.nick} — ${Number(a.dist_km).toFixed(2)} km`, latlngs);
+}
+
+function drawOnActivityMap(title, latlngs) {
   const card = document.getElementById("activityRouteCard");
   card.style.display = "block";
-  document.getElementById("activityRouteTitle").textContent = `${a.nick} — ${Number(a.dist_km).toFixed(2)} km`;
+  document.getElementById("activityRouteTitle").textContent = title;
   if (!activityMapInstance) {
     activityMapInstance = L.map("activityMap");
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -1402,6 +1470,219 @@ function showActivityRoute(index) {
     activityMapInstance.fitBounds(polyline.getBounds(), { padding: [20, 20] });
   });
   card.scrollIntoView({ behavior: "smooth" });
+}
+
+// --- Trasy społeczności: udostępnianie zaplanowanych tras ---
+const SHARED_ROUTE_MAX_POINTS = 1200;
+
+function getRouteShareTokens() {
+  try {
+    return JSON.parse(localStorage.getItem(ROUTE_SHARE_TOKENS_KEY)) || {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveRouteShareTokens(tokens) {
+  localStorage.setItem(ROUTE_SHARE_TOKENS_KEY, JSON.stringify(tokens));
+}
+
+// Upraszczanie trasy (Douglas-Peucker) - trasa z BRoutera potrafi mieć tysiące punktów.
+function simplifyTrack(track, tolerance) {
+  if (track.length <= 2) return track.slice();
+  const keep = new Array(track.length).fill(false);
+  keep[0] = keep[track.length - 1] = true;
+  const stack = [[0, track.length - 1]];
+  while (stack.length) {
+    const [start, end] = stack.pop();
+    const a = track[start], b = track[end];
+    let maxDist = 0, maxIndex = -1;
+    for (let i = start + 1; i < end; i++) {
+      const p = track[i];
+      const dx = b.lon - a.lon, dy = b.lat - a.lat;
+      const len2 = dx * dx + dy * dy;
+      let u = len2 ? ((p.lon - a.lon) * dx + (p.lat - a.lat) * dy) / len2 : 0;
+      u = Math.max(0, Math.min(1, u));
+      const ex = a.lon + u * dx - p.lon, ey = a.lat + u * dy - p.lat;
+      const d = ex * ex + ey * ey;
+      if (d > maxDist) { maxDist = d; maxIndex = i; }
+    }
+    if (maxIndex !== -1 && maxDist > tolerance * tolerance) {
+      keep[maxIndex] = true;
+      stack.push([start, maxIndex], [maxIndex, end]);
+    }
+  }
+  return track.filter((_, i) => keep[i]);
+}
+
+function compactTrackForUpload(track) {
+  let tolerance = 0.00002; // ok. 2 m
+  let simplified = simplifyTrack(track, tolerance);
+  while (simplified.length > SHARED_ROUTE_MAX_POINTS) {
+    tolerance *= 2;
+    simplified = simplifyTrack(track, tolerance);
+  }
+  return simplified.map((p) => {
+    const point = [Number(p.lat.toFixed(5)), Number(p.lon.toFixed(5))];
+    if (p.ele != null) point.push(Math.round(p.ele));
+    return point;
+  });
+}
+
+// Punkty z serwera -> { lat, lon, ele? }; odrzuca niepoprawne dane.
+function parseServerTrack(route) {
+  if (!Array.isArray(route)) return [];
+  return route
+    .filter((p) => Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1]))
+    .map((p) => (Number.isFinite(p[2]) ? { lat: p[0], lon: p[1], ele: p[2] } : { lat: p[0], lon: p[1] }));
+}
+
+function askNick() {
+  const nick = prompt(t().promptNick, localStorage.getItem(NICK_KEY) || "");
+  if (nick === null) return null;
+  const trimmed = nick.trim();
+  if (trimmed.length < 1 || trimmed.length > 30) {
+    alert(t().nickInvalid);
+    return null;
+  }
+  localStorage.setItem(NICK_KEY, trimmed);
+  return trimmed;
+}
+
+async function toggleShareRoute(index) {
+  const routes = getPlannedRoutes();
+  const route = routes[index];
+  if (!route) return;
+  if (route.sharedId) {
+    if (!confirm(t().confirmUnshareRoute)) return;
+    if (await deleteSharedRoute(route.sharedId)) {
+      refreshSavedRoutesList();
+      alert(t().unshared);
+    }
+    return;
+  }
+  if (!confirm(t().shareRouteConfirm)) return;
+  const nick = askNick();
+  if (!nick) return;
+  const token = randomToken();
+  try {
+    const id = await rpc("share_route", {
+      p_nick: nick,
+      p_name: route.name.slice(0, 60),
+      p_mode: route.mode,
+      p_dist_km: parseFloat(route.distKm),
+      p_route: compactTrackForUpload(plannedRouteTrack(route)),
+      p_delete_token: token,
+    });
+    const tokens = getRouteShareTokens();
+    tokens[id] = token;
+    saveRouteShareTokens(tokens);
+    route.sharedId = id;
+    savePlannedRoutes(routes);
+    refreshSavedRoutesList();
+    alert(t().routeSharedMsg);
+  } catch (e) {
+    alert(t().communityError);
+  }
+}
+
+// Usuwa udostępnioną trasę z serwera; zwraca true, gdy jej tam już nie ma.
+async function deleteSharedRoute(id, silent) {
+  const tokens = getRouteShareTokens();
+  if (tokens[id]) {
+    try {
+      await rpc("delete_route", { p_id: id, p_delete_token: tokens[id] });
+    } catch (e) {
+      if (!silent) alert(t().deleteFailed);
+      return false;
+    }
+    delete tokens[id];
+    saveRouteShareTokens(tokens);
+  }
+  const routes = getPlannedRoutes();
+  routes.forEach((r) => {
+    if (r.sharedId === id) delete r.sharedId;
+  });
+  savePlannedRoutes(routes);
+  return true;
+}
+
+function renderCommunityRoutesList() {
+  const listEl = document.getElementById("communityRoutesList");
+  const dict = t();
+  if (communityRoutesCache.length === 0) {
+    listEl.innerHTML = `<p>${dict.noCommunityRoutes}</p>`;
+    return;
+  }
+  const tokens = getRouteShareTokens();
+  listEl.innerHTML = communityRoutesCache
+    .map((r, index) => {
+      const mine = Boolean(tokens[r.id]);
+      const mode = dict.modeNames[r.mode] || "";
+      return `<div class="history-item">` +
+        `<span><b>${escapeXml(r.name)}</b> — ${Number(r.dist_km).toFixed(1)} km, ${mode} · ` +
+        `<span class="activity-nick">${escapeXml(r.nick)}</span>${mine ? " " + dict.mineLabel : ""}</span>` +
+        `<div class="history-actions">` +
+        `<button class="route-btn" data-index="${index}" title="${dict.showRouteTitle}">🗺</button>` +
+        `<button class="gpx-btn" data-index="${index}" title="${dict.exportRouteTitle}">GPX</button>` +
+        `<button class="copy-btn" data-index="${index}" title="${dict.copyRouteTitle}">➕</button>` +
+        (mine ? `<button class="delete-btn" data-index="${index}" title="${dict.deleteTitle}">🗑</button>` : "") +
+        `</div></div>`;
+    })
+    .join("");
+
+  const on = (cls, handler) => listEl.querySelectorAll(cls).forEach((btn) => {
+    btn.addEventListener("click", () => handler(communityRoutesCache[parseInt(btn.dataset.index, 10)]));
+  });
+  on(".route-btn", showCommunityRoute);
+  on(".gpx-btn", downloadCommunityRoute);
+  on(".copy-btn", copyCommunityRoute);
+  on(".delete-btn", async (r) => {
+    if (!confirm(t().confirmUnshareRoute)) return;
+    if (await deleteSharedRoute(r.id)) {
+      refreshSavedRoutesList();
+      refreshActivityTab();
+    }
+  });
+}
+
+async function fetchCommunityTrack(r) {
+  try {
+    const track = parseServerTrack(await rpc("get_route", { p_id: r.id }));
+    if (track.length < 2) throw new Error("empty");
+    return track;
+  } catch (e) {
+    alert(t().communityError);
+    return null;
+  }
+}
+
+async function showCommunityRoute(r) {
+  const track = await fetchCommunityTrack(r);
+  if (track) drawOnActivityMap(`${r.name} — ${r.nick}`, track.map((p) => [p.lat, p.lon]));
+}
+
+async function downloadCommunityRoute(r) {
+  const track = await fetchCommunityTrack(r);
+  if (track) downloadGpx(r.name, track);
+}
+
+async function copyCommunityRoute(r) {
+  const track = await fetchCommunityTrack(r);
+  if (!track) return;
+  const routes = getPlannedRoutes();
+  routes.push({
+    name: r.name,
+    created: new Date().toISOString().slice(0, 10),
+    mode: r.mode,
+    distKm: trackDistanceKm(track).toFixed(2),
+    // Start i meta jako punkty edycji, cała trasa jako jeden odcinek - można ją dalej wydłużać.
+    waypoints: [track[0], track[track.length - 1]],
+    segments: [track],
+  });
+  savePlannedRoutes(routes);
+  refreshSavedRoutesList();
+  alert(t().routeCopied(r.name));
 }
 
 // --- Import treningów z Garmin/Suunto/Polar (pliki GPX/TCX, parsowane lokalnie) ---

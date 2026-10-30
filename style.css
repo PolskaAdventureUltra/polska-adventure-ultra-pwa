@@ -108,7 +108,8 @@ button.primary { background: var(--accent); color: white; }
 .history-item .delete-btn,
 .history-item .route-btn,
 .history-item .gpx-btn,
-.history-item .share-btn {
+.history-item .share-btn,
+.history-item .copy-btn {
   width: auto;
   flex-shrink: 0;
   padding: 4px 10px;
@@ -119,6 +120,7 @@ button.primary { background: var(--accent); color: white; }
 .history-item .delete-btn { color: #c62828; }
 .history-item .route-btn { color: var(--accent); }
 .history-item .gpx-btn { font-size: 12px; color: var(--accent); }
+.history-item .copy-btn { color: var(--accent); }
 
 .bottom-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 10px; }
 .bottom-row button {
