@@ -6,6 +6,7 @@ const PIN_KEY = "pau_pin";
 const HISTORY_KEY = "pau_history";
 const THEME_KEY = "pau_theme";
 const LANG_KEY = "pau_lang";
+const PLANNED_ROUTES_KEY = "pau_planned_routes";
 const DEFAULT_PIN = "1234";
 
 // --- Tłumaczenia (PL/EN) ---
@@ -61,6 +62,31 @@ const TRANSLATIONS = {
     discNames: { Bieg: "Bieg", Rower: "Rower", Kajak: "Kajak" },
     routeTitle: "Trasa",
     showRouteTitle: "Pokaż trasę",
+    tabPlan: "Trasy",
+    planTitle: "Wyznacz trasę",
+    planHint: "Klikaj na mapie, żeby dodać kolejne punkty trasy. Gotową trasę zapisz i wyeksportuj do GPX, a potem wgraj do zegarka.",
+    planModeLabel: "Prowadzenie trasy",
+    planModeFoot: "Po szlakach pieszych (bieg)",
+    planModeBike: "Po drogach rowerowych (rower)",
+    planModeStraight: "Linia prosta (kajak / teren)",
+    planUndoBtn: "Cofnij punkt",
+    planClearBtn: "Wyczyść",
+    planSaveBtn: "ZAPISZ TRASĘ",
+    planExportBtn: "EKSPORTUJ DO GPX (ZEGAREK)",
+    planExportHint: "Garmin: Garmin Connect (www) → Trening → Trasy → Importuj. Suunto: otwórz plik GPX w Suunto app. Polar: Polar Flow (www) → Ulubione → Trasy → Importuj.",
+    savedRoutesTitle: "Zapisane trasy",
+    noSavedRoutes: "Brak zapisanych tras.",
+    planStats: (km, n) => `Dystans: ${km} km · punkty: ${n}`,
+    planStatsAscent: (m) => ` · przewyższenie: ${m} m`,
+    planRouting: "Wyznaczam trasę…",
+    planRoutingError: "Nie udało się wyznaczyć trasy po drogach (brak internetu lub punkt poza drogą) — ten odcinek jest linią prostą.",
+    planNeedPoints: "Dodaj co najmniej 2 punkty na mapie.",
+    promptRouteName: "Nazwa trasy:",
+    defaultRouteName: "Moja trasa",
+    routeSaved: "Trasa zapisana!",
+    confirmDeleteRoute: "Usunąć tę trasę?",
+    editRouteTitle: "Edytuj trasę",
+    exportRouteTitle: "Eksportuj do GPX",
   },
   en: {
     loginBtn: "Log in",
@@ -113,6 +139,31 @@ const TRANSLATIONS = {
     discNames: { Bieg: "Running", Rower: "Cycling", Kajak: "Kayaking" },
     routeTitle: "Route",
     showRouteTitle: "Show route",
+    tabPlan: "Routes",
+    planTitle: "Plan a route",
+    planHint: "Tap the map to add route points. Save the finished route, export it to GPX and upload it to your watch.",
+    planModeLabel: "Route guidance",
+    planModeFoot: "Follow footpaths (running)",
+    planModeBike: "Follow cycle roads (cycling)",
+    planModeStraight: "Straight lines (kayak / off-road)",
+    planUndoBtn: "Undo point",
+    planClearBtn: "Clear",
+    planSaveBtn: "SAVE ROUTE",
+    planExportBtn: "EXPORT TO GPX (WATCH)",
+    planExportHint: "Garmin: Garmin Connect (web) → Training → Courses → Import. Suunto: open the GPX file in the Suunto app. Polar: Polar Flow (web) → Favorites → Routes → Import.",
+    savedRoutesTitle: "Saved routes",
+    noSavedRoutes: "No saved routes yet.",
+    planStats: (km, n) => `Distance: ${km} km · points: ${n}`,
+    planStatsAscent: (m) => ` · ascent: ${m} m`,
+    planRouting: "Calculating route…",
+    planRoutingError: "Could not route along roads (no internet or point off-road) — this section is a straight line.",
+    planNeedPoints: "Add at least 2 points on the map.",
+    promptRouteName: "Route name:",
+    defaultRouteName: "My route",
+    routeSaved: "Route saved!",
+    confirmDeleteRoute: "Delete this route?",
+    editRouteTitle: "Edit route",
+    exportRouteTitle: "Export to GPX",
   },
 };
 
@@ -138,6 +189,8 @@ function toggleLanguage() {
   applyLanguage();
   refreshTotalLabel();
   refreshHistoryList();
+  refreshSavedRoutesList();
+  refreshPlanStats();
 }
 
 // --- Rejestracja Service Workera (offline) ---
@@ -196,6 +249,7 @@ function showMainApp() {
   document.getElementById("mainApp").style.display = "block";
   refreshTotalLabel();
   refreshHistoryList();
+  refreshSavedRoutesList();
   document.getElementById("date").valueAsDate = new Date();
 }
 
@@ -213,11 +267,18 @@ function tryLogin() {
 }
 
 // --- Zakładki ---
+const TAB_IDS = {
+  train: ["tabTrain", "tabTrainBtn"],
+  history: ["tabHistory", "tabHistoryBtn"],
+  plan: ["tabPlan", "tabPlanBtn"],
+};
+
 function showTab(tabName) {
   document.querySelectorAll(".tab-content").forEach((el) => el.classList.remove("active"));
   document.querySelectorAll(".tabs button").forEach((el) => el.classList.remove("active"));
-  document.getElementById(tabName === "train" ? "tabTrain" : "tabHistory").classList.add("active");
-  document.getElementById(tabName === "train" ? "tabTrainBtn" : "tabHistoryBtn").classList.add("active");
+  const [contentId, btnId] = TAB_IDS[tabName];
+  document.getElementById(contentId).classList.add("active");
+  document.getElementById(btnId).classList.add("active");
 }
 
 // --- Licznik motywacyjny ---
@@ -445,6 +506,308 @@ function showRoute(index) {
   drawRoute(entry.route);
 }
 
+// --- Planowanie tras (klikanie punktów na mapie + eksport GPX do zegarka) ---
+// Prowadzenie po drogach/szlakach liczy darmowy serwer BRouter (brouter.de, bez konta i klucza API).
+// Bez internetu albo w trybie "linia prosta" odcinki są po prostu prostymi liniami między punktami.
+const BROUTER_URL = "https://brouter.de/brouter";
+
+let planMapInstance = null;
+let planLayerGroup = null;
+let planWaypoints = [];   // punkty klikane przez użytkownika: { lat, lon }
+let planSegments = [];    // planSegments[i] = trasa od punktu i do i+1: [{ lat, lon, ele? }]
+let planEditingIndex = null; // indeks edytowanej zapisanej trasy (null = nowa trasa)
+let planRequestId = 0;
+
+function getPlannedRoutes() {
+  try {
+    return JSON.parse(localStorage.getItem(PLANNED_ROUTES_KEY)) || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function savePlannedRoutes(routes) {
+  localStorage.setItem(PLANNED_ROUTES_KEY, JSON.stringify(routes));
+}
+
+function initPlanMap() {
+  if (!planMapInstance) {
+    planMapInstance = L.map("planMap").setView([52.1, 19.4], 6);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(planMapInstance);
+    planLayerGroup = L.layerGroup().addTo(planMapInstance);
+    planMapInstance.on("click", (e) => addPlanPoint(e.latlng.lat, e.latlng.lng));
+  }
+  // Zakładka była ukryta (display:none) - Leaflet musi przeliczyć rozmiar.
+  requestAnimationFrame(() => planMapInstance.invalidateSize());
+}
+
+function getPlanTrack() {
+  if (planWaypoints.length === 0) return [];
+  if (planWaypoints.length === 1) return [planWaypoints[0]];
+  const track = [];
+  planSegments.forEach((seg, i) => {
+    track.push(...(i === 0 ? seg : seg.slice(1)));
+  });
+  return track;
+}
+
+function trackDistanceKm(track) {
+  let km = 0;
+  for (let i = 1; i < track.length; i++) {
+    km += haversineKm(track[i - 1].lat, track[i - 1].lon, track[i].lat, track[i].lon);
+  }
+  return km;
+}
+
+function trackAscentM(track) {
+  let up = 0;
+  for (let i = 1; i < track.length; i++) {
+    if (track[i].ele != null && track[i - 1].ele != null && track[i].ele > track[i - 1].ele) {
+      up += track[i].ele - track[i - 1].ele;
+    }
+  }
+  return Math.round(up);
+}
+
+function refreshPlanStats(statusText) {
+  const el = document.getElementById("planStats");
+  if (!el) return;
+  if (statusText) {
+    el.textContent = statusText;
+    return;
+  }
+  if (planWaypoints.length === 0) {
+    el.textContent = "";
+    return;
+  }
+  const track = getPlanTrack();
+  const ascent = trackAscentM(track);
+  el.textContent = t().planStats(trackDistanceKm(track).toFixed(2), planWaypoints.length) +
+    (ascent > 0 ? t().planStatsAscent(ascent) : "");
+}
+
+function redrawPlan() {
+  if (!planLayerGroup) return;
+  planLayerGroup.clearLayers();
+  const track = getPlanTrack();
+  if (track.length >= 2) {
+    L.polyline(track.map((p) => [p.lat, p.lon]), { color: "#2E7D32", weight: 4 }).addTo(planLayerGroup);
+  }
+  planWaypoints.forEach((p, i) => {
+    const isLast = i === planWaypoints.length - 1 && i > 0;
+    const color = i === 0 ? "#2E7D32" : isLast ? "#c62828" : "#1565C0";
+    L.circleMarker([p.lat, p.lon], { radius: 6, color, fillColor: color, fillOpacity: 1 }).addTo(planLayerGroup);
+  });
+  refreshPlanStats();
+}
+
+async function routeSegment(from, to, mode) {
+  const straight = [{ lat: from.lat, lon: from.lon }, { lat: to.lat, lon: to.lon }];
+  if (mode === "straight") return { points: straight, ok: true };
+  try {
+    const url = `${BROUTER_URL}?lonlats=${from.lon},${from.lat}|${to.lon},${to.lat}` +
+      `&profile=${mode}&alternativeidx=0&format=geojson`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    const coords = data.features[0].geometry.coordinates;
+    const points = coords.map(([lon, lat, ele]) => (ele != null ? { lat, lon, ele } : { lat, lon }));
+    if (points.length < 2) throw new Error("empty");
+    return { points, ok: true };
+  } catch (e) {
+    return { points: straight, ok: false };
+  }
+}
+
+async function addPlanPoint(lat, lon) {
+  const point = { lat, lon };
+  planWaypoints.push(point);
+  if (planWaypoints.length === 1) {
+    redrawPlan();
+    return;
+  }
+  const from = planWaypoints[planWaypoints.length - 2];
+  const segIndex = planWaypoints.length - 2;
+  // Od razu rysujemy linię prostą, a potem podmieniamy ją na trasę po drogach.
+  planSegments[segIndex] = [from, point];
+  redrawPlan();
+
+  const mode = document.getElementById("planMode").value;
+  if (mode === "straight") return;
+  const requestId = ++planRequestId;
+  refreshPlanStats(t().planRouting);
+  const result = await routeSegment(from, point, mode);
+  // Użytkownik mógł w międzyczasie cofnąć punkt albo wyczyścić trasę.
+  if (planWaypoints[segIndex] !== from || planWaypoints[segIndex + 1] !== point) return;
+  planSegments[segIndex] = result.points;
+  redrawPlan();
+  if (!result.ok && requestId === planRequestId) alert(t().planRoutingError);
+}
+
+function undoPlanPoint() {
+  planWaypoints.pop();
+  planSegments.length = Math.max(planWaypoints.length - 1, 0);
+  redrawPlan();
+}
+
+function clearPlan() {
+  planWaypoints = [];
+  planSegments = [];
+  planEditingIndex = null;
+  redrawPlan();
+}
+
+function savePlannedRoute() {
+  if (planWaypoints.length < 2) {
+    alert(t().planNeedPoints);
+    return;
+  }
+  const routes = getPlannedRoutes();
+  const existing = planEditingIndex != null ? routes[planEditingIndex] : null;
+  const name = prompt(t().promptRouteName, existing ? existing.name : t().defaultRouteName);
+  if (name === null) return;
+  const track = getPlanTrack();
+  const route = {
+    name: name.trim() || t().defaultRouteName,
+    created: existing ? existing.created : new Date().toISOString().slice(0, 10),
+    mode: document.getElementById("planMode").value,
+    distKm: trackDistanceKm(track).toFixed(2),
+    waypoints: planWaypoints,
+    segments: planSegments,
+  };
+  if (existing) routes[planEditingIndex] = route;
+  else {
+    routes.push(route);
+    planEditingIndex = routes.length - 1;
+  }
+  savePlannedRoutes(routes);
+  refreshSavedRoutesList();
+  alert(t().routeSaved);
+}
+
+function loadPlannedRoute(index) {
+  const route = getPlannedRoutes()[index];
+  if (!route) return;
+  planWaypoints = route.waypoints;
+  planSegments = route.segments;
+  planEditingIndex = index;
+  document.getElementById("planMode").value = route.mode;
+  redrawPlan();
+  const track = getPlanTrack();
+  if (track.length >= 2) {
+    planMapInstance.fitBounds(L.latLngBounds(track.map((p) => [p.lat, p.lon])), { padding: [20, 20] });
+  }
+  document.getElementById("planMap").scrollIntoView({ behavior: "smooth" });
+}
+
+function deletePlannedRoute(index) {
+  if (!confirm(t().confirmDeleteRoute)) return;
+  const routes = getPlannedRoutes();
+  routes.splice(index, 1);
+  savePlannedRoutes(routes);
+  if (planEditingIndex === index) planEditingIndex = null;
+  else if (planEditingIndex != null && planEditingIndex > index) planEditingIndex--;
+  refreshSavedRoutesList();
+}
+
+function escapeXml(text) {
+  return String(text).replace(/[<>&"']/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&apos;" }[c]));
+}
+
+// GPX z pojedynczym trackiem - Garmin Connect, Suunto app i Polar Flow importują go jako trasę do nawigacji.
+function buildGpx(name, track) {
+  const pts = track
+    .map((p) => {
+      const ele = p.ele != null ? `<ele>${p.ele}</ele>` : "";
+      return `      <trkpt lat="${p.lat.toFixed(6)}" lon="${p.lon.toFixed(6)}">${ele}</trkpt>`;
+    })
+    .join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Polska Adventure Ultra" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata><name>${escapeXml(name)}</name></metadata>
+  <trk>
+    <name>${escapeXml(name)}</name>
+    <trkseg>
+${pts}
+    </trkseg>
+  </trk>
+</gpx>
+`;
+}
+
+async function downloadGpx(name, track) {
+  const fileName = (name.replace(/[^\p{L}\p{N}_-]+/gu, "_") || "trasa") + ".gpx";
+  const gpx = buildGpx(name, track);
+  // Na telefonie systemowe "Udostępnij" pozwala od razu otworzyć plik np. w Suunto app.
+  const file = new File([gpx], fileName, { type: "application/gpx+xml" });
+  const isTouch = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+  if (isTouch && navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: name });
+      return;
+    } catch (e) {
+      if (e.name === "AbortError") return;
+    }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportCurrentPlan() {
+  if (planWaypoints.length < 2) {
+    alert(t().planNeedPoints);
+    return;
+  }
+  const routes = getPlannedRoutes();
+  const name = planEditingIndex != null && routes[planEditingIndex] ? routes[planEditingIndex].name : t().defaultRouteName;
+  downloadGpx(name, getPlanTrack());
+}
+
+function exportPlannedRoute(index) {
+  const route = getPlannedRoutes()[index];
+  if (!route) return;
+  const track = [];
+  route.segments.forEach((seg, i) => track.push(...(i === 0 ? seg : seg.slice(1))));
+  downloadGpx(route.name, track);
+}
+
+function refreshSavedRoutesList() {
+  const list = document.getElementById("savedRoutesList");
+  const routes = getPlannedRoutes();
+  const dict = t();
+  if (routes.length === 0) {
+    list.innerHTML = `<p>${dict.noSavedRoutes}</p>`;
+    return;
+  }
+  list.innerHTML = routes
+    .map((r, index) =>
+      `<div class="history-item">` +
+      `<span>${escapeXml(r.name)} — ${r.distKm} km (${r.created})</span>` +
+      `<div class="history-actions">` +
+      `<button class="route-btn" data-index="${index}" title="${dict.editRouteTitle}">🗺</button>` +
+      `<button class="gpx-btn" data-index="${index}" title="${dict.exportRouteTitle}">GPX</button>` +
+      `<button class="delete-btn" data-index="${index}" title="${dict.deleteTitle}">🗑</button></div>` +
+      `</div>`)
+    .join("");
+
+  list.querySelectorAll(".route-btn").forEach((btn) => {
+    btn.addEventListener("click", () => loadPlannedRoute(parseInt(btn.dataset.index, 10)));
+  });
+  list.querySelectorAll(".gpx-btn").forEach((btn) => {
+    btn.addEventListener("click", () => exportPlannedRoute(parseInt(btn.dataset.index, 10)));
+  });
+  list.querySelectorAll(".delete-btn").forEach((btn) => {
+    btn.addEventListener("click", () => deletePlannedRoute(parseInt(btn.dataset.index, 10)));
+  });
+}
+
 // --- Import treningów z Garmin/Suunto/Polar (pliki GPX/TCX, parsowane lokalnie) ---
 function haversineKm(lat1, lon1, lat2, lon2) {
   const toRad = (d) => (d * Math.PI) / 180;
@@ -604,6 +967,14 @@ document.addEventListener("DOMContentLoaded", () => {
     showTab("history");
     refreshHistoryList();
   });
+  document.getElementById("tabPlanBtn").addEventListener("click", () => {
+    showTab("plan");
+    initPlanMap();
+  });
+  document.getElementById("planUndoBtn").addEventListener("click", undoPlanPoint);
+  document.getElementById("planClearBtn").addEventListener("click", clearPlan);
+  document.getElementById("planSaveBtn").addEventListener("click", savePlannedRoute);
+  document.getElementById("planExportBtn").addEventListener("click", exportCurrentPlan);
 
   document.getElementById("saveBtn").addEventListener("click", saveTraining);
   document.getElementById("paceBtn").addEventListener("click", calcPace);
