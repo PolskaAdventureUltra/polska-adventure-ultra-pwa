@@ -164,5 +164,8 @@ canvas { width: 100%; height: auto; background: var(--card); border-radius: 8px;
 .activity-nick { font-weight: bold; }
 .privacy-text { font-size: 13px; line-height: 1.45; }
 .privacy-text ul { padding-left: 18px; }
+.help-text details { border-bottom: 1px solid var(--border); padding: 8px 0; }
+.help-text summary { font-weight: bold; font-size: 14px; cursor: pointer; }
+.help-text details p, .help-text details ul { margin: 6px 0; }
 .checkbox-row { display: flex; align-items: center; gap: 8px; font-weight: normal; }
 .checkbox-row input { width: auto; margin: 0; }

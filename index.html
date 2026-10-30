@@ -149,18 +149,29 @@
     </div>
   </div>
 
+  <!-- Instrukcja obsługi, bezpieczeństwo i RODO -->
+  <div class="card" id="helpCard" style="display:none">
+    <h2 data-i18n="helpTitle">Pomoc i instrukcja</h2>
+    <div id="helpText" class="privacy-text help-text"></div>
+    <button id="helpPrivacyBtn" data-i18n="helpPrivacyBtn">PEŁNA INFORMACJA O PRYWATNOŚCI (RODO)</button>
+    <button id="helpCloseBtn" data-i18n="closeBtn">Zamknij</button>
+  </div>
+
   <!-- Informacja o prywatności (RODO) -->
   <div class="card" id="privacyCard" style="display:none">
     <h2 data-i18n="privacyTitle">Prywatność</h2>
     <div id="privacyText" class="privacy-text"></div>
+    <div id="communityPrivacyControls">
     <label class="checkbox-row"><input type="checkbox" id="statsConsentToggle"> <span data-i18n="statsToggle">Anonimowe liczenie użytkowników</span></label>
     <button id="deleteMySharesBtn" data-i18n="deleteMySharesBtn">USUŃ WSZYSTKIE MOJE UDOSTĘPNIONE AKTYWNOŚCI</button>
+    </div>
     <button id="privacyCloseBtn" data-i18n="closeBtn">Zamknij</button>
   </div>
 
   <div class="bottom-row">
     <button id="themeBtn" data-i18n="themeBtn">Zmień motyw</button>
     <button id="pinChangeBtn" data-i18n="pinChangeBtn">Zmień PIN</button>
+    <button id="helpBtn" data-i18n="helpBtn">Pomoc</button>
     <button id="privacyBtn" data-i18n="privacyBtn">Prywatność</button>
     <button id="langBtn">EN</button>
   </div>

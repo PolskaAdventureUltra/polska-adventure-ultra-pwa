@@ -100,6 +100,80 @@ const TRANSLATIONS = {
     confirmDeleteRoute: "Usunąć tę trasę?",
     editRouteTitle: "Edytuj trasę",
     exportRouteTitle: "Eksportuj do GPX",
+    helpBtn: "Pomoc",
+    helpTitle: "Pomoc i instrukcja",
+    helpPrivacyBtn: "PEŁNA INFORMACJA O PRYWATNOŚCI (RODO)",
+    helpHtml: (community) => `
+      <details open><summary>🚀 Pierwsze kroki</summary>
+        <ul>
+          <li>Domyślny PIN to <b>1234</b> — zmień go od razu przyciskiem „Zmień PIN” na dole ekranu.</li>
+          <li>Dodaj aplikację do ekranu głównego: <b>Android (Chrome)</b> — menu ⋮ → „Dodaj do ekranu głównego”; <b>iPhone (Safari)</b> — przycisk Udostępnij → „Do ekranu początkowego”.</li>
+          <li>Po dodaniu aplikacja działa także bez internetu (poza mapami${community ? " i zakładką Aktywność" : ""}).</li>
+        </ul>
+      </details>
+      <details><summary>🏃 Zapisywanie treningu</summary>
+        <ul>
+          <li>W zakładce <b>Trening</b> wybierz dyscyplinę, wpisz dystans (wymagany) i pozostałe dane, kliknij „ZAPISZ TRENING”.</li>
+          <li>„OBLICZ TEMPO” pokazuje tempo (bieg) albo prędkość (rower, kajak); „POKAŻ WYKRES PROGRESU” rysuje wykres dystansów.</li>
+        </ul>
+      </details>
+      <details><summary>⌚ Import z zegarka (Garmin / Suunto / Polar)</summary>
+        <ul>
+          <li><b>Garmin Connect</b> (www): otwórz aktywność → ikona koła zębatego → „Eksportuj do GPX” lub „Eksportuj do TCX”.</li>
+          <li><b>Suunto app</b>: Dziennik → trening → ⋮ / Udostępnij → Eksportuj → GPX.</li>
+          <li><b>Polar Flow</b> (www): otwórz trening → „Eksportuj sesję” → GPX lub TCX.</li>
+          <li>W aplikacji kliknij „IMPORTUJ Z GARMIN / SUUNTO / POLAR”, wybierz plik, sprawdź dane i kliknij „ZAPISZ TRENING”. Trasa zapisze się razem z treningiem.</li>
+        </ul>
+      </details>
+      <details><summary>📋 Historia</summary>
+        <ul>
+          <li>🗺 — pokazuje trasę treningu na mapie (dla treningów zaimportowanych z pliku).</li>
+          <li>🗑 — usuwa wpis (po potwierdzeniu).</li>
+          ${community ? "<li>📤 — udostępnia trening w zakładce Aktywność; 🌍 oznacza, że trening jest udostępniony (kliknij, aby cofnąć udostępnienie).</li>" : ""}
+        </ul>
+      </details>
+      <details><summary>🗺 Planowanie tras i nawigacja w zegarku</summary>
+        <ul>
+          <li>W zakładce <b>Trasy</b> klikaj na mapie kolejne punkty. Wybierz prowadzenie: szlaki piesze, drogi rowerowe albo linia prosta (kajak / teren).</li>
+          <li>„Cofnij punkt” usuwa ostatni punkt, „Wyczyść” — całą trasę. „ZAPISZ TRASĘ” zapisuje ją na liście poniżej mapy.</li>
+          <li>„EKSPORTUJ DO GPX” (lub przycisk GPX przy zapisanej trasie) tworzy plik do zegarka. Na telefonie otworzy się menu „Udostępnij”.</li>
+          <li><b>Garmin</b>: Garmin Connect (www) → Trening → Trasy → Importuj → wyślij na zegarek. <b>Suunto</b>: otwórz plik GPX w Suunto app i zsynchronizuj zegarek. <b>Polar</b>: Polar Flow (www) → Ulubione → Trasy → Importuj → synchronizuj.</li>
+          <li>Wyznaczanie trasy po drogach wymaga internetu (darmowy serwis BRouter — wysyłane są wyłącznie współrzędne klikniętych punktów). Bez internetu odcinki będą liniami prostymi.</li>
+        </ul>
+      </details>
+      ${community ? `<details><summary>🌍 Aktywność i społeczność</summary>
+        <ul>
+          <li>Zakładka <b>Aktywność</b> pokazuje statystyki społeczności i treningi udostępnione przez innych użytkowników.</li>
+          <li>Udostępniasz tylko wtedy, gdy sam klikniesz 📤 przy treningu. Wybierasz dowolny nick (1–30 znaków).</li>
+          <li>Swój wpis usuniesz przyciskiem 🗑 w Aktywności, przyciskiem 🌍 w Historii albo wszystkie naraz w oknie „Prywatność”.</li>
+          <li>Możliwość usunięcia wpisu jest zapisana na tym telefonie — po wyczyszczeniu danych przeglądarki lub zmianie telefonu usuniesz go już tylko przez kontakt z administratorem.</li>
+        </ul>
+      </details>` : ""}
+      <details><summary>💾 Twoje dane i kopia zapasowa</summary>
+        <ul>
+          <li>Treningi, trasy i PIN są zapisane <b>tylko na tym urządzeniu, w tej przeglądarce</b>. Każdy telefon ma osobną historię.</li>
+          <li>Wyczyszczenie danych przeglądarki, usunięcie aplikacji lub zmiana telefonu <b>kasuje historię</b> — nie da się jej odzyskać.</li>
+          <li>Rób co jakiś czas kopię przyciskiem „EKSPORTUJ DO CSV” (plik do Excela; bez tras na mapie). Zapisane trasy zachowasz, eksportując je do GPX.</li>
+        </ul>
+      </details>
+      <details><summary>🔒 Bezpieczeństwo</summary>
+        <ul>
+          <li>PIN chroni przed przypadkowym podejrzeniem aplikacji na Twoim telefonie, ale nie szyfruje danych — zabezpieczaj też sam telefon (blokada ekranu).</li>
+          <li>Nie używaj jako PIN-u kodu do karty, banku ani telefonu.</li>
+          ${community ? `<li>Udostępnione treningi widzi <b>każdy</b> użytkownik aplikacji. Jeśli nie chcesz być rozpoznany, nie używaj imienia i nazwiska jako nicku.</li>
+          <li>Przy udostępnianiu aplikacja obcina pierwsze i ostatnie 300 m trasy, ale jeśli trening zaczynasz i kończysz pod domem w małej miejscowości, rozważ udostępnienie go bez trasy (np. trening wpisany ręcznie).</li>
+          <li>Treści obraźliwe lub naruszające prywatność zgłoś administratorowi (kontakt w „Prywatność”).</li>` : ""}
+          <li>Aplikacja nigdy nie prosi o hasło do Garmin, Suunto ani Polar — pliki importujesz sam.</li>
+        </ul>
+      </details>
+      <details><summary>⚖️ RODO w skrócie</summary>
+        <ul>
+          <li>Domyślnie nic nie jest wysyłane na żaden serwer.</li>
+          ${community ? `<li>Na serwer (Supabase, Unia Europejska) trafia tylko to, na co się zgodzisz: losowy identyfikator do liczenia użytkowników oraz treningi, które sam udostępnisz.</li>
+          <li>Zgodę na statystyki możesz wycofać w każdej chwili w oknie „Prywatność” — identyfikator zostanie usunięty z serwera.</li>` : ""}
+          <li>Szczegóły — przycisk poniżej.</li>
+        </ul>
+      </details>`,
     tabActivity: "Aktywność",
     consentText: "Czy możemy anonimowo liczyć, ile osób korzysta z aplikacji? Wysyłamy tylko losowy identyfikator urządzenia — bez imienia, treningów i lokalizacji.",
     consentYes: "Zgadzam się",
@@ -138,13 +212,16 @@ const TRANSLATIONS = {
     deletedAllShares: (n) => `Usunięto udostępnienia: ${n}.`,
     noShares: "Nie masz udostępnionych aktywności.",
     mineLabel: "(Ty)",
-    privacyHtml: (contact) => `
-      <p>Aplikacja domyślnie trzyma wszystkie dane <b>tylko na Twoim telefonie</b>. Na serwer trafiają wyłącznie dane, na które się zgodzisz:</p>
+    privacyHtml: (contact, community) => `
+      <p>Aplikacja domyślnie trzyma wszystkie dane (treningi, trasy, PIN) <b>tylko na Twoim telefonie</b>.</p>
+      <p><b>Usługi zewnętrzne:</b> podczas oglądania map telefon pobiera kafelki z serwerów OpenStreetMap, a przy wyznaczaniu trasy po drogach wysyła współrzędne klikniętych punktów do darmowego serwisu BRouter (brouter.de). Serwery te, jak każda strona internetowa, widzą adres IP Twojego urządzenia. Nie są im przekazywane żadne inne dane.</p>
+      ${community ? `<p>Na serwer aplikacji trafiają wyłącznie dane, na które się zgodzisz:</p>
       <ul>
         <li><b>Statystyki użytkowników</b> (tylko za zgodą): losowy identyfikator urządzenia i data ostatniego uruchomienia. Cel: policzenie, ile osób korzysta z aplikacji. Usuwany po 13 miesiącach braku aktywności lub od razu po wyłączeniu zgody.</li>
         <li><b>Udostępnione aktywności</b> (tylko te, które sam udostępnisz): nick, dyscyplina, data, dystans, czas i trasa bez pierwszych/ostatnich 300 m. Nie są powiązane z identyfikatorem urządzenia. Przechowywane do czasu, aż je usuniesz. Widoczne dla wszystkich użytkowników aplikacji.</li>
       </ul>
       <p>Podstawa prawna: Twoja zgoda (art. 6 ust. 1 lit. a RODO) — możesz ją wycofać w dowolnym momencie poniżej. Dane są przechowywane w usłudze Supabase w Unii Europejskiej; dostawca, jak każdy serwer, technicznie rejestruje adresy IP w logach.</p>
+      ` : ""}
       <p>Masz prawo dostępu do danych, ich usunięcia i wniesienia skargi do Prezesa UODO.${contact ? ` Kontakt z administratorem: <b>${contact}</b>.` : ""}</p>`,
   },
   en: {
@@ -223,6 +300,80 @@ const TRANSLATIONS = {
     confirmDeleteRoute: "Delete this route?",
     editRouteTitle: "Edit route",
     exportRouteTitle: "Export to GPX",
+    helpBtn: "Help",
+    helpTitle: "Help and guide",
+    helpPrivacyBtn: "FULL PRIVACY INFORMATION (GDPR)",
+    helpHtml: (community) => `
+      <details open><summary>🚀 Getting started</summary>
+        <ul>
+          <li>The default PIN is <b>1234</b> — change it right away with “Change PIN” at the bottom of the screen.</li>
+          <li>Add the app to your home screen: <b>Android (Chrome)</b> — menu ⋮ → “Add to Home screen”; <b>iPhone (Safari)</b> — Share button → “Add to Home Screen”.</li>
+          <li>Once added, the app also works offline (except maps${community ? " and the Activity tab" : ""}).</li>
+        </ul>
+      </details>
+      <details><summary>🏃 Saving a training</summary>
+        <ul>
+          <li>In the <b>Training</b> tab choose a discipline, enter the distance (required) and other data, then tap “SAVE TRAINING”.</li>
+          <li>“CALCULATE PACE” shows pace (running) or speed (cycling, kayaking); “SHOW PROGRESS CHART” draws a distance chart.</li>
+        </ul>
+      </details>
+      <details><summary>⌚ Import from your watch (Garmin / Suunto / Polar)</summary>
+        <ul>
+          <li><b>Garmin Connect</b> (web): open the activity → gear icon → “Export to GPX” or “Export to TCX”.</li>
+          <li><b>Suunto app</b>: Diary → training → ⋮ / Share → Export → GPX.</li>
+          <li><b>Polar Flow</b> (web): open the training → “Export session” → GPX or TCX.</li>
+          <li>In the app tap “IMPORT FROM GARMIN / SUUNTO / POLAR”, choose the file, check the data and tap “SAVE TRAINING”. The route is saved with the training.</li>
+        </ul>
+      </details>
+      <details><summary>📋 History</summary>
+        <ul>
+          <li>🗺 — shows the training route on a map (for trainings imported from a file).</li>
+          <li>🗑 — deletes the entry (after confirmation).</li>
+          ${community ? "<li>📤 — shares the training in the Activity tab; 🌍 means it is shared (tap to unshare).</li>" : ""}
+        </ul>
+      </details>
+      <details><summary>🗺 Route planning and watch navigation</summary>
+        <ul>
+          <li>In the <b>Routes</b> tab tap the map to add points. Choose guidance: footpaths, cycle roads or straight lines (kayak / off-road).</li>
+          <li>“Undo point” removes the last point, “Clear” the whole route. “SAVE ROUTE” adds it to the list below the map.</li>
+          <li>“EXPORT TO GPX” (or the GPX button next to a saved route) creates a file for your watch. On a phone the Share menu opens.</li>
+          <li><b>Garmin</b>: Garmin Connect (web) → Training → Courses → Import → send to device. <b>Suunto</b>: open the GPX file in the Suunto app and sync the watch. <b>Polar</b>: Polar Flow (web) → Favorites → Routes → Import → sync.</li>
+          <li>Road routing needs internet (free BRouter service — only the coordinates of tapped points are sent). Offline, sections are straight lines.</li>
+        </ul>
+      </details>
+      ${community ? `<details><summary>🌍 Activity and community</summary>
+        <ul>
+          <li>The <b>Activity</b> tab shows community statistics and trainings shared by other users.</li>
+          <li>You share only when you tap 📤 next to a training yourself. Choose any nickname (1–30 characters).</li>
+          <li>Delete your entry with 🗑 in Activity, 🌍 in History, or all at once in the “Privacy” window.</li>
+          <li>The ability to delete an entry is stored on this phone — after clearing browser data or changing phones, it can only be removed by contacting the administrator.</li>
+        </ul>
+      </details>` : ""}
+      <details><summary>💾 Your data and backup</summary>
+        <ul>
+          <li>Trainings, routes and the PIN are stored <b>only on this device, in this browser</b>. Each phone has its own history.</li>
+          <li>Clearing browser data, removing the app or changing phones <b>deletes the history</b> — it cannot be recovered.</li>
+          <li>Back up regularly with “EXPORT TO CSV” (an Excel file; without map routes). Keep saved routes by exporting them to GPX.</li>
+        </ul>
+      </details>
+      <details><summary>🔒 Security</summary>
+        <ul>
+          <li>The PIN protects against someone casually opening the app on your phone, but it does not encrypt data — also lock your phone itself.</li>
+          <li>Don't use your card, bank or phone code as the PIN.</li>
+          ${community ? `<li>Shared trainings are visible to <b>every</b> app user. If you don't want to be recognised, don't use your full name as a nickname.</li>
+          <li>When sharing, the app cuts the first and last 300 m of the route, but if you start and finish at home in a small town, consider sharing without a route (e.g. a manually entered training).</li>
+          <li>Report offensive content or privacy violations to the administrator (contact in “Privacy”).</li>` : ""}
+          <li>The app never asks for your Garmin, Suunto or Polar password — you import files yourself.</li>
+        </ul>
+      </details>
+      <details><summary>⚖️ GDPR in short</summary>
+        <ul>
+          <li>By default nothing is sent to any server.</li>
+          ${community ? `<li>Only what you agree to goes to the server (Supabase, European Union): a random ID for counting users and the trainings you share yourself.</li>
+          <li>You can withdraw consent to statistics at any time in the “Privacy” window — the ID will be deleted from the server.</li>` : ""}
+          <li>Details — button below.</li>
+        </ul>
+      </details>`,
     tabActivity: "Activity",
     consentText: "May we anonymously count how many people use the app? We only send a random device ID — no name, trainings or location.",
     consentYes: "I agree",
@@ -261,13 +412,16 @@ const TRANSLATIONS = {
     deletedAllShares: (n) => `Deleted shares: ${n}.`,
     noShares: "You have no shared activities.",
     mineLabel: "(you)",
-    privacyHtml: (contact) => `
-      <p>By default the app keeps all data <b>only on your phone</b>. Only data you agree to is sent to the server:</p>
+    privacyHtml: (contact, community) => `
+      <p>By default the app keeps all data (trainings, routes, PIN) <b>only on your phone</b>.</p>
+      <p><b>External services:</b> when viewing maps the phone downloads tiles from OpenStreetMap servers, and when routing along roads it sends the coordinates of tapped points to the free BRouter service (brouter.de). Like any website, these servers see your device's IP address. No other data is shared with them.</p>
+      ${community ? `<p>Only data you agree to is sent to the app's server:</p>
       <ul>
         <li><b>User statistics</b> (only with consent): a random device ID and the date of last use. Purpose: counting how many people use the app. Deleted after 13 months of inactivity or immediately when you withdraw consent.</li>
         <li><b>Shared activities</b> (only those you share yourself): nickname, discipline, date, distance, time and the route without the first/last 300 m. Not linked to the device ID. Kept until you delete them. Visible to all app users.</li>
       </ul>
       <p>Legal basis: your consent (Art. 6(1)(a) GDPR) — you can withdraw it at any time below. Data is stored with Supabase in the European Union; like any server, the provider technically records IP addresses in logs.</p>
+      ` : ""}
       <p>You have the right to access and delete your data and to lodge a complaint with the supervisory authority (UODO).${contact ? ` Contact the data controller: <b>${contact}</b>.` : ""}</p>`,
   },
 };
@@ -297,6 +451,7 @@ function toggleLanguage() {
   refreshSavedRoutesList();
   refreshPlanStats();
   refreshPrivacyText();
+  refreshHelpText();
   if (document.getElementById("tabActivity").classList.contains("active")) refreshActivityTab();
 }
 
@@ -977,7 +1132,7 @@ function saveShareTokens(tokens) {
 
 function initCommunity() {
   document.getElementById("tabActivityBtn").style.display = isCommunityConfigured() ? "" : "none";
-  document.getElementById("privacyBtn").style.display = isCommunityConfigured() ? "" : "none";
+  document.getElementById("communityPrivacyControls").style.display = isCommunityConfigured() ? "" : "none";
   if (!isCommunityConfigured()) return;
   const consent = localStorage.getItem(STATS_CONSENT_KEY);
   document.getElementById("consentCard").style.display = consent ? "none" : "block";
@@ -1012,7 +1167,19 @@ function setStatsConsent(agreed) {
 
 function refreshPrivacyText() {
   const el = document.getElementById("privacyText");
-  if (el) el.innerHTML = t().privacyHtml(escapeXml(ADMIN_CONTACT));
+  if (el) el.innerHTML = t().privacyHtml(escapeXml(ADMIN_CONTACT), isCommunityConfigured());
+}
+
+function refreshHelpText() {
+  const el = document.getElementById("helpText");
+  if (el) el.innerHTML = t().helpHtml(isCommunityConfigured());
+}
+
+function showHelp() {
+  refreshHelpText();
+  const card = document.getElementById("helpCard");
+  card.style.display = "block";
+  card.scrollIntoView({ behavior: "smooth" });
 }
 
 function showPrivacy() {
@@ -1404,6 +1571,11 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("consentNoBtn").addEventListener("click", () => setStatsConsent(false));
   document.getElementById("consentMoreBtn").addEventListener("click", showPrivacy);
   document.getElementById("privacyBtn").addEventListener("click", showPrivacy);
+  document.getElementById("helpBtn").addEventListener("click", showHelp);
+  document.getElementById("helpPrivacyBtn").addEventListener("click", showPrivacy);
+  document.getElementById("helpCloseBtn").addEventListener("click", () => {
+    document.getElementById("helpCard").style.display = "none";
+  });
   document.getElementById("privacyCloseBtn").addEventListener("click", () => {
     document.getElementById("privacyCard").style.display = "none";
   });
