@@ -81,9 +81,11 @@ button {
 
 button.primary { background: var(--accent); color: white; }
 
-.tabs { display: flex; gap: 8px; margin-bottom: 10px; }
+.tabs { display: flex; gap: 6px; margin-bottom: 10px; }
 .tabs button {
   margin-top: 0;
+  padding: 11px 4px;
+  font-size: 13px;
   background: var(--subtle-bg);
   color: var(--fg);
 }
@@ -105,7 +107,8 @@ button.primary { background: var(--accent); color: white; }
 .history-actions { display: flex; gap: 6px; flex-shrink: 0; }
 .history-item .delete-btn,
 .history-item .route-btn,
-.history-item .gpx-btn {
+.history-item .gpx-btn,
+.history-item .share-btn {
   width: auto;
   flex-shrink: 0;
   padding: 4px 10px;
@@ -117,7 +120,7 @@ button.primary { background: var(--accent); color: white; }
 .history-item .route-btn { color: var(--accent); }
 .history-item .gpx-btn { font-size: 12px; color: var(--accent); }
 
-.bottom-row { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+.bottom-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 10px; }
 .bottom-row button {
   width: auto;
   padding: 8px 14px;
@@ -147,3 +150,19 @@ canvas { width: 100%; height: auto; background: var(--card); border-radius: 8px;
 .plan-actions { display: flex; gap: 8px; }
 
 .hint-text { font-size: 12px; color: var(--subtle-fg); margin: 4px 0 0; }
+
+#activityMap { width: 100%; height: 300px; border-radius: 8px; }
+
+.consent-card p { margin-top: 0; font-size: 14px; }
+.link-btn { background: none; color: var(--subtle-fg); font-weight: normal; font-size: 13px; text-decoration: underline; padding: 6px; }
+
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stat-tile { background: var(--bg); border-radius: 8px; padding: 10px; text-align: center; }
+.stat-tile .stat-value { font-size: 22px; font-weight: bold; color: var(--accent); }
+.stat-tile .stat-label { font-size: 12px; color: var(--subtle-fg); }
+
+.activity-nick { font-weight: bold; }
+.privacy-text { font-size: 13px; line-height: 1.45; }
+.privacy-text ul { padding-left: 18px; }
+.checkbox-row { display: flex; align-items: center; gap: 8px; font-weight: normal; }
+.checkbox-row input { width: auto; margin: 0; }

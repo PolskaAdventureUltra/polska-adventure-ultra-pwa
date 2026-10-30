@@ -7,6 +7,19 @@ const HISTORY_KEY = "pau_history";
 const THEME_KEY = "pau_theme";
 const LANG_KEY = "pau_lang";
 const PLANNED_ROUTES_KEY = "pau_planned_routes";
+const STATS_CONSENT_KEY = "pau_stats_consent";   // "yes" / "no" / brak = jeszcze nie pytano
+const DEVICE_ID_KEY = "pau_device_id";
+const LAST_PING_KEY = "pau_last_ping";
+const SHARE_TOKENS_KEY = "pau_share_tokens";     // { idAktywności: tokenUsuwania }
+const NICK_KEY = "pau_nick";
+
+// --- Społeczność (Supabase) ---
+// Klucz "publishable"/"anon" jest z założenia publiczny - bezpieczeństwo zapewniają RLS
+// i funkcje w supabase/schema.sql. Puste wartości = funkcje społeczności wyłączone.
+const SUPABASE_URL = "";
+const SUPABASE_KEY = "";
+// Kontakt do administratora danych (wymagany w informacji RODO).
+const ADMIN_CONTACT = "";
 const DEFAULT_PIN = "1234";
 
 // --- Tłumaczenia (PL/EN) ---
@@ -87,6 +100,52 @@ const TRANSLATIONS = {
     confirmDeleteRoute: "Usunąć tę trasę?",
     editRouteTitle: "Edytuj trasę",
     exportRouteTitle: "Eksportuj do GPX",
+    tabActivity: "Aktywność",
+    consentText: "Czy możemy anonimowo liczyć, ile osób korzysta z aplikacji? Wysyłamy tylko losowy identyfikator urządzenia — bez imienia, treningów i lokalizacji.",
+    consentYes: "Zgadzam się",
+    consentNo: "Nie, dziękuję",
+    privacyMore: "Szczegóły (prywatność)",
+    privacyBtn: "Prywatność",
+    privacyTitle: "Prywatność",
+    statsToggle: "Anonimowe liczenie użytkowników",
+    deleteMySharesBtn: "USUŃ WSZYSTKIE MOJE UDOSTĘPNIONE AKTYWNOŚCI",
+    closeBtn: "Zamknij",
+    communityTitle: "Społeczność",
+    activityTitle: "Udostępnione aktywności",
+    activityHint: "Swój trening udostępnisz przyciskiem 📤 w zakładce Historia.",
+    statUsers: "użytkowników",
+    statActive: "aktywnych w 7 dni",
+    statActivities: "udostępnionych aktywności",
+    statKm: "km społeczności",
+    noActivities: "Nikt jeszcze nic nie udostępnił — bądź pierwszy!",
+    communityOff: "Funkcje społeczności nie są jeszcze skonfigurowane.",
+    communityError: "Nie udało się połączyć z serwerem (sprawdź internet).",
+    loading: "Wczytywanie…",
+    shareTitle: "Udostępnij w zakładce Aktywność",
+    unshareTitle: "Udostępnione — kliknij, aby usunąć z Aktywności",
+    shareConfirm: (hasRoute) =>
+      "Udostępnić ten trening wszystkim użytkownikom aplikacji?\n\n" +
+      "Widoczne będą: Twój nick, dyscyplina, data, dystans i czas" +
+      (hasRoute ? " oraz trasa na mapie (bez pierwszych i ostatnich 300 m, żeby nie zdradzać np. adresu domu)." : ".") +
+      "\nTętno, waga, VO2max i notatki NIE są wysyłane. Możesz to w każdej chwili usunąć.",
+    promptNick: "Twój nick (widoczny dla wszystkich, 1–30 znaków):",
+    nickInvalid: "Nick musi mieć od 1 do 30 znaków.",
+    shared: "Udostępniono! Zobaczysz to w zakładce Aktywność.",
+    confirmUnshare: "Usunąć to udostępnienie z zakładki Aktywność?",
+    unshared: "Usunięto z Aktywności.",
+    deleteFailed: "Nie udało się usunąć (sprawdź internet i spróbuj ponownie).",
+    confirmDeleteAllShares: "Usunąć wszystkie Twoje udostępnione aktywności z serwera?",
+    deletedAllShares: (n) => `Usunięto udostępnienia: ${n}.`,
+    noShares: "Nie masz udostępnionych aktywności.",
+    mineLabel: "(Ty)",
+    privacyHtml: (contact) => `
+      <p>Aplikacja domyślnie trzyma wszystkie dane <b>tylko na Twoim telefonie</b>. Na serwer trafiają wyłącznie dane, na które się zgodzisz:</p>
+      <ul>
+        <li><b>Statystyki użytkowników</b> (tylko za zgodą): losowy identyfikator urządzenia i data ostatniego uruchomienia. Cel: policzenie, ile osób korzysta z aplikacji. Usuwany po 13 miesiącach braku aktywności lub od razu po wyłączeniu zgody.</li>
+        <li><b>Udostępnione aktywności</b> (tylko te, które sam udostępnisz): nick, dyscyplina, data, dystans, czas i trasa bez pierwszych/ostatnich 300 m. Nie są powiązane z identyfikatorem urządzenia. Przechowywane do czasu, aż je usuniesz. Widoczne dla wszystkich użytkowników aplikacji.</li>
+      </ul>
+      <p>Podstawa prawna: Twoja zgoda (art. 6 ust. 1 lit. a RODO) — możesz ją wycofać w dowolnym momencie poniżej. Dane są przechowywane w usłudze Supabase w Unii Europejskiej; dostawca, jak każdy serwer, technicznie rejestruje adresy IP w logach.</p>
+      <p>Masz prawo dostępu do danych, ich usunięcia i wniesienia skargi do Prezesa UODO.${contact ? ` Kontakt z administratorem: <b>${contact}</b>.` : ""}</p>`,
   },
   en: {
     loginBtn: "Log in",
@@ -164,6 +223,52 @@ const TRANSLATIONS = {
     confirmDeleteRoute: "Delete this route?",
     editRouteTitle: "Edit route",
     exportRouteTitle: "Export to GPX",
+    tabActivity: "Activity",
+    consentText: "May we anonymously count how many people use the app? We only send a random device ID — no name, trainings or location.",
+    consentYes: "I agree",
+    consentNo: "No, thanks",
+    privacyMore: "Details (privacy)",
+    privacyBtn: "Privacy",
+    privacyTitle: "Privacy",
+    statsToggle: "Anonymous user counting",
+    deleteMySharesBtn: "DELETE ALL MY SHARED ACTIVITIES",
+    closeBtn: "Close",
+    communityTitle: "Community",
+    activityTitle: "Shared activities",
+    activityHint: "Share your training with the 📤 button in the History tab.",
+    statUsers: "users",
+    statActive: "active in 7 days",
+    statActivities: "shared activities",
+    statKm: "community km",
+    noActivities: "Nobody has shared anything yet — be the first!",
+    communityOff: "Community features are not configured yet.",
+    communityError: "Could not connect to the server (check your internet).",
+    loading: "Loading…",
+    shareTitle: "Share in the Activity tab",
+    unshareTitle: "Shared — click to remove from Activity",
+    shareConfirm: (hasRoute) =>
+      "Share this training with all app users?\n\n" +
+      "Visible: your nickname, discipline, date, distance and time" +
+      (hasRoute ? " and the route on a map (without the first and last 300 m, so it doesn't reveal e.g. your home address)." : ".") +
+      "\nHeart rate, weight, VO2max and notes are NOT sent. You can delete it at any time.",
+    promptNick: "Your nickname (visible to everyone, 1–30 characters):",
+    nickInvalid: "Nickname must be 1 to 30 characters.",
+    shared: "Shared! You'll see it in the Activity tab.",
+    confirmUnshare: "Remove this from the Activity tab?",
+    unshared: "Removed from Activity.",
+    deleteFailed: "Could not delete (check your internet and try again).",
+    confirmDeleteAllShares: "Delete all your shared activities from the server?",
+    deletedAllShares: (n) => `Deleted shares: ${n}.`,
+    noShares: "You have no shared activities.",
+    mineLabel: "(you)",
+    privacyHtml: (contact) => `
+      <p>By default the app keeps all data <b>only on your phone</b>. Only data you agree to is sent to the server:</p>
+      <ul>
+        <li><b>User statistics</b> (only with consent): a random device ID and the date of last use. Purpose: counting how many people use the app. Deleted after 13 months of inactivity or immediately when you withdraw consent.</li>
+        <li><b>Shared activities</b> (only those you share yourself): nickname, discipline, date, distance, time and the route without the first/last 300 m. Not linked to the device ID. Kept until you delete them. Visible to all app users.</li>
+      </ul>
+      <p>Legal basis: your consent (Art. 6(1)(a) GDPR) — you can withdraw it at any time below. Data is stored with Supabase in the European Union; like any server, the provider technically records IP addresses in logs.</p>
+      <p>You have the right to access and delete your data and to lodge a complaint with the supervisory authority (UODO).${contact ? ` Contact the data controller: <b>${contact}</b>.` : ""}</p>`,
   },
 };
 
@@ -191,6 +296,8 @@ function toggleLanguage() {
   refreshHistoryList();
   refreshSavedRoutesList();
   refreshPlanStats();
+  refreshPrivacyText();
+  if (document.getElementById("tabActivity").classList.contains("active")) refreshActivityTab();
 }
 
 // --- Rejestracja Service Workera (offline) ---
@@ -251,6 +358,7 @@ function showMainApp() {
   refreshHistoryList();
   refreshSavedRoutesList();
   document.getElementById("date").valueAsDate = new Date();
+  initCommunity();
 }
 
 function tryLogin() {
@@ -271,6 +379,7 @@ const TAB_IDS = {
   train: ["tabTrain", "tabTrainBtn"],
   history: ["tabHistory", "tabHistoryBtn"],
   plan: ["tabPlan", "tabPlanBtn"],
+  activity: ["tabActivity", "tabActivityBtn"],
 };
 
 function showTab(tabName) {
@@ -302,14 +411,17 @@ function refreshHistoryList() {
     .map(({ item, index }) => {
       const l = dict.historyLabels;
       const discName = dict.discNames[item.disc] || item.disc;
-      const notes = item.notes ? `, ${l.notes}: ${item.notes}` : "";
+      const notes = item.notes ? `, ${l.notes}: ${escapeXml(item.notes)}` : "";
       const routeBtn = item.route && item.route.length >= 2
         ? `<button class="route-btn" data-index="${index}" title="${dict.showRouteTitle}">🗺</button>`
+        : "";
+      const shareBtn = isCommunityConfigured()
+        ? `<button class="share-btn" data-index="${index}" title="${item.sharedId ? dict.unshareTitle : dict.shareTitle}">${item.sharedId ? "🌍" : "📤"}</button>`
         : "";
       return `<div class="history-item">` +
              `<span>${l.date}: ${item.date}, ${l.disc}: ${discName}, ${l.dist}: ${item.dist} km, ` +
              `${l.weight}: ${item.weight} kg, ${l.hr}: ${item.hr} bpm, ${l.vo2max}: ${item.vo2max}${notes}</span>` +
-             `<div class="history-actions">${routeBtn}` +
+             `<div class="history-actions">${shareBtn}${routeBtn}` +
              `<button class="delete-btn" data-index="${index}" title="${dict.deleteTitle}">🗑</button></div>` +
              `</div>`;
     })
@@ -320,6 +432,9 @@ function refreshHistoryList() {
   });
   list.querySelectorAll(".route-btn").forEach((btn) => {
     btn.addEventListener("click", () => showRoute(parseInt(btn.dataset.index, 10)));
+  });
+  list.querySelectorAll(".share-btn").forEach((btn) => {
+    btn.addEventListener("click", () => toggleShareTraining(parseInt(btn.dataset.index, 10)));
   });
 }
 
@@ -808,6 +923,316 @@ function refreshSavedRoutesList() {
   });
 }
 
+// --- Społeczność: statystyki użytkowników i udostępnione aktywności (Supabase) ---
+// Wszystko opt-in: statystyki tylko po zgodzie, aktywności tylko te, które użytkownik sam udostępni.
+const SHARE_TRIM_KM = 0.3; // obcinamy początek i koniec trasy, żeby nie zdradzać adresu domu
+let activityMapInstance = null;
+let activityLayerGroup = null;
+let activityCache = [];
+
+function isCommunityConfigured() {
+  return Boolean(SUPABASE_URL && SUPABASE_KEY);
+}
+
+async function rpc(fn, args) {
+  const headers = { apikey: SUPABASE_KEY, "Content-Type": "application/json" };
+  // Stary format klucza "anon" (JWT) wymaga też nagłówka Authorization; nowy "publishable" - nie.
+  if (SUPABASE_KEY.startsWith("eyJ")) headers.Authorization = `Bearer ${SUPABASE_KEY}`;
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(args || {}),
+  });
+  if (!res.ok) throw new Error(`${fn}: HTTP ${res.status}`);
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+function randomToken() {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function getDeviceId() {
+  let id = localStorage.getItem(DEVICE_ID_KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(DEVICE_ID_KEY, id);
+  }
+  return id;
+}
+
+function getShareTokens() {
+  try {
+    return JSON.parse(localStorage.getItem(SHARE_TOKENS_KEY)) || {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveShareTokens(tokens) {
+  localStorage.setItem(SHARE_TOKENS_KEY, JSON.stringify(tokens));
+}
+
+function initCommunity() {
+  document.getElementById("tabActivityBtn").style.display = isCommunityConfigured() ? "" : "none";
+  document.getElementById("privacyBtn").style.display = isCommunityConfigured() ? "" : "none";
+  if (!isCommunityConfigured()) return;
+  const consent = localStorage.getItem(STATS_CONSENT_KEY);
+  document.getElementById("consentCard").style.display = consent ? "none" : "block";
+  if (consent === "yes") pingIfNeeded();
+}
+
+async function pingIfNeeded() {
+  const today = new Date().toISOString().slice(0, 10);
+  if (localStorage.getItem(LAST_PING_KEY) === today) return;
+  try {
+    await rpc("ping", { p_device: getDeviceId() });
+    localStorage.setItem(LAST_PING_KEY, today);
+  } catch (e) {
+    console.warn("ping failed", e);
+  }
+}
+
+function setStatsConsent(agreed) {
+  localStorage.setItem(STATS_CONSENT_KEY, agreed ? "yes" : "no");
+  document.getElementById("consentCard").style.display = "none";
+  document.getElementById("statsConsentToggle").checked = agreed;
+  if (agreed) {
+    pingIfNeeded();
+  } else if (localStorage.getItem(DEVICE_ID_KEY)) {
+    // Wycofanie zgody: kasujemy identyfikator z serwera i z telefonu.
+    const id = localStorage.getItem(DEVICE_ID_KEY);
+    rpc("forget_device", { p_device: id }).catch((e) => console.warn("forget failed", e));
+    localStorage.removeItem(DEVICE_ID_KEY);
+    localStorage.removeItem(LAST_PING_KEY);
+  }
+}
+
+function refreshPrivacyText() {
+  const el = document.getElementById("privacyText");
+  if (el) el.innerHTML = t().privacyHtml(escapeXml(ADMIN_CONTACT));
+}
+
+function showPrivacy() {
+  refreshPrivacyText();
+  document.getElementById("statsConsentToggle").checked = localStorage.getItem(STATS_CONSENT_KEY) === "yes";
+  const card = document.getElementById("privacyCard");
+  card.style.display = "block";
+  card.scrollIntoView({ behavior: "smooth" });
+}
+
+// Usuwa punkty z pierwszych i ostatnich SHARE_TRIM_KM trasy. Za krótka trasa nie jest udostępniana wcale.
+function trimRouteEnds(route) {
+  if (!route || route.length < 2) return null;
+  const cum = [0];
+  for (let i = 1; i < route.length; i++) {
+    cum.push(cum[i - 1] + haversineKm(route[i - 1].lat, route[i - 1].lon, route[i].lat, route[i].lon));
+  }
+  const total = cum[cum.length - 1];
+  const kept = route.filter((_, i) => cum[i] >= SHARE_TRIM_KM && cum[i] <= total - SHARE_TRIM_KM);
+  if (kept.length < 2) return null;
+  return kept.map((p) => [Number(p.lat.toFixed(5)), Number(p.lon.toFixed(5))]);
+}
+
+async function toggleShareTraining(index) {
+  const history = getHistory();
+  const entry = history[index];
+  if (!entry) return;
+  if (entry.sharedId) {
+    if (!confirm(t().confirmUnshare)) return;
+    const ok = await deleteSharedActivity(entry.sharedId);
+    if (!ok) return;
+    delete entry.sharedId;
+    saveHistory(history);
+    refreshHistoryList();
+    alert(t().unshared);
+    return;
+  }
+
+  const route = trimRouteEnds(entry.route);
+  if (!confirm(t().shareConfirm(Boolean(route)))) return;
+  const nick = prompt(t().promptNick, localStorage.getItem(NICK_KEY) || "");
+  if (nick === null) return;
+  const trimmedNick = nick.trim();
+  if (trimmedNick.length < 1 || trimmedNick.length > 30) {
+    alert(t().nickInvalid);
+    return;
+  }
+  localStorage.setItem(NICK_KEY, trimmedNick);
+
+  const token = randomToken();
+  try {
+    const time = parseFloat(entry.time);
+    const id = await rpc("share_activity", {
+      p_nick: trimmedNick,
+      p_disc: entry.disc,
+      p_date: entry.date,
+      p_dist_km: parseFloat(entry.dist),
+      p_time_min: time > 0 ? time : null,
+      p_route: route,
+      p_delete_token: token,
+    });
+    const tokens = getShareTokens();
+    tokens[id] = token;
+    saveShareTokens(tokens);
+    entry.sharedId = id;
+    saveHistory(history);
+    refreshHistoryList();
+    alert(t().shared);
+  } catch (e) {
+    alert(t().communityError);
+  }
+}
+
+// Usuwa udostępnienie z serwera; zwraca true, gdy wpisu już tam nie ma.
+async function deleteSharedActivity(id) {
+  const tokens = getShareTokens();
+  if (tokens[id]) {
+    try {
+      await rpc("delete_activity", { p_id: id, p_delete_token: tokens[id] });
+    } catch (e) {
+      alert(t().deleteFailed);
+      return false;
+    }
+    delete tokens[id];
+    saveShareTokens(tokens);
+  }
+  const history = getHistory();
+  history.forEach((item) => {
+    if (item.sharedId === id) delete item.sharedId;
+  });
+  saveHistory(history);
+  return true;
+}
+
+async function deleteAllMyShares() {
+  const ids = Object.keys(getShareTokens());
+  if (ids.length === 0) {
+    alert(t().noShares);
+    return;
+  }
+  if (!confirm(t().confirmDeleteAllShares)) return;
+  let deleted = 0;
+  for (const id of ids) {
+    const tokens = getShareTokens();
+    try {
+      await rpc("delete_activity", { p_id: id, p_delete_token: tokens[id] });
+      delete tokens[id];
+      saveShareTokens(tokens);
+      deleted++;
+    } catch (e) {
+      console.warn("delete failed", id, e);
+    }
+  }
+  const history = getHistory();
+  history.forEach((item) => {
+    if (item.sharedId && !getShareTokens()[item.sharedId]) delete item.sharedId;
+  });
+  saveHistory(history);
+  refreshHistoryList();
+  alert(deleted === ids.length ? t().deletedAllShares(deleted) : t().deleteFailed);
+}
+
+function statTile(value, label) {
+  return `<div class="stat-tile"><div class="stat-value">${value}</div><div class="stat-label">${label}</div></div>`;
+}
+
+async function refreshActivityTab() {
+  const statsEl = document.getElementById("communityStats");
+  const listEl = document.getElementById("activityList");
+  const dict = t();
+  if (!isCommunityConfigured()) {
+    statsEl.innerHTML = "";
+    listEl.innerHTML = `<p>${dict.communityOff}</p>`;
+    return;
+  }
+  listEl.innerHTML = `<p>${dict.loading}</p>`;
+  try {
+    const [stats, activities] = await Promise.all([rpc("get_stats"), rpc("list_activities", { p_limit: 50 })]);
+    statsEl.innerHTML =
+      statTile(stats.users_total, dict.statUsers) +
+      statTile(stats.users_active_7d, dict.statActive) +
+      statTile(stats.activities_total, dict.statActivities) +
+      statTile(Number(stats.km_total).toFixed(1), dict.statKm);
+    activityCache = activities || [];
+    renderActivityList();
+  } catch (e) {
+    listEl.innerHTML = `<p>${dict.communityError}</p>`;
+  }
+}
+
+function renderActivityList() {
+  const listEl = document.getElementById("activityList");
+  const dict = t();
+  if (activityCache.length === 0) {
+    listEl.innerHTML = `<p>${dict.noActivities}</p>`;
+    return;
+  }
+  const tokens = getShareTokens();
+  listEl.innerHTML = activityCache
+    .map((a, index) => {
+      const mine = Boolean(tokens[a.id]);
+      const discName = dict.discNames[a.disc] || escapeXml(a.disc);
+      const time = a.time_min ? `, ${Math.round(a.time_min)} min` : "";
+      const mapBtn = Array.isArray(a.route) && a.route.length >= 2
+        ? `<button class="route-btn" data-index="${index}" title="${dict.showRouteTitle}">🗺</button>`
+        : "";
+      const delBtn = mine
+        ? `<button class="delete-btn" data-index="${index}" title="${dict.deleteTitle}">🗑</button>`
+        : "";
+      return `<div class="history-item">` +
+        `<span><span class="activity-nick">${escapeXml(a.nick)}</span>${mine ? " " + dict.mineLabel : ""} — ` +
+        `${discName}, ${Number(a.dist_km).toFixed(2)} km${time} (${escapeXml(a.activity_date)})</span>` +
+        `<div class="history-actions">${mapBtn}${delBtn}</div></div>`;
+    })
+    .join("");
+
+  listEl.querySelectorAll(".route-btn").forEach((btn) => {
+    btn.addEventListener("click", () => showActivityRoute(parseInt(btn.dataset.index, 10)));
+  });
+  listEl.querySelectorAll(".delete-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      if (!confirm(t().confirmUnshare)) return;
+      const a = activityCache[parseInt(btn.dataset.index, 10)];
+      if (await deleteSharedActivity(a.id)) {
+        refreshHistoryList();
+        refreshActivityTab();
+      }
+    });
+  });
+}
+
+function showActivityRoute(index) {
+  const a = activityCache[index];
+  if (!a || !Array.isArray(a.route)) return;
+  // Dane z serwera - bierzemy tylko poprawne liczby.
+  const latlngs = a.route
+    .filter((p) => Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1]))
+    .map((p) => [p[0], p[1]]);
+  if (latlngs.length < 2) return;
+
+  const card = document.getElementById("activityRouteCard");
+  card.style.display = "block";
+  document.getElementById("activityRouteTitle").textContent = `${a.nick} — ${Number(a.dist_km).toFixed(2)} km`;
+  if (!activityMapInstance) {
+    activityMapInstance = L.map("activityMap");
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(activityMapInstance);
+    activityLayerGroup = L.layerGroup().addTo(activityMapInstance);
+  }
+  activityLayerGroup.clearLayers();
+  const polyline = L.polyline(latlngs, { color: "#2E7D32", weight: 4 }).addTo(activityLayerGroup);
+  requestAnimationFrame(() => {
+    activityMapInstance.invalidateSize();
+    activityMapInstance.fitBounds(polyline.getBounds(), { padding: [20, 20] });
+  });
+  card.scrollIntoView({ behavior: "smooth" });
+}
+
 // --- Import treningów z Garmin/Suunto/Polar (pliki GPX/TCX, parsowane lokalnie) ---
 function haversineKm(lat1, lon1, lat2, lon2) {
   const toRad = (d) => (d * Math.PI) / 180;
@@ -971,6 +1396,19 @@ document.addEventListener("DOMContentLoaded", () => {
     showTab("plan");
     initPlanMap();
   });
+  document.getElementById("tabActivityBtn").addEventListener("click", () => {
+    showTab("activity");
+    refreshActivityTab();
+  });
+  document.getElementById("consentYesBtn").addEventListener("click", () => setStatsConsent(true));
+  document.getElementById("consentNoBtn").addEventListener("click", () => setStatsConsent(false));
+  document.getElementById("consentMoreBtn").addEventListener("click", showPrivacy);
+  document.getElementById("privacyBtn").addEventListener("click", showPrivacy);
+  document.getElementById("privacyCloseBtn").addEventListener("click", () => {
+    document.getElementById("privacyCard").style.display = "none";
+  });
+  document.getElementById("statsConsentToggle").addEventListener("change", (e) => setStatsConsent(e.target.checked));
+  document.getElementById("deleteMySharesBtn").addEventListener("click", deleteAllMyShares);
   document.getElementById("planUndoBtn").addEventListener("click", undoPlanPoint);
   document.getElementById("planClearBtn").addEventListener("click", clearPlan);
   document.getElementById("planSaveBtn").addEventListener("click", savePlannedRoute);
