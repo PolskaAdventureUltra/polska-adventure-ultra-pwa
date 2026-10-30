@@ -19,7 +19,7 @@ const NICK_KEY = "pau_nick";
 const SUPABASE_URL = "https://ldzpelsvqtqoxhenbbsv.supabase.co";
 const SUPABASE_KEY = "sb_publishable_D_2syaer9pzsc6nzKdY0xQ_8sIcmn_r";
 // Kontakt do administratora danych (wymagany w informacji RODO).
-const ADMIN_CONTACT = "";
+const ADMIN_CONTACT = "polskaadventureultra@gmail.com";
 const DEFAULT_PIN = "1234";
 
 // --- Tłumaczenia (PL/EN) ---
