@@ -30,10 +30,21 @@
     <div class="total" id="totalLbl">🏅 Łącznie: 0.0 km</div>
   </div>
 
+  <!-- Jednorazowe pytanie o zgodę na anonimowe statystyki (opt-in, RODO) -->
+  <div class="card consent-card" id="consentCard" style="display:none">
+    <p data-i18n="consentText">Czy możemy anonimowo liczyć, ile osób korzysta z aplikacji? Wysyłamy tylko losowy identyfikator urządzenia — bez imienia, treningów i lokalizacji.</p>
+    <div class="plan-actions">
+      <button class="primary" id="consentYesBtn" data-i18n="consentYes">Zgadzam się</button>
+      <button id="consentNoBtn" data-i18n="consentNo">Nie, dziękuję</button>
+    </div>
+    <button class="link-btn" id="consentMoreBtn" data-i18n="privacyMore">Szczegóły (prywatność)</button>
+  </div>
+
   <div class="tabs">
     <button id="tabTrainBtn" class="active" data-i18n="tabTrain">Trening</button>
     <button id="tabHistoryBtn" data-i18n="tabHistory">Historia</button>
     <button id="tabPlanBtn" data-i18n="tabPlan">Trasy</button>
+    <button id="tabActivityBtn" data-i18n="tabActivity">Aktywność</button>
   </div>
 
   <div id="tabTrain" class="tab-content active">
@@ -120,9 +131,48 @@
     </div>
   </div>
 
+  <div id="tabActivity" class="tab-content">
+    <div class="card">
+      <h2 data-i18n="communityTitle">Społeczność</h2>
+      <div class="stats-grid" id="communityStats"></div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="activityTitle">Udostępnione aktywności</h2>
+      <p class="hint-text" data-i18n="activityHint">Swój trening udostępnisz przyciskiem 📤 w zakładce Historia.</p>
+      <div id="activityList"></div>
+    </div>
+
+    <div class="card" id="activityRouteCard" style="display:none">
+      <h2 id="activityRouteTitle"></h2>
+      <div id="activityMap"></div>
+    </div>
+  </div>
+
+  <!-- Instrukcja obsługi, bezpieczeństwo i RODO -->
+  <div class="card" id="helpCard" style="display:none">
+    <h2 data-i18n="helpTitle">Pomoc i instrukcja</h2>
+    <div id="helpText" class="privacy-text help-text"></div>
+    <button id="helpPrivacyBtn" data-i18n="helpPrivacyBtn">PEŁNA INFORMACJA O PRYWATNOŚCI (RODO)</button>
+    <button id="helpCloseBtn" data-i18n="closeBtn">Zamknij</button>
+  </div>
+
+  <!-- Informacja o prywatności (RODO) -->
+  <div class="card" id="privacyCard" style="display:none">
+    <h2 data-i18n="privacyTitle">Prywatność</h2>
+    <div id="privacyText" class="privacy-text"></div>
+    <div id="communityPrivacyControls">
+    <label class="checkbox-row"><input type="checkbox" id="statsConsentToggle"> <span data-i18n="statsToggle">Anonimowe liczenie użytkowników</span></label>
+    <button id="deleteMySharesBtn" data-i18n="deleteMySharesBtn">USUŃ WSZYSTKIE MOJE UDOSTĘPNIONE AKTYWNOŚCI</button>
+    </div>
+    <button id="privacyCloseBtn" data-i18n="closeBtn">Zamknij</button>
+  </div>
+
   <div class="bottom-row">
     <button id="themeBtn" data-i18n="themeBtn">Zmień motyw</button>
     <button id="pinChangeBtn" data-i18n="pinChangeBtn">Zmień PIN</button>
+    <button id="helpBtn" data-i18n="helpBtn">Pomoc</button>
+    <button id="privacyBtn" data-i18n="privacyBtn">Prywatność</button>
     <button id="langBtn">EN</button>
   </div>
 </div>
