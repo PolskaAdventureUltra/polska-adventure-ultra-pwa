@@ -33,6 +33,7 @@
   <div class="tabs">
     <button id="tabTrainBtn" class="active" data-i18n="tabTrain">Trening</button>
     <button id="tabHistoryBtn" data-i18n="tabHistory">Historia</button>
+    <button id="tabPlanBtn" data-i18n="tabPlan">Trasy</button>
   </div>
 
   <div id="tabTrain" class="tab-content active">
@@ -89,6 +90,33 @@
     <div class="card" id="routeCard" style="display:none">
       <h2 data-i18n="routeTitle">Trasa</h2>
       <div id="routeMap"></div>
+    </div>
+  </div>
+
+  <div id="tabPlan" class="tab-content">
+    <div class="card">
+      <h2 data-i18n="planTitle">Wyznacz trasę</h2>
+      <p class="hint-text" data-i18n="planHint">Klikaj na mapie, żeby dodać kolejne punkty trasy. Gotową trasę zapisz i wyeksportuj do GPX, a potem wgraj do zegarka.</p>
+      <label data-i18n="planModeLabel">Prowadzenie trasy</label>
+      <select id="planMode">
+        <option value="hiking-mountain" data-i18n="planModeFoot">Po szlakach pieszych (bieg)</option>
+        <option value="trekking" data-i18n="planModeBike">Po drogach rowerowych (rower)</option>
+        <option value="straight" data-i18n="planModeStraight">Linia prosta (kajak / teren)</option>
+      </select>
+      <div id="planMap"></div>
+      <div class="plan-stats" id="planStats"></div>
+      <div class="plan-actions">
+        <button id="planUndoBtn" data-i18n="planUndoBtn">Cofnij punkt</button>
+        <button id="planClearBtn" data-i18n="planClearBtn">Wyczyść</button>
+      </div>
+      <button class="primary" id="planSaveBtn" data-i18n="planSaveBtn">ZAPISZ TRASĘ</button>
+      <button id="planExportBtn" data-i18n="planExportBtn">EKSPORTUJ DO GPX (ZEGAREK)</button>
+      <p class="hint-text" data-i18n="planExportHint">Garmin: Garmin Connect (www) → Trening → Trasy → Importuj. Suunto: otwórz plik GPX w Suunto app. Polar: Polar Flow (www) → Ulubione → Trasy → Importuj.</p>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="savedRoutesTitle">Zapisane trasy</h2>
+      <div id="savedRoutesList"></div>
     </div>
   </div>
 
