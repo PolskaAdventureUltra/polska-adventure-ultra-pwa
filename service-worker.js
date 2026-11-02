@@ -1,7 +1,9 @@
+// © 2026 Polska Adventure Ultra. Wszelkie prawa zastrzeżone. Kopiowanie i wykorzystanie bez zgody zabronione.
+// Licencja: plik LICENSE. Kontakt: polskaadventureultra@gmail.com
 // Polska Adventure Ultra - PWA Service Worker
 // Cache'uje wszystkie pliki apki, żeby działała w 100% offline po pierwszym wczytaniu.
 
-const CACHE_NAME = "pau-cache-v31";
+const CACHE_NAME = "pau-cache-v32";
 const ASSETS = [
   "./",
   "./index.html",

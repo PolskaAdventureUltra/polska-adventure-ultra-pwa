@@ -1,3 +1,4 @@
+/* © 2026 Polska Adventure Ultra. Wszelkie prawa zastrzeżone. Kopiowanie i wykorzystanie bez zgody zabronione. Licencja: plik LICENSE. */
 /* Paleta z logo: granat (mapa), zieleń (mapa, obwódka), pomarańcz („POLSKA”, góry). */
 :root {
   --bg: #F3F5F8;
@@ -292,3 +293,4 @@ body.dark .challenge { --ch-bg: #0A1322; --ch-band: #131E31; }
 .ch-partner { box-sizing: content-box; padding: 2px; border-radius: 3px; background: #FFFFFF; object-fit: contain; }
 .ch-partner-cta { display: inline-block; margin-top: 4px; padding: 6px 0; font-size: 11px; font-weight: 600; color: var(--ch-accent); text-decoration: none; }
 .challenge .ch-invite { display: block; width: 100%; margin-top: 4px; background: none; border: none; color: var(--ch-muted); font-size: 13px; font-weight: 600; text-decoration: underline; }
+.copyright { margin: 14px 0 4px; text-align: center; font-size: 11px; color: var(--subtle-fg); }

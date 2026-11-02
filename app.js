@@ -1,3 +1,5 @@
+// © 2026 Polska Adventure Ultra. Wszelkie prawa zastrzeżone. Kopiowanie i wykorzystanie bez zgody zabronione.
+// Licencja: plik LICENSE. Kontakt: polskaadventureultra@gmail.com
 // Polska Adventure Ultra - PWA logic
 // Wszystkie dane trzymane lokalnie w przeglądarce telefonu (localStorage).
 // Nic nie jest wysyłane na żaden serwer - każdy telefon ma swoją niezależną historię.
@@ -110,6 +112,7 @@ const TRANSLATIONS = {
     helpBtn: "Pomoc",
     helpTitle: "Pomoc i instrukcja",
     helpPrivacyBtn: "PEŁNA INFORMACJA O PRYWATNOŚCI (RODO)",
+    copyrightLine: "© 2026 Polska Adventure Ultra · Wszelkie prawa zastrzeżone",
     tabChallenge: "Wyzwanie",
     challengeJoinTitle: "Wyzwanie 4000 km",
     challengeJoinText: "4000 km dookoła Polski — biegiem, rowerem i kajakiem. Start i meta w Lublinie. Uczestnicy widzą tu swój postęp: kilometry, miejsce na trasie i prognozę mety.",
@@ -337,6 +340,14 @@ const TRANSLATIONS = {
           <li>Zgodę na statystyki możesz wycofać w każdej chwili w oknie „Prywatność” — identyfikator zostanie usunięty z serwera.</li>` : ""}
           <li>Szczegóły — przycisk poniżej.</li>
         </ul>
+      </details>
+      <details><summary>© Prawa autorskie</summary>
+        <ul>
+          <li>Aplikacja Polska Adventure Ultra — jej kod, wygląd, nazwa, logo i treści — jest chroniona prawem autorskim. © 2026 Polska Adventure Ultra. Wszelkie prawa zastrzeżone.</li>
+          <li>Kopiowanie, modyfikowanie lub wykorzystywanie aplikacji albo jej części bez pisemnej zgody jest zabronione.</li>
+          <li>Z aplikacji możesz oczywiście swobodnie korzystać i polecać ją innym.${contact ? ` W sprawie zgody na inne wykorzystanie napisz na ${contact}.` : ""}</li>
+          <li>Logotypy partnerów należą do ich właścicieli i są pokazywane za ich zgodą.</li>
+        </ul>
       </details>`,
     communityRoutesTitle: "Trasy społeczności",
     communityRoutesHint: "Swoją zaplanowaną trasę udostępnisz przyciskiem 📤 w zakładce Trasy.",
@@ -485,6 +496,7 @@ const TRANSLATIONS = {
     helpBtn: "Help",
     helpTitle: "Help and guide",
     helpPrivacyBtn: "FULL PRIVACY INFORMATION (GDPR)",
+    copyrightLine: "© 2026 Polska Adventure Ultra · All rights reserved",
     tabChallenge: "Challenge",
     challengeJoinTitle: "The 4000 km challenge",
     challengeJoinText: "4000 km around Poland — running, cycling and kayaking. Start and finish in Lublin. Participants see their progress here: kilometres, their place on the route and a finish forecast.",
@@ -711,6 +723,14 @@ const TRANSLATIONS = {
           ${community ? `<li>Only what you agree to goes to the server (Supabase, European Union): a random ID for counting users and the trainings you share yourself.</li>
           <li>You can withdraw consent to statistics at any time in the “Privacy” window — the ID will be deleted from the server.</li>` : ""}
           <li>Details — button below.</li>
+        </ul>
+      </details>
+      <details><summary>© Copyright</summary>
+        <ul>
+          <li>The Polska Adventure Ultra app — its code, design, name, logo and content — is protected by copyright. © 2026 Polska Adventure Ultra. All rights reserved.</li>
+          <li>Copying, modifying or using the app or any part of it without written permission is prohibited.</li>
+          <li>You are of course free to use the app and recommend it to others.${contact ? ` For permission to use it in any other way, write to ${contact}.` : ""}</li>
+          <li>Partner logos belong to their respective owners and are shown with their permission.</li>
         </ul>
       </details>`,
     communityRoutesTitle: "Community routes",

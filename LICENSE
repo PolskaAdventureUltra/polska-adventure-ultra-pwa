@@ -1,0 +1,31 @@
+Copyright (c) 2026 Polska Adventure Ultra. Wszelkie prawa zastrzeżone. / All rights reserved.
+
+PL
+Aplikacja Polska Adventure Ultra, w tym jej kod źródłowy, wygląd, nazwa, logo, grafiki
+i treści, jest chroniona prawem autorskim. Kopiowanie, modyfikowanie, rozpowszechnianie
+lub wykorzystywanie aplikacji albo jej części, w całości lub we fragmentach, bez
+uprzedniej pisemnej zgody właściciela praw jest zabronione.
+
+Udostępnienie kodu w tym repozytorium służy wyłącznie hostingowi aplikacji i nie
+oznacza udzielenia jakiejkolwiek licencji.
+
+Korzystanie z aplikacji pod adresem
+https://polskaadventureultra.github.io/polska-adventure-ultra-pwa/ jest bezpłatne.
+
+Kontakt w sprawie zgody: polskaadventureultra@gmail.com
+
+EN
+The Polska Adventure Ultra app, including its source code, design, name, logo, graphics
+and content, is protected by copyright. Copying, modifying, distributing or using the
+app or any part of it, in whole or in part, without prior written permission of the
+rights holder is prohibited.
+
+Publishing the code in this repository serves only to host the app and does not grant
+any licence.
+
+Contact for permissions: polskaadventureultra@gmail.com
+
+Wyjątki / Exceptions:
+- vendor/leaflet/ - Leaflet, licencja BSD-2-Clause (własna licencja w tym katalogu).
+- vendor/fonts/space-grotesk/ - Space Grotesk, SIL Open Font License 1.1 (plik LICENSE w tym katalogu).
+- partners/ - logotypy partnerów należą do ich właścicieli.
