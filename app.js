@@ -15,6 +15,7 @@ const NICK_KEY = "pau_nick";
 const ROUTE_SHARE_TOKENS_KEY = "pau_route_share_tokens"; // { idTrasy: tokenUsuwania }
 const EVENT_TOKENS_KEY = "pau_event_tokens";     // { idWydarzenia: tokenZapisu }
 const ADMIN_KEY_KEY = "pau_admin_key";           // klucz organizatora (tylko na telefonie administratora)
+const CHALLENGE_INVITE_KEY = "pau_challenge_invite"; // kod zaproszenia: dołączenie przed oficjalnymi zapisami
 const CHALLENGE_KEY = "pau_challenge";              // { start: "YYYY-MM-DD" } - udział w wyzwaniu 4000 km
 const GOALS_KEY = "pau_goals"; // [{ period: "week"|"month", disc: "all"|"Bieg"|..., km }]
 
@@ -113,13 +114,21 @@ const TRANSLATIONS = {
     challengeJoinText: "4000 km dookoła Polski — biegiem, rowerem i kajakiem. Start i meta w Lublinie. Uczestnicy widzą tu swój postęp: kilometry, miejsce na trasie i prognozę mety.",
     chSignupSoon: "ZAPISY OD WRZEŚNIA 2027",
     chDemoSub: "z 4000 km",
+    chInviteLink: "Masz kod zaproszenia?",
+    promptInvite: "Wpisz kod zaproszenia do wyzwania:",
+    inviteInvalid: "Nieprawidłowy kod zaproszenia.",
+    inviteOk: "Kod przyjęty — możesz dołączyć do wyzwania.",
+    inviteRevoked: "Twoje zaproszenie do wyzwania zostało wycofane przez organizatora. Treningi zostają w Historii.",
     chPartners: "PARTNERZY PROJEKTU",
     chPartnerCta: "Zostań partnerem →",
     chParticipantsOnly: "Postęp na żywo widzą tylko osoby biorące udział w wyzwaniu.",
     chSignupSoonHint: "Do tego czasu możesz śledzić wyzwanie i dołączać do wspólnych treningów.",
     challengeJoinBtn: "DOŁĄCZ DO WYZWANIA",
     challengeStartLabel: "Początek Twojego wyzwania",
-    challengeStartHint: "Do wyzwania liczą się treningi od tej daty (wszystkie dyscypliny).",
+    challengeStartHint: "Od tej daty liczą się dni wyzwania. Do postępu wliczają się tylko treningi oznaczone 🏁 jako odcinek wyzwania (pole przy zapisie treningu albo przycisk 🏁 w Historii).",
+    challengeFlagLabel: "🏁 Odcinek wyzwania 4000 km (liczy się do postępu w wyzwaniu)",
+    flagOnTitle: "Odcinek wyzwania — kliknij, aby odznaczyć",
+    flagOffTitle: "Oznacz jako odcinek wyzwania 4000 km",
     challengeLeaveBtn: "Zrezygnuj z wyzwania",
     confirmLeaveChallenge: "Zrezygnować z wyzwania? Postęp przestanie się liczyć (treningi zostają w Historii).",
     chOf: (pct) => `z 4 000 km · ${pct}%`,
@@ -240,7 +249,8 @@ const TRANSLATIONS = {
         <ul>
           <li>Zakładka <b>Wyzwanie</b> jest dostępna dla wszystkich: pokazuje trasę 4000 km (start i meta: Lublin) i zasady. Licznik na mapie jest poglądowy — prawdziwy postęp widzą tylko uczestnicy.</li>
           <li>Zapisy ruszają we wrześniu 2027. Po dołączeniu ekran pokazuje Twój postęp: kilometry w każdej dyscyplinie, miejsce na trasie i prognozę mety.</li>
-          <li>Liczą się wszystkie treningi (bieg, rower, kajak) od daty początku wyzwania — datę zmienisz pod ekranem wyzwania.</li>
+          <li>Masz kod zaproszenia od organizatora? Kliknij „Masz kod zaproszenia?” pod przyciskiem zapisów — po wpisaniu kodu możesz dołączyć wcześniej. Jeśli organizator wycofa kod, udział w wyzwaniu zostanie zakończony (treningi zostają w Historii).</li>
+          <li>Do postępu liczą się <b>tylko odcinki wyzwania</b>: przy zapisie treningu zaznacz „🏁 Odcinek wyzwania 4000 km”, a w Historii możesz oznaczyć lub odznaczyć trening przyciskiem 🏁. Codzienne treningi gdzie indziej trafiają tylko do Historii.</li>
           <li>Po rezygnacji ekran wraca do widoku dla obserwatorów; treningi zostają w Historii.</li>
         </ul>
       </details>
@@ -479,13 +489,21 @@ const TRANSLATIONS = {
     challengeJoinText: "4000 km around Poland — running, cycling and kayaking. Start and finish in Lublin. Participants see their progress here: kilometres, their place on the route and a finish forecast.",
     chSignupSoon: "SIGN-UPS OPEN IN SEPTEMBER 2027",
     chDemoSub: "of 4000 km",
+    chInviteLink: "Have an invitation code?",
+    promptInvite: "Enter your challenge invitation code:",
+    inviteInvalid: "Invalid invitation code.",
+    inviteOk: "Code accepted — you can join the challenge.",
+    inviteRevoked: "Your challenge invitation was withdrawn by the organiser. Your trainings stay in History.",
     chPartners: "PROJECT PARTNERS",
     chPartnerCta: "Become a partner →",
     chParticipantsOnly: "Live progress is visible only to challenge participants.",
     chSignupSoonHint: "Until then you can follow the challenge and join group trainings.",
     challengeJoinBtn: "JOIN THE CHALLENGE",
     challengeStartLabel: "Start of your challenge",
-    challengeStartHint: "Trainings from this date count towards the challenge (all disciplines).",
+    challengeStartHint: "Challenge days are counted from this date. Only trainings marked 🏁 as a challenge stage count towards progress (checkbox when saving a training or the 🏁 button in History).",
+    challengeFlagLabel: "🏁 4000 km challenge stage (counts towards challenge progress)",
+    flagOnTitle: "Challenge stage — tap to unmark",
+    flagOffTitle: "Mark as a 4000 km challenge stage",
     challengeLeaveBtn: "Leave the challenge",
     confirmLeaveChallenge: "Leave the challenge? Your progress will no longer be tracked (your trainings stay in History).",
     chOf: (pct) => `of 4,000 km · ${pct}%`,
@@ -606,7 +624,8 @@ const TRANSLATIONS = {
         <ul>
           <li>The <b>Challenge</b> tab is open to everyone: it shows the 4000 km route (start and finish: Lublin) and the rules. The counter on the map is just an illustration — real progress is visible only to participants.</li>
           <li>Sign-ups open in September 2027. After joining, the screen shows your progress: kilometres per discipline, your place on the route and a finish forecast.</li>
-          <li>All trainings (running, cycling, kayaking) from the challenge start date count — change the date below the challenge screen.</li>
+          <li>Got an invitation code from the organiser? Tap “Have an invitation code?” below the sign-up button — after entering it you can join early. If the organiser withdraws the code, your participation ends (your trainings stay in History).</li>
+          <li>Only <b>challenge stages</b> count towards progress: when saving a training tick “🏁 4000 km challenge stage”, and in History you can mark or unmark a training with the 🏁 button. Everyday trainings elsewhere go only to History.</li>
           <li>After leaving, the screen returns to the observer view; your trainings stay in History.</li>
         </ul>
       </details>
@@ -1244,7 +1263,53 @@ function saveChallenge(challenge) {
 }
 
 function canJoinChallenge() {
-  return toYmd(new Date()) >= CHALLENGE_SIGNUP_FROM || Boolean(getAdminKey());
+  return toYmd(new Date()) >= CHALLENGE_SIGNUP_FROM || Boolean(getAdminKey()) || Boolean(localStorage.getItem(CHALLENGE_INVITE_KEY));
+}
+
+function normalizeInviteCode(code) {
+  return code.trim().replace(/\s+/g, "").toUpperCase();
+}
+
+// Przed oficjalnymi zapisami udział z kodu zaproszenia trwa tylko, dopóki organizator nie usunie kodu.
+// Bez internetu nic nie zmieniamy - sprawdzimy przy następnej okazji.
+let challengeInviteChecked = false;
+
+async function verifyChallengeInvite() {
+  const code = localStorage.getItem(CHALLENGE_INVITE_KEY);
+  if (challengeInviteChecked || !code || !isCommunityConfigured()) return;
+  if (toYmd(new Date()) >= CHALLENGE_SIGNUP_FROM || getAdminKey()) return;
+  let valid;
+  try {
+    valid = await rpc("check_challenge_invite", { p_code: code });
+  } catch (e) {
+    return;
+  }
+  challengeInviteChecked = true;
+  if (valid) return;
+  localStorage.removeItem(CHALLENGE_INVITE_KEY);
+  const wasJoined = Boolean(getChallenge());
+  saveChallenge(null);
+  renderChallenge();
+  if (wasJoined) alert(t().inviteRevoked);
+}
+
+async function enterChallengeInvite() {
+  const dict = t();
+  const input = prompt(dict.promptInvite);
+  if (!input) return;
+  const code = normalizeInviteCode(input);
+  try {
+    if (!(await rpc("check_challenge_invite", { p_code: code }))) {
+      alert(dict.inviteInvalid);
+      return;
+    }
+  } catch (e) {
+    alert(dict.communityError);
+    return;
+  }
+  localStorage.setItem(CHALLENGE_INVITE_KEY, code);
+  alert(dict.inviteOk);
+  renderChallenge();
 }
 
 function joinChallenge() {
@@ -1275,7 +1340,8 @@ function pointAlongRoute(fraction) {
 function challengeStats() {
   const challenge = getChallenge();
   const today = parseYmd(toYmd(new Date()));
-  const items = getHistory().filter((item) => /^\d{4}-\d{2}-\d{2}$/.test(item.date) && item.date >= challenge.start);
+  // Do postępu liczą się wyłącznie treningi oznaczone jako odcinek wyzwania (🏁).
+  const items = getHistory().filter((item) => item.challenge === true && /^\d{4}-\d{2}-\d{2}$/.test(item.date));
   const byDisc = {};
   DISCIPLINES.forEach((disc) => {
     byDisc[disc] = summarize(items.filter((item) => item.disc === disc)).km;
@@ -1348,7 +1414,8 @@ function challengeObserverHtml() {
     (canJoinChallenge()
       ? `<button class="ch-cta" id="challengeJoinBtn">${dict.challengeJoinBtn}</button>`
       : `<button class="ch-cta" id="challengeJoinBtn" disabled>${dict.chSignupSoon}</button>` +
-        `<p class="ch-small" style="text-align:center;margin:8px 0 0">${dict.chSignupSoonHint}</p>`);
+        `<p class="ch-small" style="text-align:center;margin:8px 0 0">${dict.chSignupSoonHint}</p>` +
+        (isCommunityConfigured() ? `<button class="ch-invite" id="challengeInviteBtn">${dict.chInviteLink}</button>` : ""));
 }
 
 function challengeParticipantHtml() {
@@ -1403,11 +1470,14 @@ function renderChallenge() {
   stopChallengeDemo();
   const challenge = getChallenge();
   document.getElementById("challengeSettings").style.display = challenge ? "block" : "none";
+  document.getElementById("challengeFlagRow").style.display = challenge ? "flex" : "none";
   el.innerHTML = challenge ? challengeParticipantHtml() : challengeObserverHtml();
   if (challenge) {
     document.getElementById("challengeStart").value = challenge.start;
   } else {
     document.getElementById("challengeJoinBtn").addEventListener("click", joinChallenge);
+    const inviteBtn = document.getElementById("challengeInviteBtn");
+    if (inviteBtn) inviteBtn.addEventListener("click", enterChallengeInvite);
     if (document.getElementById("tabChallenge").classList.contains("active")) startChallengeDemo(el);
   }
 }
@@ -1433,13 +1503,16 @@ function refreshHistoryList() {
       const routeBtn = item.route && item.route.length >= 2
         ? `<button class="route-btn" data-index="${index}" title="${dict.showRouteTitle}">🗺</button>`
         : "";
+      const flagBtn = getChallenge()
+        ? `<button class="flag-btn${item.challenge ? " on" : ""}" data-index="${index}" title="${item.challenge ? dict.flagOnTitle : dict.flagOffTitle}" aria-pressed="${item.challenge ? "true" : "false"}">🏁</button>`
+        : "";
       const shareBtn = isCommunityConfigured()
         ? `<button class="share-btn" data-index="${index}" title="${item.sharedId ? dict.unshareTitle : dict.shareTitle}">${item.sharedId ? "🌍" : "📤"}</button>`
         : "";
       return `<div class="history-item">` +
              `<span>${l.date}: ${item.date}, ${l.disc}: ${discName}, ${l.dist}: ${item.dist} km, ` +
              `${l.weight}: ${item.weight} kg, ${l.hr}: ${item.hr} bpm, ${l.vo2max}: ${item.vo2max}${notes}</span>` +
-             `<div class="history-actions">${shareBtn}${routeBtn}` +
+             `<div class="history-actions">${flagBtn}${shareBtn}${routeBtn}` +
              `<button class="delete-btn" data-index="${index}" title="${dict.deleteTitle}">🗑</button></div>` +
              `</div>`;
     })
@@ -1454,6 +1527,19 @@ function refreshHistoryList() {
   list.querySelectorAll(".share-btn").forEach((btn) => {
     btn.addEventListener("click", () => toggleShareTraining(parseInt(btn.dataset.index, 10)));
   });
+  list.querySelectorAll(".flag-btn").forEach((btn) => {
+    btn.addEventListener("click", () => toggleChallengeFlag(parseInt(btn.dataset.index, 10)));
+  });
+}
+
+function toggleChallengeFlag(index) {
+  const history = getHistory();
+  const entry = history[index];
+  if (!entry) return;
+  if (entry.challenge) delete entry.challenge;
+  else entry.challenge = true;
+  saveHistory(history);
+  refreshHistoryList();
 }
 
 function deleteTraining(index) {
@@ -1484,6 +1570,7 @@ function saveTraining() {
     notes: document.getElementById("notes").value.trim(),
   };
   if (pendingRoute) entry.route = pendingRoute;
+  if (getChallenge() && document.getElementById("challengeFlag").checked) entry.challenge = true;
 
   const history = getHistory();
   const reachedBefore = reachedGoals(history);
@@ -1493,6 +1580,7 @@ function saveTraining() {
 
   document.getElementById("dist").value = "";
   document.getElementById("notes").value = "";
+  document.getElementById("challengeFlag").checked = false;
   pendingRoute = null;
 
   refreshTotalLabel();
@@ -1606,7 +1694,7 @@ function exportCsv() {
 // --- Kopia zapasowa (plik JSON z danymi z localStorage) ---
 // PIN, klucz organizatora, identyfikator urządzenia i zgoda na statystyki zostają celowo poza kopią.
 const BACKUP_FORMAT = "polska-adventure-ultra-backup";
-const BACKUP_KEYS = [HISTORY_KEY, PLANNED_ROUTES_KEY, GOALS_KEY, CHALLENGE_KEY, THEME_KEY, LANG_KEY, NICK_KEY, SHARE_TOKENS_KEY, ROUTE_SHARE_TOKENS_KEY, EVENT_TOKENS_KEY];
+const BACKUP_KEYS = [HISTORY_KEY, PLANNED_ROUTES_KEY, GOALS_KEY, CHALLENGE_KEY, CHALLENGE_INVITE_KEY, THEME_KEY, LANG_KEY, NICK_KEY, SHARE_TOKENS_KEY, ROUTE_SHARE_TOKENS_KEY, EVENT_TOKENS_KEY];
 const BACKUP_JSON_KEYS = { [HISTORY_KEY]: "array", [PLANNED_ROUTES_KEY]: "array", [GOALS_KEY]: "array", [EVENT_TOKENS_KEY]: "object", [CHALLENGE_KEY]: "object", [SHARE_TOKENS_KEY]: "object", [ROUTE_SHARE_TOKENS_KEY]: "object" };
 
 async function createBackup() {
@@ -3163,6 +3251,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("tabChallengeBtn").addEventListener("click", () => {
     showTab("challenge");
     renderChallenge();
+    verifyChallengeInvite();
   });
   document.getElementById("challengeLeaveBtn").addEventListener("click", leaveChallenge);
   document.getElementById("challengeStart").addEventListener("change", (e) => {

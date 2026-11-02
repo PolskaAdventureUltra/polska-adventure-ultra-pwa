@@ -1,7 +1,7 @@
 // Polska Adventure Ultra - PWA Service Worker
 // Cache'uje wszystkie pliki apki, żeby działała w 100% offline po pierwszym wczytaniu.
 
-const CACHE_NAME = "pau-cache-v27";
+const CACHE_NAME = "pau-cache-v30";
 const ASSETS = [
   "./",
   "./index.html",
