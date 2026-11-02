@@ -197,6 +197,40 @@
 
   <div id="tabActivity" class="tab-content">
     <div class="card">
+      <h2 data-i18n="eventsTitle">📅 Wydarzenia</h2>
+      <p class="hint-text" data-i18n="eventsHint">Wspólne treningi, spływy i rajdy. Kliknij „Biorę udział”, żeby organizator wiedział, ilu osób się spodziewać.</p>
+      <div id="eventsList"></div>
+      <div id="eventForm" style="display:none">
+        <h3 data-i18n="eventFormTitle">Nowe wydarzenie</h3>
+        <label data-i18n="eventTitleLabel">Nazwa</label>
+        <input id="eventTitle" type="text" maxlength="80">
+        <label data-i18n="labelDiscipline">Dyscyplina</label>
+        <select id="eventDisc">
+          <option value="Bieg" data-i18n="optBieg">Bieg</option>
+          <option value="Rower" data-i18n="optRower">Rower</option>
+          <option value="Kajak" data-i18n="optKajak">Kajak</option>
+          <option value="Multi" data-i18n="optMulti">Multisport</option>
+        </select>
+        <label data-i18n="eventStartLabel">Data i godzina</label>
+        <input id="eventStart" type="datetime-local">
+        <label data-i18n="eventPlaceLabel">Miejsce zbiórki</label>
+        <input id="eventPlace" type="text" maxlength="120">
+        <p class="hint-text" data-i18n="eventMapHint">Opcjonalnie: kliknij na mapie dokładne miejsce zbiórki (uczestnicy dostaną link do nawigacji).</p>
+        <div id="eventMap"></div>
+        <label data-i18n="eventDescLabel">Opis (dystans, tempo, co zabrać…)</label>
+        <textarea id="eventDesc" rows="4" maxlength="1500"></textarea>
+        <label data-i18n="eventLinkLabel">Link (opcjonalnie, np. wydarzenie na Facebooku)</label>
+        <input id="eventLink" type="url" maxlength="300" placeholder="https://">
+        <div class="plan-actions">
+          <button class="primary" id="eventSaveBtn" data-i18n="eventSaveBtn">Opublikuj</button>
+          <button id="eventCancelBtn" data-i18n="goalCancelBtn">Anuluj</button>
+        </div>
+      </div>
+      <button id="eventAddBtn" style="display:none" data-i18n="eventAddBtn">＋ DODAJ WYDARZENIE</button>
+      <button class="link-btn" id="organizerBtn" data-i18n="organizerLogin">🔑 Organizator</button>
+    </div>
+
+    <div class="card">
       <h2 data-i18n="communityTitle">Społeczność</h2>
       <div class="stats-grid" id="communityStats"></div>
     </div>
