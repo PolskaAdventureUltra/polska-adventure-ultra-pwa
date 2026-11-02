@@ -122,7 +122,8 @@ button.primary { background: var(--accent); color: var(--on-accent); font-family
 .history-item .route-btn,
 .history-item .gpx-btn,
 .history-item .share-btn,
-.history-item .copy-btn {
+.history-item .copy-btn,
+.history-item .flag-btn {
   width: auto;
   flex-shrink: 0;
   padding: 4px 10px;
@@ -134,6 +135,9 @@ button.primary { background: var(--accent); color: var(--on-accent); font-family
 .history-item .route-btn { color: var(--accent); }
 .history-item .gpx-btn { font-size: 12px; color: var(--accent); }
 .history-item .copy-btn { color: var(--accent); }
+.history-item .flag-btn { opacity: 0.4; }
+.history-item .flag-btn.on { opacity: 1; background: var(--hl); }
+.challenge-flag-row { margin-top: 12px; padding: 10px; border-radius: 8px; background: var(--subtle-bg); font-size: 14px; }
 
 .bottom-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 10px; }
 .bottom-row button {
