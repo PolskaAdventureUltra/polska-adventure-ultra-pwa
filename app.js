@@ -1540,21 +1540,23 @@ function showChart() {
   const maxDist = Math.max(...dists, 1);
   const stepX = (w - 2 * padding) / Math.max(dists.length - 1, 1);
 
-  const isDark = document.body.classList.contains("dark");
-  ctx.strokeStyle = isDark ? "#00FF7F" : "#2E7D32";
-  ctx.fillStyle = isDark ? "#00FF7F" : "#2E7D32";
+  const themeStyle = getComputedStyle(document.body);
+  const accent = themeStyle.getPropertyValue("--accent").trim() || "#3D7A22";
+  const axis = themeStyle.getPropertyValue("--border").trim() || "#ccc";
+  ctx.strokeStyle = accent;
+  ctx.fillStyle = accent;
   ctx.lineWidth = 2;
 
   // Oś
   ctx.beginPath();
   ctx.moveTo(padding, h - padding);
   ctx.lineTo(w - padding, h - padding);
-  ctx.strokeStyle = isDark ? "#555" : "#ccc";
+  ctx.strokeStyle = axis;
   ctx.stroke();
 
   // Linia dystansu
   ctx.beginPath();
-  ctx.strokeStyle = isDark ? "#00FF7F" : "#2E7D32";
+  ctx.strokeStyle = accent;
   dists.forEach((d, i) => {
     const x = padding + i * stepX;
     const y = h - padding - (d / maxDist) * (h - 2 * padding);
@@ -1711,7 +1713,7 @@ function drawElevationProfile(prefix, track) {
   const bottom = minEle - (range - (maxEle - minEle)) / 2;
 
   const style = getComputedStyle(document.body);
-  const accent = style.getPropertyValue("--accent").trim() || "#2E7D32";
+  const accent = style.getPropertyValue("--accent").trim() || "#3D7A22";
   const subtle = style.getPropertyValue("--subtle-fg").trim() || "#555";
   const padL = 44, padR = 8, padT = 8, padB = 20;
   const plotW = cssW - padL - padR, plotH = cssH - padT - padB;
@@ -1768,8 +1770,8 @@ function drawRoute(points) {
   routeLayerGroup.clearLayers();
 
   const latlngs = points.map((p) => [p.lat, p.lon]);
-  const polyline = L.polyline(latlngs, { color: "#2E7D32", weight: 4 }).addTo(routeLayerGroup);
-  L.circleMarker(latlngs[0], { radius: 6, color: "#2E7D32", fillColor: "#2E7D32", fillOpacity: 1 }).addTo(routeLayerGroup);
+  const polyline = L.polyline(latlngs, { color: "#3D7A22", weight: 4 }).addTo(routeLayerGroup);
+  L.circleMarker(latlngs[0], { radius: 6, color: "#3D7A22", fillColor: "#3D7A22", fillOpacity: 1 }).addTo(routeLayerGroup);
   L.circleMarker(latlngs[latlngs.length - 1], { radius: 6, color: "#c62828", fillColor: "#c62828", fillOpacity: 1 }).addTo(routeLayerGroup);
 
   // Kontener był ukryty (display:none), więc Leaflet potrzebuje przeliczenia
@@ -1877,11 +1879,11 @@ function redrawPlan() {
   planLayerGroup.clearLayers();
   const track = getPlanTrack();
   if (track.length >= 2) {
-    L.polyline(track.map((p) => [p.lat, p.lon]), { color: "#2E7D32", weight: 4 }).addTo(planLayerGroup);
+    L.polyline(track.map((p) => [p.lat, p.lon]), { color: "#3D7A22", weight: 4 }).addTo(planLayerGroup);
   }
   planWaypoints.forEach((p, i) => {
     const isLast = i === planWaypoints.length - 1 && i > 0;
-    const color = i === 0 ? "#2E7D32" : isLast ? "#c62828" : "#1565C0";
+    const color = i === 0 ? "#3D7A22" : isLast ? "#c62828" : "#1565C0";
     L.circleMarker([p.lat, p.lon], { radius: 6, color, fillColor: color, fillOpacity: 1 }).addTo(planLayerGroup);
   });
   refreshPlanStats();
@@ -2702,7 +2704,7 @@ function drawOnActivityMap(title, latlngs, track) {
     activityLayerGroup = L.layerGroup().addTo(activityMapInstance);
   }
   activityLayerGroup.clearLayers();
-  const polyline = L.polyline(latlngs, { color: "#2E7D32", weight: 4 }).addTo(activityLayerGroup);
+  const polyline = L.polyline(latlngs, { color: "#3D7A22", weight: 4 }).addTo(activityLayerGroup);
   requestAnimationFrame(() => {
     activityMapInstance.invalidateSize();
     activityMapInstance.fitBounds(polyline.getBounds(), { padding: [20, 20] });
