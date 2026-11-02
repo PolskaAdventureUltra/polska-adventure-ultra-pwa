@@ -169,6 +169,12 @@ canvas { width: 100%; height: auto; background: var(--card); border-radius: 8px;
 
 .activity-nick { font-weight: bold; }
 .summary-grid { margin-top: 10px; }
+.goal-item { padding: 8px 0; border-bottom: 1px solid var(--border); }
+.goal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 14px; }
+.goal-head .delete-btn { width: auto; flex-shrink: 0; margin-top: 0; padding: 4px 10px; font-size: 15px; background: var(--subtle-bg); color: #c62828; }
+.goal-bar { height: 10px; background: var(--subtle-bg); border: 1px solid var(--border); border-radius: 5px; overflow: hidden; margin: 6px 0 4px; }
+.goal-bar-fill { height: 100%; background: var(--accent); border-radius: 5px; }
+.goal-done { color: var(--accent); font-weight: bold; }
 .summary-subtitle { margin: 14px 0 6px; font-size: 15px; }
 .summary-disc { font-size: 13px; padding: 4px 0; border-bottom: 1px solid var(--border); }
 .records-disc { margin: 12px 0 4px; font-size: 15px; color: var(--accent); }

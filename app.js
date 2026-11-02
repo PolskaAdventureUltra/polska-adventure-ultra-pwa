@@ -13,6 +13,7 @@ const LAST_PING_KEY = "pau_last_ping";
 const SHARE_TOKENS_KEY = "pau_share_tokens";     // { idAktywności: tokenUsuwania }
 const NICK_KEY = "pau_nick";
 const ROUTE_SHARE_TOKENS_KEY = "pau_route_share_tokens"; // { idTrasy: tokenUsuwania }
+const GOALS_KEY = "pau_goals"; // [{ period: "week"|"month", disc: "all"|"Bieg"|..., km }]
 
 // --- Społeczność (Supabase) ---
 // Klucz "publishable"/"anon" jest z założenia publiczny - bezpieczeństwo zapewniają RLS
@@ -104,6 +105,23 @@ const TRANSLATIONS = {
     helpBtn: "Pomoc",
     helpTitle: "Pomoc i instrukcja",
     helpPrivacyBtn: "PEŁNA INFORMACJA O PRYWATNOŚCI (RODO)",
+    goalsTitle: "🎯 Cele",
+    goalsEmpty: "Nie masz jeszcze celów. Ustaw np. 30 km biegu tygodniowo i śledź postęp.",
+    goalAddBtn: "＋ DODAJ CEL",
+    goalPeriodLabel: "Okres",
+    goalWeek: "Tygodniowy",
+    goalMonth: "Miesięczny",
+    goalAllDisc: "Wszystkie dyscypliny",
+    goalKmLabel: "Dystans (km)",
+    goalSaveBtn: "Zapisz cel",
+    goalCancelBtn: "Anuluj",
+    goalKmInvalid: "Podaj dystans celu (większy od 0).",
+    goalLabel: (period, disc) => `${period === "week" ? "Tydzień" : "Miesiąc"} · ${disc}`,
+    goalAll: "wszystkie dyscypliny",
+    goalLeft: (km, days) => `zostało ${km} km · ${days} ${days === 1 ? "dzień" : "dni"} do końca`,
+    goalDone: "✅ Cel osiągnięty!",
+    confirmDeleteGoal: "Usunąć ten cel?",
+    goalReached: (labels) => `🎯 Brawo! Cel osiągnięty:\n${labels.join("\n")}`,
     summaryTitle: "Podsumowanie",
     periodWeek: "Ten tydzień",
     periodMonth: "Ten miesiąc",
@@ -173,6 +191,7 @@ const TRANSLATIONS = {
       </details>
       <details><summary>📋 Historia</summary>
         <ul>
+          <li><b>🎯 Cele</b>: „＋ DODAJ CEL” ustawia cel tygodniowy lub miesięczny w km — dla jednej dyscypliny albo wszystkich razem. Pasek pokazuje postęp, ile km i dni zostało; po zapisaniu treningu, który domyka cel, pojawi się gratulacja. Tydzień liczy się od poniedziałku.</li>
           <li><b>Podsumowanie</b> na górze zakładki: liczba treningów, dystans, czas i przewyższenie w wybranym okresie (tydzień, miesiąc, rok, od początku), porównanie z poprzednim okresem i rozbicie na dyscypliny.</li>
           <li><b>🔥 Passa</b> to liczba kolejnych dni z treningiem. Obecna passa trwa, jeśli ostatni trening był dziś albo wczoraj.</li>
           <li><b>🏆 Rekordy osobiste</b> dla każdej dyscypliny: najdłuższy dystans i czas, najszybsze tempo (bieg) lub prędkość (rower, kajak), największe przewyższenie, a także najlepszy tydzień i miesiąc. Tempo i prędkość liczą się dla treningów od 1 km z wpisanym czasem.</li>
@@ -212,7 +231,7 @@ const TRANSLATIONS = {
         <ul>
           <li>Treningi i trasy są zapisane <b>tylko na tym telefonie</b>. Wyczyszczenie danych przeglądarki, odinstalowanie aplikacji albo zgubienie telefonu oznacza ich utratę — dlatego rób kopię regularnie, np. raz w tygodniu.</li>
           <li>W zakładce <b>Historia</b> kliknij „ZRÓB KOPIĘ ZAPASOWĄ”. Na telefonie otworzy się menu „Udostępnij” — zapisz plik na Dysku Google / iCloud albo wyślij go sobie mailem. Na komputerze plik trafi do folderu Pobrane.</li>
-          <li>Kopia zawiera treningi (z trasami), zaplanowane trasy, motyw, język i nick${community ? " oraz klucze pozwalające usuwać Twoje udostępnienia" : ""}. <b>PIN nie jest zapisywany</b> w kopii.</li>
+          <li>Kopia zawiera treningi (z trasami), zaplanowane trasy, cele, motyw, język i nick${community ? " oraz klucze pozwalające usuwać Twoje udostępnienia" : ""}. <b>PIN nie jest zapisywany</b> w kopii.</li>
           <li><b>Nowy telefon:</b> otwórz aplikację, zaloguj się, w zakładce <b>Historia</b> kliknij „PRZYWRÓĆ Z KOPII” i wybierz plik <code>pau-kopia-….json</code>. Aplikacja pokaże datę kopii i liczbę treningów — po potwierdzeniu dane z kopii <b>zastąpią</b> obecne dane na telefonie.</li>
           <li>Plik kopii zawiera Twoje trasy (miejsca treningów) — przechowuj go tak jak inne prywatne pliki i nie udostępniaj publicznie.</li>
           <li>Każdy telefon i każda przeglądarka mają osobną historię.</li>
@@ -384,6 +403,23 @@ const TRANSLATIONS = {
     helpBtn: "Help",
     helpTitle: "Help and guide",
     helpPrivacyBtn: "FULL PRIVACY INFORMATION (GDPR)",
+    goalsTitle: "🎯 Goals",
+    goalsEmpty: "No goals yet. Set e.g. 30 km of running per week and track your progress.",
+    goalAddBtn: "＋ ADD GOAL",
+    goalPeriodLabel: "Period",
+    goalWeek: "Weekly",
+    goalMonth: "Monthly",
+    goalAllDisc: "All disciplines",
+    goalKmLabel: "Distance (km)",
+    goalSaveBtn: "Save goal",
+    goalCancelBtn: "Cancel",
+    goalKmInvalid: "Enter the goal distance (greater than 0).",
+    goalLabel: (period, disc) => `${period === "week" ? "Week" : "Month"} · ${disc}`,
+    goalAll: "all disciplines",
+    goalLeft: (km, days) => `${km} km to go · ${days} ${days === 1 ? "day" : "days"} left`,
+    goalDone: "✅ Goal reached!",
+    confirmDeleteGoal: "Delete this goal?",
+    goalReached: (labels) => `🎯 Well done! Goal reached:\n${labels.join("\n")}`,
     summaryTitle: "Summary",
     periodWeek: "This week",
     periodMonth: "This month",
@@ -453,6 +489,7 @@ const TRANSLATIONS = {
       </details>
       <details><summary>📋 History</summary>
         <ul>
+          <li><b>🎯 Goals</b>: “＋ ADD GOAL” sets a weekly or monthly distance goal in km — for one discipline or all of them together. The bar shows progress and how many km and days are left; saving a training that completes a goal shows a congratulation. Weeks start on Monday.</li>
           <li><b>Summary</b> at the top of the tab: number of trainings, distance, time and ascent in the chosen period (week, month, year, all time), comparison with the previous period and a breakdown by discipline.</li>
           <li><b>🔥 Streak</b> is the number of consecutive days with a training. The current streak continues as long as you train today or trained yesterday.</li>
           <li><b>🏆 Personal records</b> for each discipline: longest distance and time, fastest pace (running) or speed (cycling, kayaking), biggest ascent, plus your best week and month. Pace and speed count trainings of 1 km+ with time entered.</li>
@@ -492,7 +529,7 @@ const TRANSLATIONS = {
         <ul>
           <li>Trainings and routes are stored <b>only on this phone</b>. Clearing browser data, uninstalling the app or losing the phone means losing them — so make a backup regularly, e.g. once a week.</li>
           <li>In the <b>History</b> tab tap "MAKE A BACKUP". On a phone the Share menu opens — save the file to Google Drive / iCloud or email it to yourself. On a computer the file goes to the Downloads folder.</li>
-          <li>The backup contains trainings (with routes), planned routes, theme, language and nickname${community ? ", plus the keys that let you delete your shared items" : ""}. <b>The PIN is not stored</b> in the backup.</li>
+          <li>The backup contains trainings (with routes), planned routes, goals, theme, language and nickname${community ? ", plus the keys that let you delete your shared items" : ""}. <b>The PIN is not stored</b> in the backup.</li>
           <li><b>New phone:</b> open the app, log in, in the <b>History</b> tab tap "RESTORE FROM BACKUP" and choose the <code>pau-kopia-….json</code> file. The app shows the backup date and number of trainings — after confirming, the backup data <b>replaces</b> the current data on the phone.</li>
           <li>The backup file contains your routes (training locations) — keep it like other private files and do not share it publicly.</li>
           <li>Each phone and each browser has its own history.</li>
@@ -803,9 +840,104 @@ function statTile(value, label) {
   return `<div class="stat-tile"><div class="stat-value">${value}</div><div class="stat-label">${label}</div></div>`;
 }
 
+// --- Cele tygodniowe / miesięczne ---
+function getGoals() {
+  try {
+    const goals = JSON.parse(localStorage.getItem(GOALS_KEY));
+    return Array.isArray(goals) ? goals : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveGoals(goals) {
+  localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
+}
+
+function goalProgressKm(goal, history) {
+  const [from, to] = periodRange(goal.period, 0);
+  return history
+    .filter((item) => item.date >= from && item.date < to && (goal.disc === "all" || item.disc === goal.disc))
+    .reduce((sum, item) => sum + (parseFloat(item.dist) || 0), 0);
+}
+
+function goalLabel(goal) {
+  const dict = t();
+  return dict.goalLabel(goal.period, goal.disc === "all" ? dict.goalAll : dict.discNames[goal.disc] || goal.disc) + `: ${goal.km} km`;
+}
+
+function reachedGoals(history) {
+  return getGoals().map((goal) => goalProgressKm(goal, history) >= goal.km);
+}
+
+function refreshGoals() {
+  const list = document.getElementById("goalsList");
+  if (!list) return;
+  const dict = t();
+  const goals = getGoals();
+  if (goals.length === 0) {
+    list.innerHTML = `<p class="hint-text">${dict.goalsEmpty}</p>`;
+    return;
+  }
+  const history = getHistory();
+  const today = parseYmd(toYmd(new Date()));
+  list.innerHTML = goals
+    .map((goal, index) => {
+      const km = goalProgressKm(goal, history);
+      const pct = Math.min(100, Math.round((km / goal.km) * 100));
+      const to = parseYmd(periodRange(goal.period, 0)[1]);
+      const daysLeft = Math.round((to - today) / 86400000);
+      const status = km >= goal.km
+        ? `<span class="goal-done">${dict.goalDone}</span>`
+        : dict.goalLeft((goal.km - km).toFixed(1), daysLeft);
+      return `<div class="goal-item">` +
+        `<div class="goal-head"><span><b>${escapeXml(goalLabel(goal))}</b></span>` +
+        `<button class="delete-btn" data-index="${index}" title="${dict.deleteTitle}">🗑</button></div>` +
+        `<div class="goal-bar"><div class="goal-bar-fill" style="width:${pct}%"></div></div>` +
+        `<div class="hint-text">${km.toFixed(1)} / ${goal.km} km (${pct}%) · ${status}</div>` +
+        `</div>`;
+    })
+    .join("");
+  list.querySelectorAll(".delete-btn").forEach((btn) => {
+    btn.addEventListener("click", () => deleteGoal(parseInt(btn.dataset.index, 10)));
+  });
+}
+
+function showGoalForm(visible) {
+  document.getElementById("goalForm").style.display = visible ? "block" : "none";
+  document.getElementById("goalAddBtn").style.display = visible ? "none" : "block";
+  if (visible) document.getElementById("goalKm").value = "";
+}
+
+function addGoal() {
+  const km = parseFloat(document.getElementById("goalKm").value);
+  if (!(km > 0)) {
+    alert(t().goalKmInvalid);
+    return;
+  }
+  const goals = getGoals();
+  goals.push({
+    period: document.getElementById("goalPeriod").value,
+    disc: document.getElementById("goalDisc").value,
+    km: Math.round(km * 10) / 10,
+  });
+  saveGoals(goals);
+  showGoalForm(false);
+  refreshGoals();
+}
+
+function deleteGoal(index) {
+  if (!confirm(t().confirmDeleteGoal)) return;
+  const goals = getGoals();
+  goals.splice(index, 1);
+  saveGoals(goals);
+  refreshGoals();
+}
+
 function refreshSummary() {
   const tiles = document.getElementById("summaryTiles");
   if (!tiles) return;
+  refreshGoals();
   const dict = t();
   const history = getHistory().filter((item) => /^\d{4}-\d{2}-\d{2}$/.test(item.date));
   const period = document.getElementById("summaryPeriod").value;
@@ -986,8 +1118,10 @@ function saveTraining() {
   if (pendingRoute) entry.route = pendingRoute;
 
   const history = getHistory();
+  const reachedBefore = reachedGoals(history);
   history.push(entry);
   saveHistory(history);
+  const newlyReached = getGoals().filter((goal, i) => !reachedBefore[i] && reachedGoals(history)[i]);
 
   document.getElementById("dist").value = "";
   document.getElementById("notes").value = "";
@@ -996,6 +1130,7 @@ function saveTraining() {
   refreshTotalLabel();
   refreshHistoryList();
   alert(t().alertSaved);
+  if (newlyReached.length) alert(t().goalReached(newlyReached.map(goalLabel)));
 }
 
 // --- Tempo / prędkość ---
@@ -1101,8 +1236,8 @@ function exportCsv() {
 // --- Kopia zapasowa (plik JSON z danymi z localStorage) ---
 // PIN, identyfikator urządzenia i zgoda na statystyki zostają celowo poza kopią.
 const BACKUP_FORMAT = "polska-adventure-ultra-backup";
-const BACKUP_KEYS = [HISTORY_KEY, PLANNED_ROUTES_KEY, THEME_KEY, LANG_KEY, NICK_KEY, SHARE_TOKENS_KEY, ROUTE_SHARE_TOKENS_KEY];
-const BACKUP_JSON_KEYS = { [HISTORY_KEY]: "array", [PLANNED_ROUTES_KEY]: "array", [SHARE_TOKENS_KEY]: "object", [ROUTE_SHARE_TOKENS_KEY]: "object" };
+const BACKUP_KEYS = [HISTORY_KEY, PLANNED_ROUTES_KEY, GOALS_KEY, THEME_KEY, LANG_KEY, NICK_KEY, SHARE_TOKENS_KEY, ROUTE_SHARE_TOKENS_KEY];
+const BACKUP_JSON_KEYS = { [HISTORY_KEY]: "array", [PLANNED_ROUTES_KEY]: "array", [GOALS_KEY]: "array", [SHARE_TOKENS_KEY]: "object", [ROUTE_SHARE_TOKENS_KEY]: "object" };
 
 async function createBackup() {
   const data = {};
@@ -2381,6 +2516,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("chartBtn").addEventListener("click", showChart);
   document.getElementById("exportBtn").addEventListener("click", exportCsv);
   document.getElementById("summaryPeriod").addEventListener("change", refreshSummary);
+  document.getElementById("goalAddBtn").addEventListener("click", () => showGoalForm(true));
+  document.getElementById("goalCancelBtn").addEventListener("click", () => showGoalForm(false));
+  document.getElementById("goalSaveBtn").addEventListener("click", addGoal);
   document.getElementById("backupBtn").addEventListener("click", createBackup);
   document.getElementById("restoreBtn").addEventListener("click", () => {
     document.getElementById("restoreFile").click();

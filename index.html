@@ -94,6 +94,32 @@
 
   <div id="tabHistory" class="tab-content">
     <div class="card">
+      <h2 data-i18n="goalsTitle">🎯 Cele</h2>
+      <div id="goalsList"></div>
+      <div id="goalForm" style="display:none">
+        <label data-i18n="goalPeriodLabel">Okres</label>
+        <select id="goalPeriod">
+          <option value="week" data-i18n="goalWeek">Tygodniowy</option>
+          <option value="month" data-i18n="goalMonth">Miesięczny</option>
+        </select>
+        <label data-i18n="labelDiscipline">Dyscyplina</label>
+        <select id="goalDisc">
+          <option value="all" data-i18n="goalAllDisc">Wszystkie dyscypliny</option>
+          <option value="Bieg" data-i18n="optBieg">Bieg</option>
+          <option value="Rower" data-i18n="optRower">Rower</option>
+          <option value="Kajak" data-i18n="optKajak">Kajak</option>
+        </select>
+        <label data-i18n="goalKmLabel">Dystans (km)</label>
+        <input id="goalKm" type="number" step="1" min="1" inputmode="decimal">
+        <div class="plan-actions">
+          <button class="primary" id="goalSaveBtn" data-i18n="goalSaveBtn">Zapisz cel</button>
+          <button id="goalCancelBtn" data-i18n="goalCancelBtn">Anuluj</button>
+        </div>
+      </div>
+      <button id="goalAddBtn" data-i18n="goalAddBtn">＋ DODAJ CEL</button>
+    </div>
+
+    <div class="card">
       <h2 data-i18n="summaryTitle">Podsumowanie</h2>
       <select id="summaryPeriod">
         <option value="week" data-i18n="periodWeek">Ten tydzień</option>
