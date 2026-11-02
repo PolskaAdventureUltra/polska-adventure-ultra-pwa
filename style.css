@@ -268,8 +268,7 @@ canvas { width: 100%; height: auto; background: var(--card); border-radius: 8px;
 .ch-lock svg { flex-shrink: 0; color: var(--ch-accent); }
 .ch-partners { margin-top: 12px; }
 .ch-partners .ch-kicker { font-size: 9px; letter-spacing: 0.1em; }
-.ch-partner-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; margin-top: 5px; }
-/* Białe kafelki (część logotypów jest ciemna na przezroczystym tle), z minimalnym marginesem. */
-.ch-partner { height: 24px; box-sizing: border-box; padding: 2px 3px; border-radius: 4px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; }
-.ch-partner img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.ch-partner-grid { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }
+/* Cienka biała ramka tuż przy logo: część logotypów jest ciemna na przezroczystym tle. */
+.ch-partner { box-sizing: content-box; padding: 2px; border-radius: 3px; background: #FFFFFF; object-fit: contain; }
 .ch-partner-cta { display: inline-block; margin-top: 4px; padding: 6px 0; font-size: 11px; font-weight: 600; color: var(--ch-accent); text-decoration: none; }

@@ -1205,15 +1205,18 @@ const DISC_ICONS = {
   Kajak: '<path d="M2 15c5 3.5 15 3.5 20 0"></path><path d="M5 5l14 13"></path><path d="M3.5 3.5l2.5 2.5"></path><path d="M18 17l2.5 2.5"></path>',
 };
 // Partnerzy jak na polskaadventureultra.pl (#partners); logotypy lokalnie w partners/ (działają offline).
+// ratio = szerokość / wysokość pliku; służy do wyrównania wielkości logotypów.
 const CHALLENGE_PARTNERS = [
-  { name: "Cedrus", logo: "partners/cedrus.png" },
-  { name: "TVP3 Lublin", logo: "partners/tvplublin.png" },
-  { name: "Agnieszka Danieluk", logo: "partners/agnieszkadanieluk.png" },
-  { name: "4evolve", logo: "partners/4evolve.png" },
-  { name: "Gospodarstwo rolne Szymon Gorzałczany", logo: "partners/szymong.png" },
-  { name: "Stokrotka", logo: "partners/stokrotka.png" },
-  { name: "MOSiR Lublin", logo: "partners/mosir.png" },
+  { name: "Cedrus", logo: "partners/cedrus.png", ratio: 360 / 56 },
+  { name: "TVP3 Lublin", logo: "partners/tvplublin.png", ratio: 199 / 49 },
+  { name: "Agnieszka Danieluk", logo: "partners/agnieszkadanieluk.png", ratio: 196 / 200 },
+  { name: "4evolve", logo: "partners/4evolve.png", ratio: 226 / 84 },
+  { name: "Gospodarstwo rolne Szymon Gorzałczany", logo: "partners/szymong.png", ratio: 360 / 96 },
+  { name: "Stokrotka", logo: "partners/stokrotka.png", ratio: 254 / 200 },
+  { name: "MOSiR Lublin", logo: "partners/mosir.png", ratio: 360 / 157 },
 ];
+const PARTNER_LOGO_AREA = 750; // px² - każde logo zajmuje mniej więcej tyle samo miejsca
+const PARTNER_LOGO_MAX_W = 62;
 const PARTNERS_PAGE_URL = "https://polskaadventureultra.pl/#partners";
 let challengeDemoFrame = null; // animacja licznika 1-100% w widoku obserwatora
 
@@ -1309,7 +1312,11 @@ function challengeHeadHtml() {
 function challengePartnersHtml() {
   const dict = t();
   return `<div class="ch-partners"><span class="ch-kicker">${dict.chPartners}</span><div class="ch-partner-grid">` +
-    CHALLENGE_PARTNERS.map((p) => `<div class="ch-partner"><img src="${p.logo}" alt="${escapeXml(p.name)}" loading="lazy"></div>`).join("") +
+    CHALLENGE_PARTNERS.map((p) => {
+      const w = Math.min(PARTNER_LOGO_MAX_W, Math.sqrt(PARTNER_LOGO_AREA * p.ratio));
+      const h = w / p.ratio;
+      return `<img class="ch-partner" src="${p.logo}" alt="${escapeXml(p.name)}" width="${Math.round(w)}" height="${Math.round(h)}" loading="lazy">`;
+    }).join("") +
     `</div><a class="ch-partner-cta" href="${PARTNERS_PAGE_URL}" target="_blank" rel="noopener">${dict.chPartnerCta}</a></div>`;
 }
 
