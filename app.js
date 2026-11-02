@@ -1287,7 +1287,7 @@ function challengeMapSvg(fraction, showDot) {
 
 function challengeHeadHtml() {
   const dict = t();
-  return `<div class="ch-flag" aria-hidden="true"><i style="background:#EEF0F4"></i><i style="background:var(--ch-accent)"></i></div>` +
+  return `<div class="ch-flag" aria-hidden="true"><i style="background:var(--ch-stripe)"></i><i style="background:var(--ch-accent)"></i></div>` +
     `<span class="ch-kicker">${dict.chMeta}</span><h2 class="ch-h1">${dict.chH1}</h2>`;
 }
 
