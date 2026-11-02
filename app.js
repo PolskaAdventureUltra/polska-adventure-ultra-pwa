@@ -114,7 +114,7 @@ const TRANSLATIONS = {
     chSignupSoon: "ZAPISY OD WRZEŚNIA 2027",
     chDemoSub: "z 4000 km",
     chPartners: "PARTNERZY PROJEKTU",
-    chPartnerCta: "Miejsce dla Twojej marki — zostań partnerem",
+    chPartnerCta: "Zostań partnerem →",
     chParticipantsOnly: "Postęp na żywo widzą tylko osoby biorące udział w wyzwaniu.",
     chSignupSoonHint: "Do tego czasu możesz śledzić wyzwanie i dołączać do wspólnych treningów.",
     challengeJoinBtn: "DOŁĄCZ DO WYZWANIA",
@@ -479,7 +479,7 @@ const TRANSLATIONS = {
     chSignupSoon: "SIGN-UPS OPEN IN SEPTEMBER 2027",
     chDemoSub: "of 4000 km",
     chPartners: "PROJECT PARTNERS",
-    chPartnerCta: "A place for your brand — become a partner",
+    chPartnerCta: "Become a partner →",
     chParticipantsOnly: "Live progress is visible only to challenge participants.",
     chSignupSoonHint: "Until then you can follow the challenge and join group trainings.",
     challengeJoinBtn: "JOIN THE CHALLENGE",
@@ -1328,15 +1328,15 @@ function challengeWeekHtml(st) {
 function challengeObserverHtml() {
   const dict = t();
   return challengeHeadHtml() +
-    `<div class="ch-map">${challengeMapSvg(0, true)}<div class="ch-map-left"><span class="ch-big" id="chDemoPct">1%</span>` +
-    `<span class="ch-sub">${dict.chDemoSub}</span><span class="ch-small">${dict.chNow(1).split("<br>")[0]}</span></div></div>` +
+    `<div class="ch-map"><div class="ch-map-left"><span class="ch-big" id="chDemoPct">1%</span>` +
+    `<span class="ch-sub">${dict.chDemoSub}</span><span class="ch-small">${dict.chNow(1).split("<br>")[0]}</span>` +
+    `${challengePartnersHtml()}</div>${challengeMapSvg(0, true)}</div>` +
     `<p class="ch-lock"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>${dict.chParticipantsOnly}</p>` +
     `<p class="ch-intro">${dict.challengeJoinText}</p>` +
     (canJoinChallenge()
       ? `<button class="ch-cta" id="challengeJoinBtn">${dict.challengeJoinBtn}</button>`
       : `<button class="ch-cta" id="challengeJoinBtn" disabled>${dict.chSignupSoon}</button>` +
-        `<p class="ch-small" style="text-align:center;margin:8px 0 0">${dict.chSignupSoonHint}</p>`) +
-    challengePartnersHtml();
+        `<p class="ch-small" style="text-align:center;margin:8px 0 0">${dict.chSignupSoonHint}</p>`);
 }
 
 function challengeParticipantHtml() {
@@ -1344,13 +1344,14 @@ function challengeParticipantHtml() {
   const st = challengeStats();
   const eta = st.eta ? st.eta.toLocaleDateString(dict.dateLocale, { day: "numeric", month: "short" }) : "—";
   return challengeHeadHtml() +
-    `<div class="ch-map">${challengeMapSvg(st.fraction, true)}<div class="ch-map-left"><span class="ch-big">${st.pct}%</span>` +
-    `<span class="ch-sub">${Math.round(st.km).toLocaleString(dict.dateLocale)} km</span><span class="ch-small">${dict.chNow(st.day)}</span></div></div>` +
+    `<div class="ch-map"><div class="ch-map-left"><span class="ch-big">${st.pct}%</span>` +
+    `<span class="ch-sub">${Math.round(st.km).toLocaleString(dict.dateLocale)} km</span><span class="ch-small">${dict.chNow(st.day)}</span>` +
+    `${challengePartnersHtml()}</div>${challengeMapSvg(st.fraction, true)}</div>` +
     `<div class="ch-pills">${DISCIPLINES.map((d) => `<div class="ch-pill" title="${dict.discNames[d]}">${discIcon(d, 18)}<b>${Math.round(st.byDisc[d])}</b> km</div>`).join("")}</div>` +
     `<div class="ch-stats"><div><span class="ch-stat-value">${st.day}</span><span class="ch-stat-label">${dict.chStatDays}</span></div>` +
     `<div><span class="ch-stat-value">${st.perDay.toFixed(1)}</span><span class="ch-stat-label">${dict.chStatAvg}</span></div>` +
     `<div><span class="ch-stat-value">${escapeXml(eta)}</span><span class="ch-stat-label">${dict.chStatEta}</span></div></div>` +
-    challengeWeekHtml(st) + challengePartnersHtml();
+    challengeWeekHtml(st);
 }
 
 function setChallengeDemo(el, fraction) {
