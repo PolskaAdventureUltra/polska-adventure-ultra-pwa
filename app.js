@@ -114,6 +114,8 @@ const TRANSLATIONS = {
     challengeJoinTitle: "Wyzwanie 4000 km",
     challengeJoinText: "4000 km dookoła Polski — biegiem, rowerem i kajakiem. Start i meta w Lublinie. Dołącz, a ten ekran pokaże Twój postęp: kilometry, miejsce na trasie i prognozę mety.",
     chObserveSub: "km · bieg · rower · kajak",
+    chSignupSoon: "ZAPISY OD WRZEŚNIA 2027",
+    chSignupSoonHint: "Do tego czasu możesz śledzić wyzwanie i dołączać do wspólnych treningów.",
     challengeJoinBtn: "DOŁĄCZ DO WYZWANIA",
     challengeStartLabel: "Początek Twojego wyzwania",
     challengeStartHint: "Do wyzwania liczą się treningi od tej daty (wszystkie dyscypliny).",
@@ -491,6 +493,8 @@ const TRANSLATIONS = {
     challengeJoinTitle: "The 4000 km challenge",
     challengeJoinText: "4000 km around Poland — running, cycling and kayaking. Start and finish in Lublin. Join and this screen shows your progress: kilometres, your place on the route and a finish forecast.",
     chObserveSub: "km · run · bike · kayak",
+    chSignupSoon: "SIGN-UPS OPEN IN SEPTEMBER 2027",
+    chSignupSoonHint: "Until then you can follow the challenge and join group trainings.",
     challengeJoinBtn: "JOIN THE CHALLENGE",
     challengeStartLabel: "Start of your challenge",
     challengeStartHint: "Trainings from this date count towards the challenge (all disciplines).",
@@ -1211,6 +1215,8 @@ function refreshRecords(history) {
 // --- Wyzwanie 4000 km (dodatkowa zakładka dla uczestników) ---
 const CHALLENGE_KM = 4000;
 const CHALLENGE_CP_KM = 500;
+// Zapisy dla nowych uczestników ruszają od tej daty; wcześniej dołączyć może tylko organizator.
+const CHALLENGE_SIGNUP_FROM = "2027-09-01";
 // Schematyczna pętla na konturze Polski (start i meta: Lublin). Do podmiany na prawdziwą trasę z GPX.
 const POLAND_OUTLINE_D = "M8.0 47.7 L18.8 45.4 L41.7 37.5 L64.5 30.6 L84.5 16.7 L113.0 6.0 L127.3 7.9 L138.7 16.7 L133.0 24.5 L144.4 28.3 L161.6 23.6 L184.4 26.4 L210.1 29.2 L252.9 27.8 L272.9 39.8 L272.9 58.4 L284.3 83.9 L284.3 104.8 L264.3 123.3 L277.2 134.0 L277.2 155.8 L290.0 183.6 L275.8 211.4 L247.2 248.5 L254.4 274.0 L230.1 267.0 L201.5 256.8 L175.9 267.0 L155.9 248.5 L140.2 253.1 L118.8 230.9 L107.3 216.0 L84.5 210.5 L70.2 199.8 L58.8 202.1 L41.7 192.9 L26.0 189.6 L30.3 174.3 L23.1 155.8 L18.8 132.6 L17.4 109.4 L6.0 97.8 L13.1 76.9 L8.0 47.7 Z";
 const CHALLENGE_ROUTE = [[246.3, 172.0], [282.9, 168.3], [277.2, 155.7], [277.2, 134.0], [264.3, 123.3], [284.3, 104.7],
@@ -1252,6 +1258,7 @@ function getChallengeVariant() {
 }
 
 function joinChallenge() {
+  if (!canJoinChallenge()) return;
   saveChallenge({ start: toYmd(new Date()) });
   renderChallenge();
 }
@@ -1369,7 +1376,14 @@ function challengeObserverHtml(variant) {
   return head + `<div class="ch-map">${map}${center}</div>` +
     `<p class="ch-intro">${dict.challengeJoinText}</p>` +
     challengeEventHtml(variant) +
-    `<button class="ch-cta" id="challengeJoinBtn">${dict.challengeJoinBtn}</button>`;
+    (canJoinChallenge()
+      ? `<button class="ch-cta" id="challengeJoinBtn">${dict.challengeJoinBtn}</button>`
+      : `<button class="ch-cta" id="challengeJoinBtn" disabled>${dict.chSignupSoon}</button>` +
+        `<p class="ch-small" style="text-align:center;margin:8px 0 0">${dict.chSignupSoonHint}</p>`);
+}
+
+function canJoinChallenge() {
+  return toYmd(new Date()) >= CHALLENGE_SIGNUP_FROM || Boolean(getAdminKey());
 }
 
 function renderChallenge() {
@@ -2558,6 +2572,7 @@ async function toggleOrganizer() {
   if (getAdminKey()) {
     localStorage.removeItem(ADMIN_KEY_KEY);
     showEventForm(false);
+    renderChallenge();
     return;
   }
   const key = prompt(dict.promptAdminKey);
@@ -2574,6 +2589,7 @@ async function toggleOrganizer() {
   localStorage.setItem(ADMIN_KEY_KEY, key.trim());
   alert(dict.adminLoggedIn);
   renderEvents();
+  renderChallenge();
 }
 
 function showEventForm(visible) {
