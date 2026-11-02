@@ -41,7 +41,7 @@
   </div>
 
   <div class="tabs">
-    <button id="tabChallengeBtn" data-i18n="tabChallenge" style="display:none">Wyzwanie</button>
+    <button id="tabChallengeBtn" data-i18n="tabChallenge">Wyzwanie</button>
     <button id="tabTrainBtn" class="active" data-i18n="tabTrain">Trening</button>
     <button id="tabHistoryBtn" data-i18n="tabHistory">Historia</button>
     <button id="tabPlanBtn" data-i18n="tabPlan">Trasy</button>
@@ -56,7 +56,7 @@
       <button data-variant="c">C · Biało-czerwona</button>
     </div>
     <div id="challengeScreen" class="challenge variant-a"></div>
-    <div class="card">
+    <div class="card" id="challengeSettings" style="display:none">
       <label for="challengeStart" data-i18n="challengeStartLabel">Początek Twojego wyzwania</label>
       <input type="date" id="challengeStart">
       <p class="hint-text" data-i18n="challengeStartHint">Do wyzwania liczą się treningi od tej daty (wszystkie dyscypliny).</p>
@@ -65,11 +65,6 @@
   </div>
 
   <div id="tabTrain" class="tab-content active">
-    <div class="card challenge-join" id="challengeJoinCard" style="display:none">
-      <h2 data-i18n="challengeJoinTitle">Wyzwanie 4000 km</h2>
-      <p data-i18n="challengeJoinText">Polska Adventure Ultra: 4000 km dookoła Polski — biegiem, rowerem i kajakiem. Start i meta w Lublinie. Dołącz, a w aplikacji pojawi się zakładka „Wyzwanie” z Twoim postępem.</p>
-      <button class="primary" id="challengeJoinBtn" data-i18n="challengeJoinBtn">DOŁĄCZ DO WYZWANIA</button>
-    </div>
     <div class="card">
       <label data-i18n="labelDiscipline">Dyscyplina</label>
       <select id="discipline">

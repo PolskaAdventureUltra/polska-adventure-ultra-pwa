@@ -112,12 +112,13 @@ const TRANSLATIONS = {
     tabChallenge: "Wyzwanie",
     variantLabel: "Wygląd (test):",
     challengeJoinTitle: "Wyzwanie 4000 km",
-    challengeJoinText: "Polska Adventure Ultra: 4000 km dookoła Polski — biegiem, rowerem i kajakiem. Start i meta w Lublinie. Dołącz, a w aplikacji pojawi się zakładka „Wyzwanie” z Twoim postępem.",
+    challengeJoinText: "4000 km dookoła Polski — biegiem, rowerem i kajakiem. Start i meta w Lublinie. Dołącz, a ten ekran pokaże Twój postęp: kilometry, miejsce na trasie i prognozę mety.",
+    chObserveSub: "km · bieg · rower · kajak",
     challengeJoinBtn: "DOŁĄCZ DO WYZWANIA",
     challengeStartLabel: "Początek Twojego wyzwania",
     challengeStartHint: "Do wyzwania liczą się treningi od tej daty (wszystkie dyscypliny).",
     challengeLeaveBtn: "Zrezygnuj z wyzwania",
-    confirmLeaveChallenge: "Zrezygnować z wyzwania? Zakładka Wyzwanie zniknie (treningi zostają w Historii).",
+    confirmLeaveChallenge: "Zrezygnować z wyzwania? Postęp przestanie się liczyć (treningi zostają w Historii).",
     chKicker: (year) => `WYZWANIE ${year}`,
     chOf: (pct) => `z 4 000 km · ${pct}%`,
     chCaption: (day) => `Start i meta: <b>Lublin</b> · dzień ${day} wyzwania`,
@@ -249,9 +250,10 @@ const TRANSLATIONS = {
       </details>
       <details><summary>🇵🇱 Wyzwanie 4000 km</summary>
         <ul>
-          <li>W zakładce <b>Trening</b> kliknij „DOŁĄCZ DO WYZWANIA”. Pojawi się dodatkowa zakładka <b>Wyzwanie</b> z Twoim postępem na pętli 4000 km (start i meta: Lublin).</li>
+          <li>Zakładka <b>Wyzwanie</b> jest dostępna dla wszystkich: pokazuje trasę 4000 km (start i meta: Lublin) i najbliższe wydarzenie.</li>
+          <li>Kliknij „DOŁĄCZ DO WYZWANIA”, a ekran zacznie pokazywać Twój postęp: kilometry w każdej dyscyplinie, miejsce na trasie i prognozę mety.</li>
           <li>Liczą się wszystkie treningi (bieg, rower, kajak) od daty początku wyzwania — datę zmienisz pod ekranem wyzwania.</li>
-          <li>Rezygnacja ukrywa zakładkę; treningi zostają w Historii.</li>
+          <li>Po rezygnacji ekran wraca do widoku dla obserwatorów; treningi zostają w Historii.</li>
         </ul>
       </details>
       <details><summary>🏃 Zapisywanie treningu</summary>
@@ -487,12 +489,13 @@ const TRANSLATIONS = {
     tabChallenge: "Challenge",
     variantLabel: "Look (test):",
     challengeJoinTitle: "The 4000 km challenge",
-    challengeJoinText: "Polska Adventure Ultra: 4000 km around Poland — running, cycling and kayaking. Start and finish in Lublin. Join and a “Challenge” tab with your progress appears in the app.",
+    challengeJoinText: "4000 km around Poland — running, cycling and kayaking. Start and finish in Lublin. Join and this screen shows your progress: kilometres, your place on the route and a finish forecast.",
+    chObserveSub: "km · run · bike · kayak",
     challengeJoinBtn: "JOIN THE CHALLENGE",
     challengeStartLabel: "Start of your challenge",
     challengeStartHint: "Trainings from this date count towards the challenge (all disciplines).",
     challengeLeaveBtn: "Leave the challenge",
-    confirmLeaveChallenge: "Leave the challenge? The Challenge tab will disappear (your trainings stay in History).",
+    confirmLeaveChallenge: "Leave the challenge? Your progress will no longer be tracked (your trainings stay in History).",
     chKicker: (year) => `CHALLENGE ${year}`,
     chOf: (pct) => `of 4,000 km · ${pct}%`,
     chCaption: (day) => `Start and finish: <b>Lublin</b> · day ${day} of the challenge`,
@@ -624,9 +627,10 @@ const TRANSLATIONS = {
       </details>
       <details><summary>🇵🇱 The 4000 km challenge</summary>
         <ul>
-          <li>In the <b>Training</b> tab tap “JOIN THE CHALLENGE”. An extra <b>Challenge</b> tab appears with your progress on the 4000 km loop (start and finish: Lublin).</li>
+          <li>The <b>Challenge</b> tab is open to everyone: it shows the 4000 km route (start and finish: Lublin) and the next event.</li>
+          <li>Tap “JOIN THE CHALLENGE” and the screen starts showing your progress: kilometres per discipline, your place on the route and a finish forecast.</li>
           <li>All trainings (running, cycling, kayaking) from the challenge start date count — change the date below the challenge screen.</li>
-          <li>Leaving hides the tab; your trainings stay in History.</li>
+          <li>After leaving, the screen returns to the observer view; your trainings stay in History.</li>
         </ul>
       </details>
       <details><summary>🏃 Saving a training</summary>
@@ -870,7 +874,6 @@ function showMainApp() {
   refreshTotalLabel();
   refreshHistoryList();
   refreshSavedRoutesList();
-  refreshChallengeVisibility();
   document.getElementById("date").valueAsDate = new Date();
   initCommunity();
 }
@@ -1248,24 +1251,15 @@ function getChallengeVariant() {
   return ["a", "b", "c"].includes(v) ? v : "a";
 }
 
-function refreshChallengeVisibility() {
-  const joined = Boolean(getChallenge());
-  document.getElementById("tabChallengeBtn").style.display = joined ? "" : "none";
-  document.getElementById("challengeJoinCard").style.display = joined ? "none" : "block";
-  if (!joined && document.getElementById("tabChallenge").classList.contains("active")) showTab("train");
-}
-
 function joinChallenge() {
   saveChallenge({ start: toYmd(new Date()) });
-  refreshChallengeVisibility();
-  showTab("challenge");
-  refreshChallenge();
+  renderChallenge();
 }
 
 function leaveChallenge() {
   if (!confirm(t().confirmLeaveChallenge)) return;
   saveChallenge(null);
-  refreshChallengeVisibility();
+  renderChallenge();
 }
 
 function pointAlongRoute(fraction) {
@@ -1306,7 +1300,7 @@ function challengeStats() {
   };
 }
 
-function challengeMapSvg(variant, fraction) {
+function challengeMapSvg(variant, fraction, showDot = true) {
   const [dx, dy] = pointAlongRoute(fraction);
   const dash = `${(fraction * 100).toFixed(2)} 100`;
   const ticks = variant === "b"
@@ -1318,8 +1312,8 @@ function challengeMapSvg(variant, fraction) {
     (fraction > 0 ? `<path class="ch-progress" d="${CHALLENGE_ROUTE_D}" pathLength="100" stroke-dasharray="${dash}"></path>` : "") +
     `<circle class="ch-start" cx="246.3" cy="172" r="7"></circle>` +
     `<text class="ch-start-label" x="234" y="176.5" text-anchor="end">${label}</text>` +
-    `<circle class="ch-dot-halo" cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="11"></circle>` +
-    `<circle class="ch-dot" cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="5.5"></circle>` +
+    (showDot ? `<circle class="ch-dot-halo" cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="11"></circle>` +
+      `<circle class="ch-dot" cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="5.5"></circle>` : "") +
     `</svg>`;
 }
 
@@ -1359,11 +1353,42 @@ function challengeWeekHtml(st) {
     `<span class="ch-note">${st.streak ? dict.chStreak(st.streak) : dict.chNoStreak}</span></div>`;
 }
 
+// Widok dla osób, które nie dołączyły: opis wyzwania, trasa, najbliższe wydarzenie i przycisk "Dołącz".
+function challengeObserverHtml(variant) {
+  const dict = t();
+  const year = new Date().getFullYear();
+  const map = challengeMapSvg(variant, 0, false);
+  const head = variant === "c"
+    ? `<div class="ch-flag" aria-hidden="true"><i style="background:#EEF0F4"></i><i style="background:var(--ch-accent)"></i></div>` +
+      `<span class="ch-kicker">${dict.chMeta}</span><h2 class="ch-h1">${dict.chH1}</h2>`
+    : variant === "b"
+      ? `<div class="ch-head"><span class="ch-title">POLSKA<br>ADVENTURE ULTRA</span><span class="ch-chip">EDYCJA ${year}</span></div>`
+      : `<div class="ch-head"><div><span class="ch-kicker">${dict.chKicker(year)}</span><span class="ch-title">POLSKA ADVENTURE ULTRA</span></div></div>`;
+  const center = variant === "c" ? ""
+    : `<div class="ch-map-center"><span class="ch-big">4000</span><span class="ch-sub">${dict.chObserveSub}</span></div>`;
+  return head + `<div class="ch-map">${map}${center}</div>` +
+    `<p class="ch-intro">${dict.challengeJoinText}</p>` +
+    challengeEventHtml(variant) +
+    `<button class="ch-cta" id="challengeJoinBtn">${dict.challengeJoinBtn}</button>`;
+}
+
 function renderChallenge() {
   const el = document.getElementById("challengeScreen");
-  if (!el || !getChallenge()) return;
+  if (!el) return;
   const dict = t();
   const variant = getChallengeVariant();
+  document.querySelectorAll(".variant-switch button").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.variant === variant);
+  });
+  el.className = `challenge variant-${variant}`;
+  const joined = Boolean(getChallenge());
+  document.getElementById("challengeSettings").style.display = joined ? "block" : "none";
+  if (!joined) {
+    el.innerHTML = challengeObserverHtml(variant);
+    document.getElementById("challengeJoinBtn").addEventListener("click", joinChallenge);
+    bindChallengeEventButtons(el);
+    return;
+  }
   const st = challengeStats();
   const year = new Date().getFullYear();
   const kmText = Math.round(st.km).toLocaleString(dict.dateLocale);
@@ -1407,8 +1432,12 @@ function renderChallenge() {
       `<div><span class="ch-stat-value">${escapeXml(eta)}</span><span class="ch-mono">${dict.chStatEta}</span></div></div>` +
       challengeWeekHtml(st) + challengeEventHtml("c");
   }
-  el.className = `challenge variant-${variant}`;
   el.innerHTML = html;
+  bindChallengeEventButtons(el);
+  document.getElementById("challengeStart").value = getChallenge().start;
+}
+
+function bindChallengeEventButtons(el) {
   el.querySelectorAll(".ch-btn[data-event-id]").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const ev = eventsCache.find((e) => e.id === btn.dataset.eventId);
@@ -1418,10 +1447,6 @@ function renderChallenge() {
       }
     });
   });
-  document.querySelectorAll(".variant-switch button").forEach((btn) => {
-    btn.classList.toggle("active", btn.dataset.variant === variant);
-  });
-  document.getElementById("challengeStart").value = getChallenge().start;
 }
 
 async function refreshChallenge() {
@@ -3157,7 +3182,6 @@ document.addEventListener("DOMContentLoaded", () => {
     showTab("challenge");
     refreshChallenge();
   });
-  document.getElementById("challengeJoinBtn").addEventListener("click", joinChallenge);
   document.getElementById("challengeLeaveBtn").addEventListener("click", leaveChallenge);
   document.getElementById("challengeStart").addEventListener("change", (e) => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) return;
