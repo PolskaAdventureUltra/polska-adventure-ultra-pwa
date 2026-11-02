@@ -45,6 +45,17 @@
     <button id="tabHistoryBtn" data-i18n="tabHistory">Historia</button>
     <button id="tabPlanBtn" data-i18n="tabPlan">Trasy</button>
     <button id="tabActivityBtn" data-i18n="tabActivity">Aktywność</button>
+    <button id="tabChallengeBtn" data-i18n="tabChallenge">Wyzwanie</button>
+  </div>
+
+  <div id="tabChallenge" class="tab-content">
+    <div id="challengeScreen" class="challenge"></div>
+    <div class="card" id="challengeSettings" style="display:none">
+      <label for="challengeStart" data-i18n="challengeStartLabel">Początek Twojego wyzwania</label>
+      <input type="date" id="challengeStart">
+      <p class="hint-text" data-i18n="challengeStartHint">Do wyzwania liczą się treningi od tej daty (wszystkie dyscypliny).</p>
+      <button id="challengeLeaveBtn" data-i18n="challengeLeaveBtn">Zrezygnuj z wyzwania</button>
+    </div>
   </div>
 
   <div id="tabTrain" class="tab-content active">
