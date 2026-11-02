@@ -828,6 +828,9 @@ function getTotalDistance() {
 function applyTheme() {
   const theme = localStorage.getItem(THEME_KEY) || "light";
   document.body.classList.toggle("dark", theme === "dark");
+  // Pasek systemowy telefonu w kolorze tła aplikacji (--bg w style.css), żeby górny i dolny pasek się zgadzały.
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute("content", theme === "dark" ? "#0F1A2B" : "#F3F5F8");
 }
 
 function toggleTheme() {
