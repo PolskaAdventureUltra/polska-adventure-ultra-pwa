@@ -223,7 +223,7 @@ canvas { width: 100%; height: auto; background: var(--card); border-radius: 8px;
 
 .challenge {
   --ch-bg: #FFFFFF; --ch-fg: #14213D; --ch-muted: #5A6378; --ch-accent: #C21C37; --ch-on-accent: #FFFFFF;
-  --ch-line: #DADEE6; --ch-track: #EEF0F4; --ch-band: #14213D; --ch-band-muted: #C5CBD8; --ch-date-bg: #FBE9EC;
+  --ch-line: #DADEE6; --ch-track: #EEF0F4; --ch-band: #14213D; --ch-band-muted: #C5CBD8;
   --ch-display: "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --ch-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   border-radius: 16px; padding: 0 16px 18px; margin-bottom: 10px; overflow: hidden;
@@ -231,7 +231,7 @@ canvas { width: 100%; height: auto; background: var(--card); border-radius: 8px;
 }
 body.dark .challenge {
   --ch-bg: #121826; --ch-fg: #F3F5F9; --ch-muted: #A9B1C3; --ch-accent: #E8455C; --ch-on-accent: #FFFFFF;
-  --ch-line: #2A3347; --ch-track: #1E2638; --ch-band: #1E2A47; --ch-band-muted: #B8C0D2; --ch-date-bg: #3A1A22;
+  --ch-line: #2A3347; --ch-track: #1E2638; --ch-band: #1E2A47; --ch-band-muted: #B8C0D2;
 }
 .challenge button { width: auto; margin-top: 0; min-height: 44px; font-family: var(--ch-body); cursor: pointer; }
 .ch-flag { display: flex; height: 6px; margin: 0 -16px 14px; }
@@ -263,13 +263,8 @@ body.dark .challenge {
 .ch-bar { height: 8px; background: var(--ch-track); border-radius: 4px; overflow: hidden; }
 .ch-bar-fill { height: 100%; background: var(--ch-accent); border-radius: 4px; }
 .ch-note { font-size: 12px; font-weight: 600; color: var(--ch-accent); }
-.ch-event { border: 1px solid var(--ch-line); border-radius: 16px; padding: 12px 14px; margin-top: 12px; display: flex; align-items: center; gap: 12px; }
-.ch-event-title { font-family: var(--ch-display); font-weight: 600; font-size: 16px; line-height: 1.15; }
-.ch-event .ch-btn { flex-shrink: 0; padding: 0 12px; border-radius: 10px; border: none; background: var(--ch-accent); color: var(--ch-on-accent); font-weight: 700; font-size: 13px; }
-.ch-date-block { flex-shrink: 0; width: 52px; height: 56px; border-radius: 10px; background: var(--ch-date-bg); color: var(--ch-accent); display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; }
-.ch-date-block span:first-child { font-family: var(--ch-display); font-size: 22px; line-height: 1; }
-.ch-date-block span:last-child { font-size: 11px; }
 .ch-intro { margin: 10px 0 0; font-size: 14px; line-height: 1.45; }
-.ch-empty { margin: 10px 0 0; font-size: 13px; color: var(--ch-muted); text-align: center; }
 .challenge .ch-cta { width: 100%; margin-top: 14px; border: none; border-radius: 12px; background: var(--ch-accent); color: var(--ch-on-accent); font-weight: 700; font-size: 15px; letter-spacing: 0.03em; }
 .challenge .ch-cta:disabled { opacity: 0.55; cursor: default; }
+.ch-lock { display: flex; align-items: center; gap: 6px; margin: 8px 0 0; padding: 8px 10px; border-radius: 10px; background: var(--ch-track); font-size: 12px; font-weight: 600; color: var(--ch-fg); }
+.ch-lock svg { flex-shrink: 0; color: var(--ch-accent); }

@@ -110,8 +110,10 @@ const TRANSLATIONS = {
     helpPrivacyBtn: "PEŁNA INFORMACJA O PRYWATNOŚCI (RODO)",
     tabChallenge: "Wyzwanie",
     challengeJoinTitle: "Wyzwanie 4000 km",
-    challengeJoinText: "4000 km dookoła Polski — biegiem, rowerem i kajakiem. Start i meta w Lublinie. Dołącz, a ten ekran pokaże Twój postęp: kilometry, miejsce na trasie i prognozę mety.",
+    challengeJoinText: "4000 km dookoła Polski — biegiem, rowerem i kajakiem. Start i meta w Lublinie. Uczestnicy widzą tu swój postęp: kilometry, miejsce na trasie i prognozę mety.",
     chSignupSoon: "ZAPISY OD WRZEŚNIA 2027",
+    chDemoSub: "z 4000 km",
+    chParticipantsOnly: "Postęp na żywo widzą tylko osoby biorące udział w wyzwaniu.",
     chSignupSoonHint: "Do tego czasu możesz śledzić wyzwanie i dołączać do wspólnych treningów.",
     challengeJoinBtn: "DOŁĄCZ DO WYZWANIA",
     challengeStartLabel: "Początek Twojego wyzwania",
@@ -122,15 +124,12 @@ const TRANSLATIONS = {
     chWeek: "TEN TYDZIEŃ",
     chStreak: (n) => `${n} ${n === 1 ? "dzień" : "dni"} z rzędu w ruchu`,
     chNoStreak: "Dodaj dziś trening i zacznij passę",
-    chNoEvent: "Brak zaplanowanych wydarzeń.",
     chH1: "4000 km<br>dookoła Polski",
     chMeta: "WYZWANIE · BIEG · ROWER · KAJAK",
     chNow: (day) => `start i meta: Lublin<br>dzień ${day} wyzwania`,
     chStatDays: "dni w wyzwaniu",
     chStatAvg: "km dziennie",
     chStatEta: "meta ok.",
-    chJoinEvent: "Biorę udział",
-    chJoined: "Bierzesz udział",
     eventsTitle: "📅 Wydarzenia",
     eventsHint: "Wspólne treningi, spływy i rajdy. Kliknij „Biorę udział”, żeby organizator wiedział, ilu osób się spodziewać.",
     noEvents: "Brak zaplanowanych wydarzeń — zajrzyj później.",
@@ -236,8 +235,8 @@ const TRANSLATIONS = {
       </details>
       <details><summary>🇵🇱 Wyzwanie 4000 km</summary>
         <ul>
-          <li>Zakładka <b>Wyzwanie</b> jest dostępna dla wszystkich: pokazuje trasę 4000 km (start i meta: Lublin) i najbliższe wydarzenie.</li>
-          <li>Kliknij „DOŁĄCZ DO WYZWANIA”, a ekran zacznie pokazywać Twój postęp: kilometry w każdej dyscyplinie, miejsce na trasie i prognozę mety.</li>
+          <li>Zakładka <b>Wyzwanie</b> jest dostępna dla wszystkich: pokazuje trasę 4000 km (start i meta: Lublin) i zasady. Licznik na mapie jest poglądowy — prawdziwy postęp widzą tylko uczestnicy.</li>
+          <li>Zapisy ruszają we wrześniu 2027. Po dołączeniu ekran pokazuje Twój postęp: kilometry w każdej dyscyplinie, miejsce na trasie i prognozę mety.</li>
           <li>Liczą się wszystkie treningi (bieg, rower, kajak) od daty początku wyzwania — datę zmienisz pod ekranem wyzwania.</li>
           <li>Po rezygnacji ekran wraca do widoku dla obserwatorów; treningi zostają w Historii.</li>
         </ul>
@@ -474,8 +473,10 @@ const TRANSLATIONS = {
     helpPrivacyBtn: "FULL PRIVACY INFORMATION (GDPR)",
     tabChallenge: "Challenge",
     challengeJoinTitle: "The 4000 km challenge",
-    challengeJoinText: "4000 km around Poland — running, cycling and kayaking. Start and finish in Lublin. Join and this screen shows your progress: kilometres, your place on the route and a finish forecast.",
+    challengeJoinText: "4000 km around Poland — running, cycling and kayaking. Start and finish in Lublin. Participants see their progress here: kilometres, their place on the route and a finish forecast.",
     chSignupSoon: "SIGN-UPS OPEN IN SEPTEMBER 2027",
+    chDemoSub: "of 4000 km",
+    chParticipantsOnly: "Live progress is visible only to challenge participants.",
     chSignupSoonHint: "Until then you can follow the challenge and join group trainings.",
     challengeJoinBtn: "JOIN THE CHALLENGE",
     challengeStartLabel: "Start of your challenge",
@@ -486,15 +487,12 @@ const TRANSLATIONS = {
     chWeek: "THIS WEEK",
     chStreak: (n) => `${n} ${n === 1 ? "day" : "days"} in a row`,
     chNoStreak: "Add a training today to start a streak",
-    chNoEvent: "No events planned.",
     chH1: "4000 km<br>around Poland",
     chMeta: "CHALLENGE · RUN · BIKE · KAYAK",
     chNow: (day) => `start and finish: Lublin<br>day ${day} of the challenge`,
     chStatDays: "days in",
     chStatAvg: "km per day",
     chStatEta: "finish ~",
-    chJoinEvent: "I'm going",
-    chJoined: "You're going",
     eventsTitle: "📅 Events",
     eventsHint: "Group trainings, kayak trips and races. Tap “I'm going” so the organiser knows how many people to expect.",
     noEvents: "No events planned — check back later.",
@@ -600,8 +598,8 @@ const TRANSLATIONS = {
       </details>
       <details><summary>🇵🇱 The 4000 km challenge</summary>
         <ul>
-          <li>The <b>Challenge</b> tab is open to everyone: it shows the 4000 km route (start and finish: Lublin) and the next event.</li>
-          <li>Tap “JOIN THE CHALLENGE” and the screen starts showing your progress: kilometres per discipline, your place on the route and a finish forecast.</li>
+          <li>The <b>Challenge</b> tab is open to everyone: it shows the 4000 km route (start and finish: Lublin) and the rules. The counter on the map is just an illustration — real progress is visible only to participants.</li>
+          <li>Sign-ups open in September 2027. After joining, the screen shows your progress: kilometres per discipline, your place on the route and a finish forecast.</li>
           <li>All trainings (running, cycling, kayaking) from the challenge start date count — change the date below the challenge screen.</li>
           <li>After leaving, the screen returns to the observer view; your trainings stay in History.</li>
         </ul>
@@ -876,6 +874,7 @@ const TAB_IDS = {
 function showTab(tabName) {
   document.querySelectorAll(".tab-content").forEach((el) => el.classList.remove("active"));
   document.querySelectorAll(".tabs button").forEach((el) => el.classList.remove("active"));
+  if (tabName !== "challenge") stopChallengeDemo();
   const [contentId, btnId] = TAB_IDS[tabName];
   document.getElementById(contentId).classList.add("active");
   document.getElementById(btnId).classList.add("active");
@@ -1200,7 +1199,7 @@ const DISC_ICONS = {
   Rower: '<circle cx="5.5" cy="16.5" r="3.5"></circle><circle cx="18.5" cy="16.5" r="3.5"></circle><path d="M5.5 16.5L9 9h6l3.5 7.5"></path><path d="M9 9l3.5 7.5H5.5"></path><path d="M13.5 6h2.5"></path>',
   Kajak: '<path d="M2 15c5 3.5 15 3.5 20 0"></path><path d="M5 5l14 13"></path><path d="M3.5 3.5l2.5 2.5"></path><path d="M18 17l2.5 2.5"></path>',
 };
-let challengeEventsLoaded = false;
+let challengeDemoFrame = null; // animacja licznika 1-100% w widoku obserwatora
 
 function discIcon(disc, size) {
   return `<svg aria-hidden="true" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${DISC_ICONS[disc]}</svg>`;
@@ -1278,7 +1277,7 @@ function challengeMapSvg(fraction, showDot) {
   return `<svg role="img" aria-label="${escapeXml(t().chOf(Math.round(fraction * 100)))}" viewBox="0 0 296 280">` +
     `<path class="ch-outline" d="${POLAND_OUTLINE_D}"></path>` +
     `<path class="ch-route-base" d="${CHALLENGE_ROUTE_D}"></path>` +
-    (fraction > 0 ? `<path class="ch-progress" d="${CHALLENGE_ROUTE_D}" pathLength="100" stroke-dasharray="${(fraction * 100).toFixed(2)} 100"></path>` : "") +
+    `<path class="ch-progress" d="${CHALLENGE_ROUTE_D}" pathLength="100" stroke-dasharray="${(fraction * 100).toFixed(2)} 100"></path>` +
     `<circle class="ch-start" cx="246.3" cy="172" r="7"></circle>` +
     `<text class="ch-start-label" x="234" y="176.5" text-anchor="end">Lublin</text>` +
     (showDot ? `<circle class="ch-dot" cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="8"></circle>` : "") +
@@ -1289,23 +1288,6 @@ function challengeHeadHtml() {
   const dict = t();
   return `<div class="ch-flag" aria-hidden="true"><i style="background:#EEF0F4"></i><i style="background:var(--ch-accent)"></i></div>` +
     `<span class="ch-kicker">${dict.chMeta}</span><h2 class="ch-h1">${dict.chH1}</h2>`;
-}
-
-function challengeEventHtml() {
-  const dict = t();
-  if (!isCommunityConfigured()) return "";
-  const ev = eventsCache.find((e) => new Date(e.starts_at) > new Date(Date.now() - 12 * 3600000));
-  if (!ev) return `<p class="ch-empty">${dict.chNoEvent}</p>`;
-  const start = new Date(ev.starts_at);
-  const joined = Boolean(getEventTokens()[ev.id]);
-  const count = Number(ev.participants) || 0;
-  const when = start.toLocaleString(dict.dateLocale, { weekday: "short", hour: "2-digit", minute: "2-digit" });
-  const month = start.toLocaleString(dict.dateLocale, { month: "short" }).replace(".", "").toUpperCase();
-  return `<div class="ch-event"><div class="ch-date-block"><span>${start.getDate()}</span><span>${escapeXml(month)}</span></div>` +
-    `<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">` +
-    `<span class="ch-event-title">${escapeXml(ev.title)}</span>` +
-    `<span class="ch-small">${escapeXml(when)} · ${escapeXml(ev.place)}</span></div>` +
-    `<button class="ch-btn" data-event-id="${escapeXml(ev.id)}">${joined ? dict.chJoined : dict.chJoinEvent} · ${count}</button></div>`;
 }
 
 function challengeWeekHtml(st) {
@@ -1319,12 +1301,14 @@ function challengeWeekHtml(st) {
 }
 
 // Widok dla osób, które nie dołączyły: opis wyzwania, trasa, najbliższe wydarzenie i przycisk "Dołącz".
+// Licznik i kropka są tu tylko poglądowe (animacja 1-100%) - prawdziwy postęp widzą uczestnicy.
 function challengeObserverHtml() {
   const dict = t();
   return challengeHeadHtml() +
-    `<div class="ch-map" style="text-align:center">${challengeMapSvg(0, false)}</div>` +
+    `<div class="ch-map">${challengeMapSvg(0, true)}<div class="ch-map-left"><span class="ch-big" id="chDemoPct">1%</span>` +
+    `<span class="ch-sub">${dict.chDemoSub}</span><span class="ch-small">${dict.chNow(1).split("<br>")[0]}</span></div></div>` +
+    `<p class="ch-lock"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>${dict.chParticipantsOnly}</p>` +
     `<p class="ch-intro">${dict.challengeJoinText}</p>` +
-    challengeEventHtml() +
     (canJoinChallenge()
       ? `<button class="ch-cta" id="challengeJoinBtn">${dict.challengeJoinBtn}</button>`
       : `<button class="ch-cta" id="challengeJoinBtn" disabled>${dict.chSignupSoon}</button>` +
@@ -1342,38 +1326,52 @@ function challengeParticipantHtml() {
     `<div class="ch-stats"><div><span class="ch-stat-value">${st.day}</span><span class="ch-stat-label">${dict.chStatDays}</span></div>` +
     `<div><span class="ch-stat-value">${st.perDay.toFixed(1)}</span><span class="ch-stat-label">${dict.chStatAvg}</span></div>` +
     `<div><span class="ch-stat-value">${escapeXml(eta)}</span><span class="ch-stat-label">${dict.chStatEta}</span></div></div>` +
-    challengeWeekHtml(st) + challengeEventHtml();
+    challengeWeekHtml(st);
+}
+
+function setChallengeDemo(el, fraction) {
+  const [x, y] = pointAlongRoute(fraction);
+  el.querySelector("#chDemoPct").textContent = `${Math.max(1, Math.round(fraction * 100))}%`;
+  el.querySelector(".ch-progress").setAttribute("stroke-dasharray", `${(fraction * 100).toFixed(2)} 100`);
+  const dot = el.querySelector(".ch-dot");
+  dot.setAttribute("cx", x.toFixed(1));
+  dot.setAttribute("cy", y.toFixed(1));
+}
+
+function stopChallengeDemo() {
+  if (challengeDemoFrame) cancelAnimationFrame(challengeDemoFrame);
+  challengeDemoFrame = null;
+}
+
+function startChallengeDemo(el) {
+  stopChallengeDemo();
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    setChallengeDemo(el, 1);
+    return;
+  }
+  const runMs = 7000, holdMs = 1500;
+  let startTs = null;
+  const step = (ts) => {
+    if (startTs === null) startTs = ts;
+    const fraction = Math.min(1, ((ts - startTs) % (runMs + holdMs)) / runMs);
+    setChallengeDemo(el, fraction);
+    challengeDemoFrame = requestAnimationFrame(step);
+  };
+  challengeDemoFrame = requestAnimationFrame(step);
 }
 
 function renderChallenge() {
   const el = document.getElementById("challengeScreen");
   if (!el) return;
+  stopChallengeDemo();
   const challenge = getChallenge();
   document.getElementById("challengeSettings").style.display = challenge ? "block" : "none";
   el.innerHTML = challenge ? challengeParticipantHtml() : challengeObserverHtml();
-  if (challenge) document.getElementById("challengeStart").value = challenge.start;
-  else document.getElementById("challengeJoinBtn").addEventListener("click", joinChallenge);
-  el.querySelectorAll(".ch-btn[data-event-id]").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const ev = eventsCache.find((e) => e.id === btn.dataset.eventId);
-      if (ev) {
-        await toggleJoinEvent(ev);
-        renderChallenge();
-      }
-    });
-  });
-}
-
-async function refreshChallenge() {
-  renderChallenge();
-  if (!challengeEventsLoaded && isCommunityConfigured()) {
-    try {
-      eventsCache = (await rpc("list_events")) || [];
-      challengeEventsLoaded = true;
-      renderChallenge();
-    } catch (e) {
-      // Bez internetu ekran wyzwania działa dalej, tylko bez wydarzenia.
-    }
+  if (challenge) {
+    document.getElementById("challengeStart").value = challenge.start;
+  } else {
+    document.getElementById("challengeJoinBtn").addEventListener("click", joinChallenge);
+    if (document.getElementById("tabChallenge").classList.contains("active")) startChallengeDemo(el);
   }
 }
 
@@ -3097,7 +3095,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("organizerBtn").addEventListener("click", toggleOrganizer);
   document.getElementById("tabChallengeBtn").addEventListener("click", () => {
     showTab("challenge");
-    refreshChallenge();
+    renderChallenge();
   });
   document.getElementById("challengeLeaveBtn").addEventListener("click", leaveChallenge);
   document.getElementById("challengeStart").addEventListener("change", (e) => {
