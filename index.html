@@ -94,6 +94,26 @@
 
   <div id="tabHistory" class="tab-content">
     <div class="card">
+      <h2 data-i18n="summaryTitle">Podsumowanie</h2>
+      <select id="summaryPeriod">
+        <option value="week" data-i18n="periodWeek">Ten tydzień</option>
+        <option value="month" data-i18n="periodMonth" selected>Ten miesiąc</option>
+        <option value="year" data-i18n="periodYear">Ten rok</option>
+        <option value="all" data-i18n="periodAll">Od początku</option>
+      </select>
+      <div class="stats-grid summary-grid" id="summaryTiles"></div>
+      <p class="hint-text" id="summaryCompare"></p>
+      <div id="summaryByDisc"></div>
+      <h3 class="summary-subtitle" data-i18n="streakTitle">🔥 Passa treningowa</h3>
+      <div class="stats-grid" id="streakTiles"></div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="recordsTitle">🏆 Rekordy osobiste</h2>
+      <div id="recordsList"></div>
+    </div>
+
+    <div class="card">
       <h2 data-i18n="historyTitle">Historia treningów</h2>
       <div id="historyList"></div>
     </div>
