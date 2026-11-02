@@ -379,6 +379,7 @@ const TRANSLATIONS = {
     activityHint: "Swój trening udostępnisz przyciskiem 📤 w zakładce Historia.",
     statUsers: "użytkowników",
     statActive: "aktywnych w 7 dni",
+    statActiveHour: "aktywnych w ostatniej godzinie",
     statActivities: "udostępnionych aktywności",
     statKm: "km społeczności",
     noActivities: "Nikt jeszcze nic nie udostępnił — bądź pierwszy!",
@@ -408,7 +409,7 @@ const TRANSLATIONS = {
       <p><b>Usługi zewnętrzne:</b> podczas oglądania map telefon pobiera kafelki z serwerów OpenStreetMap, a przy wyznaczaniu trasy po drogach wysyła współrzędne klikniętych punktów do darmowego serwisu BRouter (brouter.de). Serwery te, jak każda strona internetowa, widzą adres IP Twojego urządzenia. Nie są im przekazywane żadne inne dane.</p>
       ${community ? `<p>Na serwer aplikacji trafiają wyłącznie dane, na które się zgodzisz:</p>
       <ul>
-        <li><b>Statystyki użytkowników</b> (tylko za zgodą): losowy identyfikator urządzenia i data ostatniego uruchomienia. Cel: policzenie, ile osób korzysta z aplikacji. Usuwany po 13 miesiącach braku aktywności lub od razu po wyłączeniu zgody.</li>
+        <li><b>Statystyki użytkowników</b> (tylko za zgodą): losowy identyfikator urządzenia i czas ostatniego użycia aplikacji. Cel: policzenie, ile osób korzysta z aplikacji (łącznie, w ostatnim tygodniu i w ostatniej godzinie) — liczymy tylko liczby, nikt nie widzi, kto konkretnie jest aktywny. Usuwany po 13 miesiącach braku aktywności lub od razu po wyłączeniu zgody.</li>
         <li><b>Udostępnione aktywności</b> (tylko te, które sam udostępnisz): nick, dyscyplina, data, dystans, czas i trasa bez pierwszych/ostatnich 300 m. Nie są powiązane z identyfikatorem urządzenia. Przechowywane do czasu, aż je usuniesz. Widoczne dla wszystkich użytkowników aplikacji.</li>
         <li><b>Udostępnione trasy</b> (tylko te, które sam udostępnisz): nick, nazwa trasy, rodzaj, dystans i cała trasa. Nie są powiązane z identyfikatorem urządzenia. Przechowywane do czasu, aż je usuniesz. Widoczne dla wszystkich i możliwe do pobrania przez innych użytkowników.</li>
         <li><b>Zapisy na wydarzenia</b> (tylko gdy klikniesz „Biorę udział”): wyłącznie skrót (hash) losowego znacznika zapisanego na Twoim telefonie — bez nicku i identyfikatora urządzenia. Służy do policzenia chętnych i umożliwia wypisanie się. Usuwany po wypisaniu się albo razem z wydarzeniem, najpóźniej 30 dni po jego terminie.</li>
@@ -763,6 +764,7 @@ const TRANSLATIONS = {
     activityHint: "Share your training with the 📤 button in the History tab.",
     statUsers: "users",
     statActive: "active in 7 days",
+    statActiveHour: "active in the last hour",
     statActivities: "shared activities",
     statKm: "community km",
     noActivities: "Nobody has shared anything yet — be the first!",
@@ -792,7 +794,7 @@ const TRANSLATIONS = {
       <p><b>External services:</b> when viewing maps the phone downloads tiles from OpenStreetMap servers, and when routing along roads it sends the coordinates of tapped points to the free BRouter service (brouter.de). Like any website, these servers see your device's IP address. No other data is shared with them.</p>
       ${community ? `<p>Only data you agree to is sent to the app's server:</p>
       <ul>
-        <li><b>User statistics</b> (only with consent): a random device ID and the date of last use. Purpose: counting how many people use the app. Deleted after 13 months of inactivity or immediately when you withdraw consent.</li>
+        <li><b>User statistics</b> (only with consent): a random device ID and the time of last use. Purpose: counting how many people use the app (in total, in the last week and in the last hour) — only numbers are counted, nobody can see who exactly is active. Deleted after 13 months of inactivity or immediately when you withdraw consent.</li>
         <li><b>Shared activities</b> (only those you share yourself): nickname, discipline, date, distance, time and the route without the first/last 300 m. Not linked to the device ID. Kept until you delete them. Visible to all app users.</li>
         <li><b>Shared routes</b> (only those you share yourself): nickname, route name, type, distance and the whole route. Not linked to the device ID. Kept until you delete them. Visible to and downloadable by all app users.</li>
         <li><b>Event sign-ups</b> (only when you tap “I'm going”): only a hash of a random marker stored on your phone — no nickname or device ID. Used to count participants and to let you cancel. Deleted when you cancel or together with the event, at the latest 30 days after it takes place.</li>
@@ -2296,14 +2298,19 @@ function initCommunity() {
   const consent = localStorage.getItem(STATS_CONSENT_KEY);
   document.getElementById("consentCard").style.display = consent ? "none" : "block";
   if (consent === "yes") pingIfNeeded();
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && localStorage.getItem(STATS_CONSENT_KEY) === "yes") pingIfNeeded();
+  });
 }
 
+// Ping co najwyżej co 10 minut (licznik „aktywni w ostatniej godzinie”), ponawiany po powrocie do aplikacji.
+const PING_INTERVAL_MS = 10 * 60 * 1000;
 async function pingIfNeeded() {
-  const today = new Date().toISOString().slice(0, 10);
-  if (localStorage.getItem(LAST_PING_KEY) === today) return;
+  const last = Number(localStorage.getItem(LAST_PING_KEY)); // stary format (data) → NaN → ping
+  if (last && Date.now() - last < PING_INTERVAL_MS) return;
   try {
     await rpc("ping", { p_device: getDeviceId() });
-    localStorage.setItem(LAST_PING_KEY, today);
+    localStorage.setItem(LAST_PING_KEY, String(Date.now()));
   } catch (e) {
     console.warn("ping failed", e);
   }
@@ -2773,6 +2780,7 @@ async function refreshActivityTab() {
   try {
     const [stats, activities] = await Promise.all([rpc("get_stats"), rpc("list_activities", { p_limit: 50 })]);
     statsEl.innerHTML =
+      statTile(stats.users_active_1h ?? "—", dict.statActiveHour) +
       statTile(stats.users_total, dict.statUsers) +
       statTile(stats.users_active_7d, dict.statActive) +
       statTile(stats.activities_total, dict.statActivities) +

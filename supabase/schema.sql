@@ -117,6 +117,7 @@ create or replace function public.get_stats()
 returns json language sql stable security definer set search_path = public as $$
   select json_build_object(
     'users_total', (select count(*) from devices),
+    'users_active_1h', (select count(*) from devices where last_seen > now() - interval '1 hour'),
     'users_active_7d', (select count(*) from devices where last_seen > now() - interval '7 days'),
     'activities_total', (select count(*) from activities),
     'km_total', (select coalesce(sum(dist_km), 0) from activities),
