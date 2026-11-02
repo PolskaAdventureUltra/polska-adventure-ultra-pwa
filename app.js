@@ -145,7 +145,6 @@ const TRANSLATIONS = {
       <details><summary>📋 Historia</summary>
         <ul>
           <li>🗺 — pokazuje trasę treningu na mapie wraz z profilem wysokości (dla treningów zaimportowanych z pliku).</li>
-          <li>„ZRÓB KOPIĘ ZAPASOWĄ” zapisuje wszystkie treningi i trasy do pliku — rób ją regularnie. Na nowym telefonie wczytaj plik przyciskiem „PRZYWRÓĆ Z KOPII”.</li>
           <li>🗑 — usuwa wpis (po potwierdzeniu).</li>
           ${community ? "<li>📤 — udostępnia trening w zakładce Aktywność; 🌍 oznacza, że trening jest udostępniony (kliknij, aby cofnąć udostępnienie).</li>" : ""}
         </ul>
@@ -159,6 +158,15 @@ const TRANSLATIONS = {
           <li>Wyznaczanie trasy po drogach wymaga internetu (darmowy serwis BRouter — wysyłane są wyłącznie współrzędne klikniętych punktów). Bez internetu odcinki będą liniami prostymi.</li>
         </ul>
       </details>
+      <details><summary>⛰ Profil wysokości</summary>
+        <ul>
+          <li>Pod mapą trasy pokazuje się wykres wysokości: na osi poziomej dystans, na pionowej wysokość n.p.m.</li>
+          <li>Pod wykresem: <b>↗ podejścia</b> i <b>↘ zejścia</b> (suma metrów w górę i w dół) oraz najniższy i najwyższy punkt trasy.</li>
+          <li>Gdzie go zobaczysz: w <b>Historii</b> po kliknięciu 🗺 przy zaimportowanym treningu, w zakładce <b>Trasy</b> na bieżąco podczas wyznaczania trasy${community ? " oraz przy podglądzie tras społeczności w zakładce Aktywność" : ""}.</li>
+          <li>Wysokość jest odczytywana z pliku GPX/TCX z zegarka. Treningi zaimportowane przed dodaniem tej funkcji nie mają wysokości — usuń taki wpis i zaimportuj plik ponownie.</li>
+          <li>Trasy wyznaczane linią prostą (kajak / teren) oraz pliki bez danych o wysokości nie mają wykresu.</li>
+        </ul>
+      </details>
       ${community ? `<details><summary>🌍 Aktywność i społeczność</summary>
         <ul>
           <li>Zakładka <b>Aktywność</b> pokazuje statystyki społeczności i treningi udostępnione przez innych użytkowników.</li>
@@ -168,11 +176,15 @@ const TRANSLATIONS = {
           <li>Możliwość usunięcia wpisu jest zapisana na tym telefonie — po wyczyszczeniu danych przeglądarki lub zmianie telefonu usuniesz go już tylko przez kontakt z administratorem.</li>
         </ul>
       </details>` : ""}
-      <details><summary>💾 Twoje dane i kopia zapasowa</summary>
+      <details><summary>💾 Twoje dane, kopia zapasowa i zmiana telefonu</summary>
         <ul>
-          <li>Treningi, trasy i PIN są zapisane <b>tylko na tym urządzeniu, w tej przeglądarce</b>. Każdy telefon ma osobną historię.</li>
-          <li>Wyczyszczenie danych przeglądarki, usunięcie aplikacji lub zmiana telefonu <b>kasuje historię</b> — nie da się jej odzyskać.</li>
-          <li>Rób co jakiś czas kopię przyciskiem „EKSPORTUJ DO CSV” (plik do Excela; bez tras na mapie). Zapisane trasy zachowasz, eksportując je do GPX.</li>
+          <li>Treningi i trasy są zapisane <b>tylko na tym telefonie</b>. Wyczyszczenie danych przeglądarki, odinstalowanie aplikacji albo zgubienie telefonu oznacza ich utratę — dlatego rób kopię regularnie, np. raz w tygodniu.</li>
+          <li>W zakładce <b>Historia</b> kliknij „ZRÓB KOPIĘ ZAPASOWĄ”. Na telefonie otworzy się menu „Udostępnij” — zapisz plik na Dysku Google / iCloud albo wyślij go sobie mailem. Na komputerze plik trafi do folderu Pobrane.</li>
+          <li>Kopia zawiera treningi (z trasami), zaplanowane trasy, motyw, język i nick${community ? " oraz klucze pozwalające usuwać Twoje udostępnienia" : ""}. <b>PIN nie jest zapisywany</b> w kopii.</li>
+          <li><b>Nowy telefon:</b> otwórz aplikację, zaloguj się, w zakładce <b>Historia</b> kliknij „PRZYWRÓĆ Z KOPII” i wybierz plik <code>pau-kopia-….json</code>. Aplikacja pokaże datę kopii i liczbę treningów — po potwierdzeniu dane z kopii <b>zastąpią</b> obecne dane na telefonie.</li>
+          <li>Plik kopii zawiera Twoje trasy (miejsca treningów) — przechowuj go tak jak inne prywatne pliki i nie udostępniaj publicznie.</li>
+          <li>Każdy telefon i każda przeglądarka mają osobną historię.</li>
+          <li>„EKSPORTUJ DO CSV” w zakładce Trening tworzy dodatkowo plik do Excela (bez tras) — przydatny do własnych zestawień, ale nie da się go wczytać z powrotem.</li>
         </ul>
       </details>
       <details><summary>🔒 Bezpieczeństwo</summary>
@@ -381,7 +393,6 @@ const TRANSLATIONS = {
       <details><summary>📋 History</summary>
         <ul>
           <li>🗺 — shows the training route on a map with its elevation profile (for trainings imported from a file).</li>
-          <li>"MAKE A BACKUP" saves all trainings and routes to a file — do it regularly. On a new phone, load the file with "RESTORE FROM BACKUP".</li>
           <li>🗑 — deletes the entry (after confirmation).</li>
           ${community ? "<li>📤 — shares the training in the Activity tab; 🌍 means it is shared (tap to unshare).</li>" : ""}
         </ul>
@@ -395,6 +406,15 @@ const TRANSLATIONS = {
           <li>Road routing needs internet (free BRouter service — only the coordinates of tapped points are sent). Offline, sections are straight lines.</li>
         </ul>
       </details>
+      <details><summary>⛰ Elevation profile</summary>
+        <ul>
+          <li>An elevation chart is shown under the route map: distance on the horizontal axis, altitude above sea level on the vertical one.</li>
+          <li>Below the chart: <b>↗ ascent</b> and <b>↘ descent</b> (total metres up and down) plus the lowest and highest point of the route.</li>
+          <li>Where to find it: in <b>History</b> after tapping 🗺 on an imported training, in the <b>Routes</b> tab live while planning${community ? ", and when previewing community routes in the Activity tab" : ""}.</li>
+          <li>Altitude is read from the GPX/TCX file from your watch. Trainings imported before this feature have no altitude — delete such an entry and import the file again.</li>
+          <li>Straight-line routes (kayak / off-road) and files without altitude data have no chart.</li>
+        </ul>
+      </details>
       ${community ? `<details><summary>🌍 Activity and community</summary>
         <ul>
           <li>The <b>Activity</b> tab shows community statistics and trainings shared by other users.</li>
@@ -404,11 +424,15 @@ const TRANSLATIONS = {
           <li>The ability to delete an entry is stored on this phone — after clearing browser data or changing phones, it can only be removed by contacting the administrator.</li>
         </ul>
       </details>` : ""}
-      <details><summary>💾 Your data and backup</summary>
+      <details><summary>💾 Your data, backup and changing phones</summary>
         <ul>
-          <li>Trainings, routes and the PIN are stored <b>only on this device, in this browser</b>. Each phone has its own history.</li>
-          <li>Clearing browser data, removing the app or changing phones <b>deletes the history</b> — it cannot be recovered.</li>
-          <li>Back up regularly with “EXPORT TO CSV” (an Excel file; without map routes). Keep saved routes by exporting them to GPX.</li>
+          <li>Trainings and routes are stored <b>only on this phone</b>. Clearing browser data, uninstalling the app or losing the phone means losing them — so make a backup regularly, e.g. once a week.</li>
+          <li>In the <b>History</b> tab tap "MAKE A BACKUP". On a phone the Share menu opens — save the file to Google Drive / iCloud or email it to yourself. On a computer the file goes to the Downloads folder.</li>
+          <li>The backup contains trainings (with routes), planned routes, theme, language and nickname${community ? ", plus the keys that let you delete your shared items" : ""}. <b>The PIN is not stored</b> in the backup.</li>
+          <li><b>New phone:</b> open the app, log in, in the <b>History</b> tab tap "RESTORE FROM BACKUP" and choose the <code>pau-kopia-….json</code> file. The app shows the backup date and number of trainings — after confirming, the backup data <b>replaces</b> the current data on the phone.</li>
+          <li>The backup file contains your routes (training locations) — keep it like other private files and do not share it publicly.</li>
+          <li>Each phone and each browser has its own history.</li>
+          <li>“EXPORT TO CSV” in the Training tab additionally creates an Excel file (without routes) — handy for your own analysis, but it cannot be loaded back.</li>
         </ul>
       </details>
       <details><summary>🔒 Security</summary>
