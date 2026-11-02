@@ -8,6 +8,8 @@
 -- * Usunąć aktywność może tylko autor (zna losowy token; w bazie trzymany jest wyłącznie jego hash SHA-256).
 -- * Wydarzenia dodaje i usuwa wyłącznie administrator (klucz organizatora; w bazie tylko jego hash SHA-256).
 --   Klucz dodaje się ręcznie: insert into public.admin_keys (key_hash, label) values ('<hash>', 'opis');
+-- * Kody zaproszenia pozwalają wybranym osobom dołączyć do wyzwania przed oficjalnymi zapisami
+--   (tylko hash SHA-256 kodu): insert into public.challenge_invites (code_hash, label) values ('<hash>', 'imię');
 
 create table if not exists public.devices (
   id uuid primary key,
@@ -78,9 +80,17 @@ alter table public.activities enable row level security;
 alter table public.community_routes enable row level security;
 alter table public.admin_keys enable row level security;
 alter table public.events enable row level security;
+-- Kody zaproszenia do wyzwania (wcześniejsze dołączenie, bez uprawnień organizatora).
+create table if not exists public.challenge_invites (
+  code_hash text primary key,
+  label text,
+  created_at timestamptz not null default now()
+);
+
 alter table public.event_participants enable row level security;
+alter table public.challenge_invites enable row level security;
 revoke all on public.devices, public.activities, public.community_routes,
-  public.admin_keys, public.events, public.event_participants from anon, authenticated;
+  public.admin_keys, public.events, public.event_participants, public.challenge_invites from anon, authenticated;
 
 -- Zliczanie użytkowników (tylko za zgodą użytkownika w aplikacji). Przy okazji kasuje urządzenia
 -- nieaktywne dłużej niż 13 miesięcy (retencja danych).
@@ -281,6 +291,15 @@ begin
   return (select count(*) from event_participants where event_id = p_id);
 end $$;
 
+-- --- Wyzwanie: kody zaproszenia ---
+-- Kod porównywany bez spacji i wielkości liter (aplikacja i tak go normalizuje).
+create or replace function public.check_challenge_invite(p_code text)
+returns boolean language sql stable security definer set search_path = public as $$
+  select coalesce(char_length(p_code), 0) >= 8 and exists (
+    select 1 from challenge_invites
+    where code_hash = encode(sha256(convert_to(upper(replace(trim(p_code), ' ', '')), 'UTF8')), 'hex'));
+$$;
+
 -- Dostęp z aplikacji tylko do powyższych funkcji (bez is_admin).
 revoke execute on function public.ping(uuid), public.forget_device(uuid), public.get_stats(),
   public.share_activity(text, text, date, numeric, numeric, jsonb, text),
@@ -290,7 +309,8 @@ revoke execute on function public.ping(uuid), public.forget_device(uuid), public
   public.is_admin(text), public.admin_check(text),
   public.admin_create_event(text, text, text, timestamptz, text, double precision, double precision, text, text),
   public.admin_delete_event(text, uuid), public.list_events(),
-  public.join_event(uuid, text), public.leave_event(uuid, text) from public;
+  public.join_event(uuid, text), public.leave_event(uuid, text),
+  public.check_challenge_invite(text) from public;
 grant execute on function public.ping(uuid), public.forget_device(uuid), public.get_stats(),
   public.share_activity(text, text, date, numeric, numeric, jsonb, text),
   public.delete_activity(uuid, text), public.list_activities(int),
@@ -299,4 +319,5 @@ grant execute on function public.ping(uuid), public.forget_device(uuid), public.
   public.admin_check(text),
   public.admin_create_event(text, text, text, timestamptz, text, double precision, double precision, text, text),
   public.admin_delete_event(text, uuid), public.list_events(),
-  public.join_event(uuid, text), public.leave_event(uuid, text) to anon;
+  public.join_event(uuid, text), public.leave_event(uuid, text),
+  public.check_challenge_invite(text) to anon;
