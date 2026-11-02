@@ -224,6 +224,7 @@ const TRANSLATIONS = {
     recommendTitle: "📱 Poleć aplikację",
     recommendText: "Pokaż ten kod znajomemu — zeskanuje go aparatem telefonu i od razu otworzy aplikację.",
     shareAppBtn: "WYŚLIJ LINK DO APLIKACJI",
+    shareQrBtn: "UDOSTĘPNIJ KOD QR",
     shareAppText: "Polska Adventure Ultra — dziennik treningów biegowych, rowerowych i kajakowych:",
     appLinkCopied: "Link do aplikacji skopiowany do schowka.",
     helpHtml: (community, contact) => `
@@ -589,6 +590,7 @@ const TRANSLATIONS = {
     recommendTitle: "📱 Recommend the app",
     recommendText: "Show this code to a friend — they scan it with the phone camera and the app opens right away.",
     shareAppBtn: "SEND A LINK TO THE APP",
+    shareQrBtn: "SHARE THE QR CODE",
     shareAppText: "Polska Adventure Ultra — a training log for running, cycling and kayaking:",
     appLinkCopied: "App link copied to the clipboard.",
     helpHtml: (community, contact) => `
@@ -2235,6 +2237,33 @@ async function shareAppLink() {
   }
 }
 
+// Obrazek z kodem QR przez systemowe "Udostępnij" (telefon i komputer); pobranie PNG tylko gdy przeglądarka nie umie udostępniać plików.
+async function shareAppQr() {
+  let file;
+  try {
+    const res = await fetch("qr/qr-aplikacja.png");
+    if (!res.ok) throw new Error(res.status);
+    file = new File([await res.blob()], "polska-adventure-ultra-qr.png", { type: "image/png" });
+  } catch (e) {
+    alert(t().communityError);
+    return;
+  }
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: "Polska Adventure Ultra", text: `${t().shareAppText} ${APP_URL}` });
+      return;
+    } catch (e) {
+      if (e.name === "AbortError") return;
+    }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = file.name;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function showPrivacy() {
   refreshPrivacyText();
   document.getElementById("statsConsentToggle").checked = localStorage.getItem(STATS_CONSENT_KEY) === "yes";
@@ -3110,6 +3139,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("helpBtn").addEventListener("click", showHelp);
   document.getElementById("helpPrivacyBtn").addEventListener("click", showPrivacy);
   document.getElementById("shareAppBtn").addEventListener("click", shareAppLink);
+  document.getElementById("shareQrBtn").addEventListener("click", shareAppQr);
   document.getElementById("helpCloseBtn").addEventListener("click", () => {
     document.getElementById("helpCard").style.display = "none";
   });
