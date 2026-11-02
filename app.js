@@ -113,6 +113,8 @@ const TRANSLATIONS = {
     challengeJoinText: "4000 km dookoła Polski — biegiem, rowerem i kajakiem. Start i meta w Lublinie. Uczestnicy widzą tu swój postęp: kilometry, miejsce na trasie i prognozę mety.",
     chSignupSoon: "ZAPISY OD WRZEŚNIA 2027",
     chDemoSub: "z 4000 km",
+    chPartners: "PARTNERZY PROJEKTU",
+    chPartnerCta: "Miejsce dla Twojej marki — zostań partnerem",
     chParticipantsOnly: "Postęp na żywo widzą tylko osoby biorące udział w wyzwaniu.",
     chSignupSoonHint: "Do tego czasu możesz śledzić wyzwanie i dołączać do wspólnych treningów.",
     challengeJoinBtn: "DOŁĄCZ DO WYZWANIA",
@@ -476,6 +478,8 @@ const TRANSLATIONS = {
     challengeJoinText: "4000 km around Poland — running, cycling and kayaking. Start and finish in Lublin. Participants see their progress here: kilometres, their place on the route and a finish forecast.",
     chSignupSoon: "SIGN-UPS OPEN IN SEPTEMBER 2027",
     chDemoSub: "of 4000 km",
+    chPartners: "PROJECT PARTNERS",
+    chPartnerCta: "A place for your brand — become a partner",
     chParticipantsOnly: "Live progress is visible only to challenge participants.",
     chSignupSoonHint: "Until then you can follow the challenge and join group trainings.",
     challengeJoinBtn: "JOIN THE CHALLENGE",
@@ -1200,6 +1204,17 @@ const DISC_ICONS = {
   Rower: '<circle cx="5.5" cy="16.5" r="3.5"></circle><circle cx="18.5" cy="16.5" r="3.5"></circle><path d="M5.5 16.5L9 9h6l3.5 7.5"></path><path d="M9 9l3.5 7.5H5.5"></path><path d="M13.5 6h2.5"></path>',
   Kajak: '<path d="M2 15c5 3.5 15 3.5 20 0"></path><path d="M5 5l14 13"></path><path d="M3.5 3.5l2.5 2.5"></path><path d="M18 17l2.5 2.5"></path>',
 };
+// Partnerzy jak na polskaadventureultra.pl (#partners); logotypy lokalnie w partners/ (działają offline).
+const CHALLENGE_PARTNERS = [
+  { name: "Cedrus", logo: "partners/cedrus.png" },
+  { name: "TVP3 Lublin", logo: "partners/tvplublin.png" },
+  { name: "Agnieszka Danieluk", logo: "partners/agnieszkadanieluk.png" },
+  { name: "4evolve", logo: "partners/4evolve.png" },
+  { name: "Gospodarstwo rolne Szymon Gorzałczany", logo: "partners/szymong.png" },
+  { name: "Stokrotka", logo: "partners/stokrotka.png" },
+  { name: "MOSiR Lublin", logo: "partners/mosir.png" },
+];
+const PARTNERS_PAGE_URL = "https://polskaadventureultra.pl/#partners";
 let challengeDemoFrame = null; // animacja licznika 1-100% w widoku obserwatora
 
 function discIcon(disc, size) {
@@ -1291,6 +1306,13 @@ function challengeHeadHtml() {
     `<span class="ch-kicker">${dict.chMeta}</span><h2 class="ch-h1">${dict.chH1}</h2>`;
 }
 
+function challengePartnersHtml() {
+  const dict = t();
+  return `<div class="ch-partners"><span class="ch-kicker">${dict.chPartners}</span><div class="ch-partner-grid">` +
+    CHALLENGE_PARTNERS.map((p) => `<div class="ch-partner"><img src="${p.logo}" alt="${escapeXml(p.name)}" loading="lazy"></div>`).join("") +
+    `</div><a class="ch-partner-cta" href="${PARTNERS_PAGE_URL}" target="_blank" rel="noopener">${dict.chPartnerCta}</a></div>`;
+}
+
 function challengeWeekHtml(st) {
   const dict = t();
   const goal = st.weekGoal;
@@ -1313,7 +1335,8 @@ function challengeObserverHtml() {
     (canJoinChallenge()
       ? `<button class="ch-cta" id="challengeJoinBtn">${dict.challengeJoinBtn}</button>`
       : `<button class="ch-cta" id="challengeJoinBtn" disabled>${dict.chSignupSoon}</button>` +
-        `<p class="ch-small" style="text-align:center;margin:8px 0 0">${dict.chSignupSoonHint}</p>`);
+        `<p class="ch-small" style="text-align:center;margin:8px 0 0">${dict.chSignupSoonHint}</p>`) +
+    challengePartnersHtml();
 }
 
 function challengeParticipantHtml() {
@@ -1327,7 +1350,7 @@ function challengeParticipantHtml() {
     `<div class="ch-stats"><div><span class="ch-stat-value">${st.day}</span><span class="ch-stat-label">${dict.chStatDays}</span></div>` +
     `<div><span class="ch-stat-value">${st.perDay.toFixed(1)}</span><span class="ch-stat-label">${dict.chStatAvg}</span></div>` +
     `<div><span class="ch-stat-value">${escapeXml(eta)}</span><span class="ch-stat-label">${dict.chStatEta}</span></div></div>` +
-    challengeWeekHtml(st);
+    challengeWeekHtml(st) + challengePartnersHtml();
 }
 
 function setChallengeDemo(el, fraction) {
