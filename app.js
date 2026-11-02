@@ -2237,16 +2237,31 @@ async function shareAppLink() {
   }
 }
 
-// Obrazek z kodem QR: na telefonie systemowe "Udostępnij", na komputerze pobranie pliku PNG.
+// Obrazek z kodem QR przez systemowe "Udostępnij" (telefon i komputer); pobranie PNG tylko gdy przeglądarka nie umie udostępniać plików.
 async function shareAppQr() {
+  let file;
   try {
     const res = await fetch("qr/qr-aplikacja.png");
     if (!res.ok) throw new Error(res.status);
-    const file = new File([await res.blob()], "polska-adventure-ultra-qr.png", { type: "image/png" });
-    await saveFile(file, "Polska Adventure Ultra");
+    file = new File([await res.blob()], "polska-adventure-ultra-qr.png", { type: "image/png" });
   } catch (e) {
     alert(t().communityError);
+    return;
   }
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: "Polska Adventure Ultra", text: `${t().shareAppText} ${APP_URL}` });
+      return;
+    } catch (e) {
+      if (e.name === "AbortError") return;
+    }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = file.name;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function showPrivacy() {
