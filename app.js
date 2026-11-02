@@ -104,6 +104,11 @@ const TRANSLATIONS = {
     helpBtn: "Pomoc",
     helpTitle: "Pomoc i instrukcja",
     helpPrivacyBtn: "PEŁNA INFORMACJA O PRYWATNOŚCI (RODO)",
+    recommendTitle: "📱 Poleć aplikację",
+    recommendText: "Pokaż ten kod znajomemu — zeskanuje go aparatem telefonu i od razu otworzy aplikację.",
+    shareAppBtn: "WYŚLIJ LINK DO APLIKACJI",
+    shareAppText: "Polska Adventure Ultra — dziennik treningów biegowych, rowerowych i kajakowych:",
+    appLinkCopied: "Link do aplikacji skopiowany do schowka.",
     helpHtml: (community, contact) => `
       ${contact ? `<p class="contact-box">✉️ Kontakt: <a href="mailto:${contact}">${contact}</a> — pytania, zgłoszenia błędów, prośby o usunięcie danych, zgłaszanie niestosownych treści.</p>` : ""}
       <details open><summary>🚀 Pierwsze kroki</summary>
@@ -324,6 +329,11 @@ const TRANSLATIONS = {
     helpBtn: "Help",
     helpTitle: "Help and guide",
     helpPrivacyBtn: "FULL PRIVACY INFORMATION (GDPR)",
+    recommendTitle: "📱 Recommend the app",
+    recommendText: "Show this code to a friend — they scan it with the phone camera and the app opens right away.",
+    shareAppBtn: "SEND A LINK TO THE APP",
+    shareAppText: "Polska Adventure Ultra — a training log for running, cycling and kayaking:",
+    appLinkCopied: "App link copied to the clipboard.",
     helpHtml: (community, contact) => `
       ${contact ? `<p class="contact-box">✉️ Contact: <a href="mailto:${contact}">${contact}</a> — questions, bug reports, data deletion requests, reporting inappropriate content.</p>` : ""}
       <details open><summary>🚀 Getting started</summary>
@@ -1236,6 +1246,25 @@ function showHelp() {
   card.scrollIntoView({ behavior: "smooth" });
 }
 
+const APP_URL = "https://polskaadventureultra.github.io/polska-adventure-ultra-pwa/";
+
+async function shareAppLink() {
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: "Polska Adventure Ultra", text: t().shareAppText, url: APP_URL });
+      return;
+    } catch (e) {
+      if (e.name === "AbortError") return;
+    }
+  }
+  try {
+    await navigator.clipboard.writeText(APP_URL);
+    alert(t().appLinkCopied);
+  } catch (e) {
+    prompt(t().shareAppBtn, APP_URL);
+  }
+}
+
 function showPrivacy() {
   refreshPrivacyText();
   document.getElementById("statsConsentToggle").checked = localStorage.getItem(STATS_CONSENT_KEY) === "yes";
@@ -1858,6 +1887,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("privacyBtn").addEventListener("click", showPrivacy);
   document.getElementById("helpBtn").addEventListener("click", showHelp);
   document.getElementById("helpPrivacyBtn").addEventListener("click", showPrivacy);
+  document.getElementById("shareAppBtn").addEventListener("click", shareAppLink);
   document.getElementById("helpCloseBtn").addEventListener("click", () => {
     document.getElementById("helpCard").style.display = "none";
   });
