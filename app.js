@@ -104,6 +104,16 @@ const TRANSLATIONS = {
     helpBtn: "Pomoc",
     helpTitle: "Pomoc i instrukcja",
     helpPrivacyBtn: "PEŁNA INFORMACJA O PRYWATNOŚCI (RODO)",
+    elevationTitle: "Profil wysokości",
+    elevationStats: (up, down, min, max) => `↗ podejścia ${up} m · ↘ zejścia ${down} m · min ${min} m · max ${max} m n.p.m.`,
+    backupTitle: "Kopia zapasowa",
+    backupHint: "Treningi i trasy są zapisane tylko na tym telefonie. Zrób kopię i zachowaj plik (np. na Dysku Google lub wyślij sobie mailem) — na nowym telefonie wczytasz go przyciskiem „Przywróć”.",
+    backupBtn: "ZRÓB KOPIĘ ZAPASOWĄ",
+    restoreBtn: "PRZYWRÓĆ Z KOPII",
+    backupInvalid: "To nie jest poprawny plik kopii zapasowej Polska Adventure Ultra.",
+    confirmRestore: (date, trainings, routes) =>
+      `Przywrócić kopię z ${date}?\n\nZawiera: ${trainings} treningów i ${routes} tras.\n\nUWAGA: obecne treningi i trasy na tym telefonie zostaną zastąpione danymi z kopii.`,
+    restoreDone: "Kopia przywrócona.",
     recommendTitle: "📱 Poleć aplikację",
     recommendText: "Pokaż ten kod znajomemu — zeskanuje go aparatem telefonu i od razu otworzy aplikację.",
     shareAppBtn: "WYŚLIJ LINK DO APLIKACJI",
@@ -134,7 +144,7 @@ const TRANSLATIONS = {
       </details>
       <details><summary>📋 Historia</summary>
         <ul>
-          <li>🗺 — pokazuje trasę treningu na mapie (dla treningów zaimportowanych z pliku).</li>
+          <li>🗺 — pokazuje trasę treningu na mapie wraz z profilem wysokości (dla treningów zaimportowanych z pliku).</li>
           <li>🗑 — usuwa wpis (po potwierdzeniu).</li>
           ${community ? "<li>📤 — udostępnia trening w zakładce Aktywność; 🌍 oznacza, że trening jest udostępniony (kliknij, aby cofnąć udostępnienie).</li>" : ""}
         </ul>
@@ -148,6 +158,15 @@ const TRANSLATIONS = {
           <li>Wyznaczanie trasy po drogach wymaga internetu (darmowy serwis BRouter — wysyłane są wyłącznie współrzędne klikniętych punktów). Bez internetu odcinki będą liniami prostymi.</li>
         </ul>
       </details>
+      <details><summary>⛰ Profil wysokości</summary>
+        <ul>
+          <li>Pod mapą trasy pokazuje się wykres wysokości: na osi poziomej dystans, na pionowej wysokość n.p.m.</li>
+          <li>Pod wykresem: <b>↗ podejścia</b> i <b>↘ zejścia</b> (suma metrów w górę i w dół) oraz najniższy i najwyższy punkt trasy.</li>
+          <li>Gdzie go zobaczysz: w <b>Historii</b> po kliknięciu 🗺 przy zaimportowanym treningu, w zakładce <b>Trasy</b> na bieżąco podczas wyznaczania trasy${community ? " oraz przy podglądzie tras społeczności w zakładce Aktywność" : ""}.</li>
+          <li>Wysokość jest odczytywana z pliku GPX/TCX z zegarka. Treningi zaimportowane przed dodaniem tej funkcji nie mają wysokości — usuń taki wpis i zaimportuj plik ponownie.</li>
+          <li>Trasy wyznaczane linią prostą (kajak / teren) oraz pliki bez danych o wysokości nie mają wykresu.</li>
+        </ul>
+      </details>
       ${community ? `<details><summary>🌍 Aktywność i społeczność</summary>
         <ul>
           <li>Zakładka <b>Aktywność</b> pokazuje statystyki społeczności i treningi udostępnione przez innych użytkowników.</li>
@@ -157,11 +176,15 @@ const TRANSLATIONS = {
           <li>Możliwość usunięcia wpisu jest zapisana na tym telefonie — po wyczyszczeniu danych przeglądarki lub zmianie telefonu usuniesz go już tylko przez kontakt z administratorem.</li>
         </ul>
       </details>` : ""}
-      <details><summary>💾 Twoje dane i kopia zapasowa</summary>
+      <details><summary>💾 Twoje dane, kopia zapasowa i zmiana telefonu</summary>
         <ul>
-          <li>Treningi, trasy i PIN są zapisane <b>tylko na tym urządzeniu, w tej przeglądarce</b>. Każdy telefon ma osobną historię.</li>
-          <li>Wyczyszczenie danych przeglądarki, usunięcie aplikacji lub zmiana telefonu <b>kasuje historię</b> — nie da się jej odzyskać.</li>
-          <li>Rób co jakiś czas kopię przyciskiem „EKSPORTUJ DO CSV” (plik do Excela; bez tras na mapie). Zapisane trasy zachowasz, eksportując je do GPX.</li>
+          <li>Treningi i trasy są zapisane <b>tylko na tym telefonie</b>. Wyczyszczenie danych przeglądarki, odinstalowanie aplikacji albo zgubienie telefonu oznacza ich utratę — dlatego rób kopię regularnie, np. raz w tygodniu.</li>
+          <li>W zakładce <b>Historia</b> kliknij „ZRÓB KOPIĘ ZAPASOWĄ”. Na telefonie otworzy się menu „Udostępnij” — zapisz plik na Dysku Google / iCloud albo wyślij go sobie mailem. Na komputerze plik trafi do folderu Pobrane.</li>
+          <li>Kopia zawiera treningi (z trasami), zaplanowane trasy, motyw, język i nick${community ? " oraz klucze pozwalające usuwać Twoje udostępnienia" : ""}. <b>PIN nie jest zapisywany</b> w kopii.</li>
+          <li><b>Nowy telefon:</b> otwórz aplikację, zaloguj się, w zakładce <b>Historia</b> kliknij „PRZYWRÓĆ Z KOPII” i wybierz plik <code>pau-kopia-….json</code>. Aplikacja pokaże datę kopii i liczbę treningów — po potwierdzeniu dane z kopii <b>zastąpią</b> obecne dane na telefonie.</li>
+          <li>Plik kopii zawiera Twoje trasy (miejsca treningów) — przechowuj go tak jak inne prywatne pliki i nie udostępniaj publicznie.</li>
+          <li>Każdy telefon i każda przeglądarka mają osobną historię.</li>
+          <li>„EKSPORTUJ DO CSV” w zakładce Trening tworzy dodatkowo plik do Excela (bez tras) — przydatny do własnych zestawień, ale nie da się go wczytać z powrotem.</li>
         </ul>
       </details>
       <details><summary>🔒 Bezpieczeństwo</summary>
@@ -329,6 +352,16 @@ const TRANSLATIONS = {
     helpBtn: "Help",
     helpTitle: "Help and guide",
     helpPrivacyBtn: "FULL PRIVACY INFORMATION (GDPR)",
+    elevationTitle: "Elevation profile",
+    elevationStats: (up, down, min, max) => `↗ ascent ${up} m · ↘ descent ${down} m · min ${min} m · max ${max} m a.s.l.`,
+    backupTitle: "Backup",
+    backupHint: "Trainings and routes are stored only on this phone. Make a backup and keep the file (e.g. on Google Drive or email it to yourself) — on a new phone, load it with the \"Restore\" button.",
+    backupBtn: "MAKE A BACKUP",
+    restoreBtn: "RESTORE FROM BACKUP",
+    backupInvalid: "This is not a valid Polska Adventure Ultra backup file.",
+    confirmRestore: (date, trainings, routes) =>
+      `Restore the backup from ${date}?\n\nIt contains: ${trainings} trainings and ${routes} routes.\n\nWARNING: the current trainings and routes on this phone will be replaced with the backup data.`,
+    restoreDone: "Backup restored.",
     recommendTitle: "📱 Recommend the app",
     recommendText: "Show this code to a friend — they scan it with the phone camera and the app opens right away.",
     shareAppBtn: "SEND A LINK TO THE APP",
@@ -359,7 +392,7 @@ const TRANSLATIONS = {
       </details>
       <details><summary>📋 History</summary>
         <ul>
-          <li>🗺 — shows the training route on a map (for trainings imported from a file).</li>
+          <li>🗺 — shows the training route on a map with its elevation profile (for trainings imported from a file).</li>
           <li>🗑 — deletes the entry (after confirmation).</li>
           ${community ? "<li>📤 — shares the training in the Activity tab; 🌍 means it is shared (tap to unshare).</li>" : ""}
         </ul>
@@ -373,6 +406,15 @@ const TRANSLATIONS = {
           <li>Road routing needs internet (free BRouter service — only the coordinates of tapped points are sent). Offline, sections are straight lines.</li>
         </ul>
       </details>
+      <details><summary>⛰ Elevation profile</summary>
+        <ul>
+          <li>An elevation chart is shown under the route map: distance on the horizontal axis, altitude above sea level on the vertical one.</li>
+          <li>Below the chart: <b>↗ ascent</b> and <b>↘ descent</b> (total metres up and down) plus the lowest and highest point of the route.</li>
+          <li>Where to find it: in <b>History</b> after tapping 🗺 on an imported training, in the <b>Routes</b> tab live while planning${community ? ", and when previewing community routes in the Activity tab" : ""}.</li>
+          <li>Altitude is read from the GPX/TCX file from your watch. Trainings imported before this feature have no altitude — delete such an entry and import the file again.</li>
+          <li>Straight-line routes (kayak / off-road) and files without altitude data have no chart.</li>
+        </ul>
+      </details>
       ${community ? `<details><summary>🌍 Activity and community</summary>
         <ul>
           <li>The <b>Activity</b> tab shows community statistics and trainings shared by other users.</li>
@@ -382,11 +424,15 @@ const TRANSLATIONS = {
           <li>The ability to delete an entry is stored on this phone — after clearing browser data or changing phones, it can only be removed by contacting the administrator.</li>
         </ul>
       </details>` : ""}
-      <details><summary>💾 Your data and backup</summary>
+      <details><summary>💾 Your data, backup and changing phones</summary>
         <ul>
-          <li>Trainings, routes and the PIN are stored <b>only on this device, in this browser</b>. Each phone has its own history.</li>
-          <li>Clearing browser data, removing the app or changing phones <b>deletes the history</b> — it cannot be recovered.</li>
-          <li>Back up regularly with “EXPORT TO CSV” (an Excel file; without map routes). Keep saved routes by exporting them to GPX.</li>
+          <li>Trainings and routes are stored <b>only on this phone</b>. Clearing browser data, uninstalling the app or losing the phone means losing them — so make a backup regularly, e.g. once a week.</li>
+          <li>In the <b>History</b> tab tap "MAKE A BACKUP". On a phone the Share menu opens — save the file to Google Drive / iCloud or email it to yourself. On a computer the file goes to the Downloads folder.</li>
+          <li>The backup contains trainings (with routes), planned routes, theme, language and nickname${community ? ", plus the keys that let you delete your shared items" : ""}. <b>The PIN is not stored</b> in the backup.</li>
+          <li><b>New phone:</b> open the app, log in, in the <b>History</b> tab tap "RESTORE FROM BACKUP" and choose the <code>pau-kopia-….json</code> file. The app shows the backup date and number of trainings — after confirming, the backup data <b>replaces</b> the current data on the phone.</li>
+          <li>The backup file contains your routes (training locations) — keep it like other private files and do not share it publicly.</li>
+          <li>Each phone and each browser has its own history.</li>
+          <li>“EXPORT TO CSV” in the Training tab additionally creates an Excel file (without routes) — handy for your own analysis, but it cannot be loaded back.</li>
         </ul>
       </details>
       <details><summary>🔒 Security</summary>
@@ -503,6 +549,7 @@ function toggleLanguage() {
   refreshPlanStats();
   refreshPrivacyText();
   refreshHelpText();
+  redrawElevations();
   if (document.getElementById("tabActivity").classList.contains("active")) refreshActivityTab();
 }
 
@@ -549,6 +596,7 @@ function toggleTheme() {
   const current = localStorage.getItem(THEME_KEY) || "light";
   localStorage.setItem(THEME_KEY, current === "light" ? "dark" : "light");
   applyTheme();
+  redrawElevations();
 }
 
 // --- Logowanie PIN-em ---
@@ -786,6 +834,157 @@ function exportCsv() {
   URL.revokeObjectURL(url);
 }
 
+// --- Kopia zapasowa (plik JSON z danymi z localStorage) ---
+// PIN, identyfikator urządzenia i zgoda na statystyki zostają celowo poza kopią.
+const BACKUP_FORMAT = "polska-adventure-ultra-backup";
+const BACKUP_KEYS = [HISTORY_KEY, PLANNED_ROUTES_KEY, THEME_KEY, LANG_KEY, NICK_KEY, SHARE_TOKENS_KEY, ROUTE_SHARE_TOKENS_KEY];
+const BACKUP_JSON_KEYS = { [HISTORY_KEY]: "array", [PLANNED_ROUTES_KEY]: "array", [SHARE_TOKENS_KEY]: "object", [ROUTE_SHARE_TOKENS_KEY]: "object" };
+
+async function createBackup() {
+  const data = {};
+  BACKUP_KEYS.forEach((key) => {
+    const value = localStorage.getItem(key);
+    if (value !== null) data[key] = value;
+  });
+  const backup = { format: BACKUP_FORMAT, version: 1, created: new Date().toISOString(), data };
+  const fileName = `pau-kopia-${backup.created.slice(0, 10)}.json`;
+  await saveFile(new File([JSON.stringify(backup)], fileName, { type: "application/json" }), fileName);
+}
+
+// Zwraca dane kopii albo null, jeśli plik nie jest poprawną kopią.
+function parseBackup(text) {
+  let backup;
+  try {
+    backup = JSON.parse(text);
+  } catch (e) {
+    return null;
+  }
+  if (!backup || backup.format !== BACKUP_FORMAT || !backup.data || typeof backup.data !== "object") return null;
+  for (const [key, value] of Object.entries(backup.data)) {
+    if (!BACKUP_KEYS.includes(key) || typeof value !== "string") return null;
+    const kind = BACKUP_JSON_KEYS[key];
+    if (!kind) continue;
+    let parsed;
+    try {
+      parsed = JSON.parse(value);
+    } catch (e) {
+      return null;
+    }
+    const ok = kind === "array" ? Array.isArray(parsed) : parsed !== null && typeof parsed === "object" && !Array.isArray(parsed);
+    if (!ok) return null;
+  }
+  return backup;
+}
+
+function restoreBackupFile(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    const backup = parseBackup(reader.result);
+    if (!backup) {
+      alert(t().backupInvalid);
+      return;
+    }
+    const count = (key) => (backup.data[key] ? JSON.parse(backup.data[key]).length : 0);
+    const created = String(backup.created || "").slice(0, 10) || "?";
+    if (!confirm(t().confirmRestore(created, count(HISTORY_KEY), count(PLANNED_ROUTES_KEY)))) return;
+    BACKUP_KEYS.forEach((key) => {
+      if (key in backup.data) localStorage.setItem(key, backup.data[key]);
+      else localStorage.removeItem(key);
+    });
+    alert(t().restoreDone);
+    // Sesja (sessionStorage) zostaje, więc po przeładowaniu nie trzeba ponownie podawać PIN-u.
+    location.reload();
+  };
+  reader.readAsText(file);
+}
+
+// --- Profil wysokości trasy (canvas pod mapą) ---
+const elevationTracks = {}; // prefix -> ostatnio pokazana trasa (do przerysowania po zmianie motywu/języka)
+
+function showElevation(prefix, track) {
+  const box = document.getElementById(`${prefix}ElevationBox`);
+  if (!box) return;
+  const withEle = (track || []).filter((p) => Number.isFinite(p.ele));
+  if (withEle.length < 2) {
+    box.style.display = "none";
+    delete elevationTracks[prefix];
+    return;
+  }
+  elevationTracks[prefix] = withEle;
+  box.style.display = "block";
+  requestAnimationFrame(() => drawElevationProfile(prefix, withEle));
+}
+
+function redrawElevations() {
+  Object.entries(elevationTracks).forEach(([prefix, track]) => drawElevationProfile(prefix, track));
+}
+
+function drawElevationProfile(prefix, track) {
+  const dist = [0];
+  for (let i = 1; i < track.length; i++) {
+    dist.push(dist[i - 1] + haversineKm(track[i - 1].lat, track[i - 1].lon, track[i].lat, track[i].lon));
+  }
+  const totalKm = dist[dist.length - 1] || 1;
+  const eles = track.map((p) => p.ele);
+  const minEle = Math.min(...eles), maxEle = Math.max(...eles);
+  let down = 0;
+  for (let i = 1; i < track.length; i++) {
+    if (track[i].ele < track[i - 1].ele) down += track[i - 1].ele - track[i].ele;
+  }
+  document.getElementById(`${prefix}ElevationStats`).textContent =
+    t().elevationStats(trackAscentM(track), Math.round(down), Math.round(minEle), Math.round(maxEle));
+
+  const canvas = document.getElementById(`${prefix}ElevationCanvas`);
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = canvas.clientWidth || 600, cssH = canvas.clientHeight || 160;
+  canvas.width = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, cssW, cssH);
+
+  // Minimalny zakres 20 m, żeby płaska trasa nie wyglądała jak góry.
+  const range = Math.max(maxEle - minEle, 20);
+  const bottom = minEle - (range - (maxEle - minEle)) / 2;
+
+  const style = getComputedStyle(document.body);
+  const accent = style.getPropertyValue("--accent").trim() || "#2E7D32";
+  const subtle = style.getPropertyValue("--subtle-fg").trim() || "#555";
+  const padL = 44, padR = 8, padT = 8, padB = 20;
+  const plotW = cssW - padL - padR, plotH = cssH - padT - padB;
+  const x = (km) => padL + (km / totalKm) * plotW;
+  const y = (ele) => padT + plotH - ((ele - bottom) / range) * plotH;
+
+  ctx.beginPath();
+  ctx.moveTo(x(0), padT + plotH);
+  track.forEach((p, i) => ctx.lineTo(x(dist[i]), y(p.ele)));
+  ctx.lineTo(x(totalKm), padT + plotH);
+  ctx.closePath();
+  ctx.globalAlpha = 0.25;
+  ctx.fillStyle = accent;
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  ctx.beginPath();
+  track.forEach((p, i) => (i === 0 ? ctx.moveTo(x(dist[i]), y(p.ele)) : ctx.lineTo(x(dist[i]), y(p.ele))));
+  ctx.strokeStyle = accent;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.fillStyle = subtle;
+  ctx.font = "11px sans-serif";
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+  ctx.fillText(`${Math.round(maxEle)} m`, padL - 4, y(maxEle));
+  ctx.fillText(`${Math.round(minEle)} m`, padL - 4, y(minEle));
+  ctx.textBaseline = "top";
+  ctx.textAlign = "left";
+  ctx.fillText("0 km", padL, padT + plotH + 4);
+  ctx.textAlign = "right";
+  ctx.fillText(`${totalKm.toFixed(1)} km`, padL + plotW, padT + plotH + 4);
+}
+
 // --- Trasa (z importu GPX/TCX) ---
 let pendingRoute = null;
 let routeMapInstance = null;
@@ -817,6 +1016,7 @@ function drawRoute(points) {
     routeMapInstance.invalidateSize();
     routeMapInstance.fitBounds(polyline.getBounds(), { padding: [20, 20] });
   });
+  showElevation("route", points);
 
   card.scrollIntoView({ behavior: "smooth" });
 }
@@ -923,6 +1123,7 @@ function redrawPlan() {
     L.circleMarker([p.lat, p.lon], { radius: 6, color, fillColor: color, fillOpacity: 1 }).addTo(planLayerGroup);
   });
   refreshPlanStats();
+  showElevation("plan", track);
 }
 
 async function routeSegment(from, to, mode) {
@@ -1063,13 +1264,15 @@ ${pts}
 
 async function downloadGpx(name, track) {
   const fileName = (name.replace(/[^\p{L}\p{N}_-]+/gu, "_") || "trasa") + ".gpx";
-  const gpx = buildGpx(name, track);
   // Na telefonie systemowe "Udostępnij" pozwala od razu otworzyć plik np. w Suunto app.
-  const file = new File([gpx], fileName, { type: "application/gpx+xml" });
+  await saveFile(new File([buildGpx(name, track)], fileName, { type: "application/gpx+xml" }), name);
+}
+
+async function saveFile(file, title) {
   const isTouch = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
   if (isTouch && navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
-      await navigator.share({ files: [file], title: name });
+      await navigator.share({ files: [file], title });
       return;
     } catch (e) {
       if (e.name === "AbortError") return;
@@ -1078,7 +1281,7 @@ async function downloadGpx(name, track) {
   const url = URL.createObjectURL(file);
   const a = document.createElement("a");
   a.href = url;
-  a.download = fileName;
+  a.download = file.name;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -1480,7 +1683,7 @@ function showActivityRoute(index) {
   drawOnActivityMap(`${a.nick} — ${Number(a.dist_km).toFixed(2)} km`, latlngs);
 }
 
-function drawOnActivityMap(title, latlngs) {
+function drawOnActivityMap(title, latlngs, track) {
   const card = document.getElementById("activityRouteCard");
   card.style.display = "block";
   document.getElementById("activityRouteTitle").textContent = title;
@@ -1498,6 +1701,7 @@ function drawOnActivityMap(title, latlngs) {
     activityMapInstance.invalidateSize();
     activityMapInstance.fitBounds(polyline.getBounds(), { padding: [20, 20] });
   });
+  showElevation("activity", track);
   card.scrollIntoView({ behavior: "smooth" });
 }
 
@@ -1688,7 +1892,7 @@ async function fetchCommunityTrack(r) {
 
 async function showCommunityRoute(r) {
   const track = await fetchCommunityTrack(r);
-  if (track) drawOnActivityMap(`${r.name} — ${r.nick}`, track.map((p) => [p.lat, p.lon]));
+  if (track) drawOnActivityMap(`${r.name} — ${r.nick}`, track.map((p) => [p.lat, p.lon]), track);
 }
 
 async function downloadCommunityRoute(r) {
@@ -1744,7 +1948,9 @@ function parseGpx(xml) {
     const pt = trkpts[i];
     const lat = parseFloat(pt.getAttribute("lat"));
     const lon = parseFloat(pt.getAttribute("lon"));
-    route.push({ lat, lon });
+    const eleEl = pt.getElementsByTagName("ele")[0];
+    const ele = eleEl ? parseFloat(eleEl.textContent) : NaN;
+    route.push(Number.isFinite(ele) ? { lat, lon, ele } : { lat, lon });
     if (i > 0) {
       const prevLat = parseFloat(trkpts[i - 1].getAttribute("lat"));
       const prevLon = parseFloat(trkpts[i - 1].getAttribute("lon"));
@@ -1803,7 +2009,12 @@ function parseTcx(xml) {
       if (!posEl) return;
       const latEl = posEl.getElementsByTagName("LatitudeDegrees")[0];
       const lonEl = posEl.getElementsByTagName("LongitudeDegrees")[0];
-      if (latEl && lonEl) route.push({ lat: parseFloat(latEl.textContent), lon: parseFloat(lonEl.textContent) });
+      if (!latEl || !lonEl) return;
+      const point = { lat: parseFloat(latEl.textContent), lon: parseFloat(lonEl.textContent) };
+      const altEl = tp.getElementsByTagName("AltitudeMeters")[0];
+      const ele = altEl ? parseFloat(altEl.textContent) : NaN;
+      if (Number.isFinite(ele)) point.ele = ele;
+      route.push(point);
     });
   });
 
@@ -1905,6 +2116,15 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("paceBtn").addEventListener("click", calcPace);
   document.getElementById("chartBtn").addEventListener("click", showChart);
   document.getElementById("exportBtn").addEventListener("click", exportCsv);
+  document.getElementById("backupBtn").addEventListener("click", createBackup);
+  document.getElementById("restoreBtn").addEventListener("click", () => {
+    document.getElementById("restoreFile").click();
+  });
+  document.getElementById("restoreFile").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) restoreBackupFile(file);
+    e.target.value = "";
+  });
   document.getElementById("importBtn").addEventListener("click", () => {
     document.getElementById("importFile").click();
   });

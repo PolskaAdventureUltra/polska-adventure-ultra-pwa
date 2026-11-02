@@ -98,9 +98,22 @@
       <div id="historyList"></div>
     </div>
 
+    <div class="card">
+      <h2 data-i18n="backupTitle">Kopia zapasowa</h2>
+      <p class="hint-text" data-i18n="backupHint">Treningi i trasy są zapisane tylko na tym telefonie. Zrób kopię i zachowaj plik (np. na Dysku Google lub wyślij sobie mailem) — na nowym telefonie wczytasz go przyciskiem „Przywróć”.</p>
+      <button class="primary" id="backupBtn" data-i18n="backupBtn">ZRÓB KOPIĘ ZAPASOWĄ</button>
+      <button id="restoreBtn" data-i18n="restoreBtn">PRZYWRÓĆ Z KOPII</button>
+      <input type="file" id="restoreFile" accept=".json,application/json" style="display:none">
+    </div>
+
     <div class="card" id="routeCard" style="display:none">
       <h2 data-i18n="routeTitle">Trasa</h2>
       <div id="routeMap"></div>
+      <div class="elevation-box" id="routeElevationBox" style="display:none">
+        <h3 data-i18n="elevationTitle">Profil wysokości</h3>
+        <canvas id="routeElevationCanvas" class="elevation-canvas"></canvas>
+        <p class="elevation-stats" id="routeElevationStats"></p>
+      </div>
     </div>
   </div>
 
@@ -116,6 +129,11 @@
       </select>
       <div id="planMap"></div>
       <div class="plan-stats" id="planStats"></div>
+      <div class="elevation-box" id="planElevationBox" style="display:none">
+        <h3 data-i18n="elevationTitle">Profil wysokości</h3>
+        <canvas id="planElevationCanvas" class="elevation-canvas"></canvas>
+        <p class="elevation-stats" id="planElevationStats"></p>
+      </div>
       <div class="plan-actions">
         <button id="planUndoBtn" data-i18n="planUndoBtn">Cofnij punkt</button>
         <button id="planClearBtn" data-i18n="planClearBtn">Wyczyść</button>
@@ -152,6 +170,11 @@
     <div class="card" id="activityRouteCard" style="display:none">
       <h2 id="activityRouteTitle"></h2>
       <div id="activityMap"></div>
+      <div class="elevation-box" id="activityElevationBox" style="display:none">
+        <h3 data-i18n="elevationTitle">Profil wysokości</h3>
+        <canvas id="activityElevationCanvas" class="elevation-canvas"></canvas>
+        <p class="elevation-stats" id="activityElevationStats"></p>
+      </div>
     </div>
   </div>
 
