@@ -41,21 +41,15 @@
   </div>
 
   <div class="tabs">
-    <button id="tabChallengeBtn" data-i18n="tabChallenge">Wyzwanie</button>
     <button id="tabTrainBtn" class="active" data-i18n="tabTrain">Trening</button>
     <button id="tabHistoryBtn" data-i18n="tabHistory">Historia</button>
     <button id="tabPlanBtn" data-i18n="tabPlan">Trasy</button>
     <button id="tabActivityBtn" data-i18n="tabActivity">Aktywność</button>
+    <button id="tabChallengeBtn" data-i18n="tabChallenge">Wyzwanie</button>
   </div>
 
   <div id="tabChallenge" class="tab-content">
-    <div class="variant-switch" role="group" aria-label="Wygląd ekranu wyzwania">
-      <span data-i18n="variantLabel">Wygląd (test):</span>
-      <button data-variant="a">A · Szlak</button>
-      <button data-variant="b">B · Nocny etap</button>
-      <button data-variant="c">C · Biało-czerwona</button>
-    </div>
-    <div id="challengeScreen" class="challenge variant-a"></div>
+    <div id="challengeScreen" class="challenge"></div>
     <div class="card" id="challengeSettings" style="display:none">
       <label for="challengeStart" data-i18n="challengeStartLabel">Początek Twojego wyzwania</label>
       <input type="date" id="challengeStart">
