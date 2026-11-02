@@ -168,6 +168,13 @@ canvas { width: 100%; height: auto; background: var(--card); border-radius: 8px;
 .stat-tile .stat-label { font-size: 12px; color: var(--subtle-fg); }
 
 .activity-nick { font-weight: bold; }
+.summary-grid { margin-top: 10px; }
+.summary-subtitle { margin: 14px 0 6px; font-size: 15px; }
+.summary-disc { font-size: 13px; padding: 4px 0; border-bottom: 1px solid var(--border); }
+.records-disc { margin: 12px 0 4px; font-size: 15px; color: var(--accent); }
+.record-row { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; padding: 5px 0; border-bottom: 1px solid var(--border); }
+.record-row b { white-space: nowrap; }
+.record-date { color: var(--subtle-fg); font-size: 12px; }
 .privacy-text { font-size: 13px; line-height: 1.45; }
 .privacy-text ul { padding-left: 18px; }
 .contact-box { background: var(--bg); border-left: 4px solid var(--accent); border-radius: 6px; padding: 8px 10px; font-size: 14px; }

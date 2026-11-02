@@ -104,6 +104,35 @@ const TRANSLATIONS = {
     helpBtn: "Pomoc",
     helpTitle: "Pomoc i instrukcja",
     helpPrivacyBtn: "PEŁNA INFORMACJA O PRYWATNOŚCI (RODO)",
+    summaryTitle: "Podsumowanie",
+    periodWeek: "Ten tydzień",
+    periodMonth: "Ten miesiąc",
+    periodYear: "Ten rok",
+    periodAll: "Od początku",
+    summaryTrainings: "Treningi",
+    summaryDistance: "Dystans (km)",
+    summaryTime: "Czas",
+    summaryAscent: "Przewyższenie (m)",
+    summaryEmpty: "Brak treningów w tym okresie.",
+    summaryCompare: (period, km, diff) =>
+      `${{ week: "Poprzedni tydzień", month: "Poprzedni miesiąc", year: "Poprzedni rok" }[period]}: ${km} km` +
+      (diff !== null ? ` (${diff >= 0 ? "+" : ""}${diff} km)` : ""),
+    summaryDiscLine: (name, count, km, time) => `<b>${name}</b>: ${count}× · ${km} km${time ? ` · ${time}` : ""}`,
+    streakTitle: "🔥 Passa treningowa",
+    streakCurrent: "Obecna passa",
+    streakBest: "Najdłuższa passa",
+    days: (n) => `${n} ${n === 1 ? "dzień" : "dni"}`,
+    recordsTitle: "🏆 Rekordy osobiste",
+    recordsEmpty: "Zapisz pierwszy trening, żeby zobaczyć rekordy.",
+    recordsOverall: "Ogółem",
+    recLongestDist: "Najdłuższy dystans",
+    recLongestTime: "Najdłuższy czas",
+    recBestPace: "Najszybsze tempo (od 1 km)",
+    recBestSpeed: "Najwyższa śr. prędkość (od 1 km)",
+    recMaxAscent: "Największe przewyższenie",
+    recBestWeek: "Najlepszy tydzień",
+    recBestMonth: "Najlepszy miesiąc",
+    recWeekOf: (date) => `od ${date}`,
     elevationTitle: "Profil wysokości",
     elevationStats: (up, down, min, max) => `↗ podejścia ${up} m · ↘ zejścia ${down} m · min ${min} m · max ${max} m n.p.m.`,
     backupTitle: "Kopia zapasowa",
@@ -144,6 +173,9 @@ const TRANSLATIONS = {
       </details>
       <details><summary>📋 Historia</summary>
         <ul>
+          <li><b>Podsumowanie</b> na górze zakładki: liczba treningów, dystans, czas i przewyższenie w wybranym okresie (tydzień, miesiąc, rok, od początku), porównanie z poprzednim okresem i rozbicie na dyscypliny.</li>
+          <li><b>🔥 Passa</b> to liczba kolejnych dni z treningiem. Obecna passa trwa, jeśli ostatni trening był dziś albo wczoraj.</li>
+          <li><b>🏆 Rekordy osobiste</b> dla każdej dyscypliny: najdłuższy dystans i czas, najszybsze tempo (bieg) lub prędkość (rower, kajak), największe przewyższenie, a także najlepszy tydzień i miesiąc. Tempo i prędkość liczą się dla treningów od 1 km z wpisanym czasem.</li>
           <li>🗺 — pokazuje trasę treningu na mapie wraz z profilem wysokości (dla treningów zaimportowanych z pliku).</li>
           <li>🗑 — usuwa wpis (po potwierdzeniu).</li>
           ${community ? "<li>📤 — udostępnia trening w zakładce Aktywność; 🌍 oznacza, że trening jest udostępniony (kliknij, aby cofnąć udostępnienie).</li>" : ""}
@@ -352,6 +384,35 @@ const TRANSLATIONS = {
     helpBtn: "Help",
     helpTitle: "Help and guide",
     helpPrivacyBtn: "FULL PRIVACY INFORMATION (GDPR)",
+    summaryTitle: "Summary",
+    periodWeek: "This week",
+    periodMonth: "This month",
+    periodYear: "This year",
+    periodAll: "All time",
+    summaryTrainings: "Trainings",
+    summaryDistance: "Distance (km)",
+    summaryTime: "Time",
+    summaryAscent: "Ascent (m)",
+    summaryEmpty: "No trainings in this period.",
+    summaryCompare: (period, km, diff) =>
+      `${{ week: "Previous week", month: "Previous month", year: "Previous year" }[period]}: ${km} km` +
+      (diff !== null ? ` (${diff >= 0 ? "+" : ""}${diff} km)` : ""),
+    summaryDiscLine: (name, count, km, time) => `<b>${name}</b>: ${count}× · ${km} km${time ? ` · ${time}` : ""}`,
+    streakTitle: "🔥 Training streak",
+    streakCurrent: "Current streak",
+    streakBest: "Longest streak",
+    days: (n) => `${n} ${n === 1 ? "day" : "days"}`,
+    recordsTitle: "🏆 Personal records",
+    recordsEmpty: "Save your first training to see records.",
+    recordsOverall: "Overall",
+    recLongestDist: "Longest distance",
+    recLongestTime: "Longest time",
+    recBestPace: "Fastest pace (1 km+)",
+    recBestSpeed: "Highest avg. speed (1 km+)",
+    recMaxAscent: "Biggest ascent",
+    recBestWeek: "Best week",
+    recBestMonth: "Best month",
+    recWeekOf: (date) => `from ${date}`,
     elevationTitle: "Elevation profile",
     elevationStats: (up, down, min, max) => `↗ ascent ${up} m · ↘ descent ${down} m · min ${min} m · max ${max} m a.s.l.`,
     backupTitle: "Backup",
@@ -392,6 +453,9 @@ const TRANSLATIONS = {
       </details>
       <details><summary>📋 History</summary>
         <ul>
+          <li><b>Summary</b> at the top of the tab: number of trainings, distance, time and ascent in the chosen period (week, month, year, all time), comparison with the previous period and a breakdown by discipline.</li>
+          <li><b>🔥 Streak</b> is the number of consecutive days with a training. The current streak continues as long as you train today or trained yesterday.</li>
+          <li><b>🏆 Personal records</b> for each discipline: longest distance and time, fastest pace (running) or speed (cycling, kayaking), biggest ascent, plus your best week and month. Pace and speed count trainings of 1 km+ with time entered.</li>
           <li>🗺 — shows the training route on a map with its elevation profile (for trainings imported from a file).</li>
           <li>🗑 — deletes the entry (after confirmation).</li>
           ${community ? "<li>📤 — shares the training in the Activity tab; 🌍 means it is shared (tap to unshare).</li>" : ""}
@@ -650,8 +714,208 @@ function refreshTotalLabel() {
   document.getElementById("totalLbl").textContent = t().totalLabel(total.toFixed(1));
 }
 
+// --- Podsumowanie, passa i rekordy (liczone na bieżąco z historii) ---
+const DISCIPLINES = ["Bieg", "Rower", "Kajak"];
+
+function toYmd(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function parseYmd(ymd) {
+  const [y, m, d] = ymd.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function addDays(d, days) {
+  const copy = new Date(d);
+  copy.setDate(copy.getDate() + days);
+  return copy;
+}
+
+// Poniedziałek tygodnia, do którego należy data.
+function weekStart(d) {
+  return addDays(d, -((d.getDay() + 6) % 7));
+}
+
+// [od, do) jako "YYYY-MM-DD"; offset -1 = poprzedni okres.
+function periodRange(period, offset) {
+  const now = new Date();
+  let from, to;
+  if (period === "week") {
+    from = addDays(weekStart(now), 7 * offset);
+    to = addDays(from, 7);
+  } else if (period === "month") {
+    from = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+    to = new Date(now.getFullYear(), now.getMonth() + offset + 1, 1);
+  } else {
+    from = new Date(now.getFullYear() + offset, 0, 1);
+    to = new Date(now.getFullYear() + offset + 1, 0, 1);
+  }
+  return [toYmd(from), toYmd(to)];
+}
+
+function entryAscent(item) {
+  return Array.isArray(item.route) ? trackAscentM(item.route.filter((p) => Number.isFinite(p.ele))) : 0;
+}
+
+function formatDuration(min) {
+  const total = Math.round(min);
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")} h`;
+}
+
+function formatPace(minPerKm) {
+  let m = Math.floor(minPerKm);
+  let sec = Math.round((minPerKm - m) * 60);
+  if (sec === 60) { m++; sec = 0; }
+  return `${m}:${String(sec).padStart(2, "0")} /km`;
+}
+
+function summarize(items) {
+  const sum = { count: items.length, km: 0, min: 0, ascent: 0 };
+  items.forEach((item) => {
+    sum.km += parseFloat(item.dist) || 0;
+    sum.min += parseFloat(item.time) || 0;
+    sum.ascent += entryAscent(item);
+  });
+  return sum;
+}
+
+function streaks(history) {
+  const days = new Set(history.map((item) => item.date));
+  let current = 0;
+  let day = new Date();
+  if (!days.has(toYmd(day))) day = addDays(day, -1); // passa trwa, jeśli trening był wczoraj
+  while (days.has(toYmd(day))) {
+    current++;
+    day = addDays(day, -1);
+  }
+  let best = 0, run = 0, prev = null;
+  [...days].sort().forEach((ymd) => {
+    const d = parseYmd(ymd);
+    run = prev && toYmd(addDays(prev, 1)) === ymd ? run + 1 : 1;
+    best = Math.max(best, run);
+    prev = d;
+  });
+  return { current, best };
+}
+
+function statTile(value, label) {
+  return `<div class="stat-tile"><div class="stat-value">${value}</div><div class="stat-label">${label}</div></div>`;
+}
+
+function refreshSummary() {
+  const tiles = document.getElementById("summaryTiles");
+  if (!tiles) return;
+  const dict = t();
+  const history = getHistory().filter((item) => /^\d{4}-\d{2}-\d{2}$/.test(item.date));
+  const period = document.getElementById("summaryPeriod").value;
+
+  const inRange = ([from, to]) => history.filter((item) => item.date >= from && item.date < to);
+  const items = period === "all" ? history : inRange(periodRange(period, 0));
+  const sum = summarize(items);
+  tiles.innerHTML =
+    statTile(sum.count, dict.summaryTrainings) +
+    statTile(sum.km.toFixed(1), dict.summaryDistance) +
+    statTile(sum.min > 0 ? formatDuration(sum.min) : "—", dict.summaryTime) +
+    statTile(sum.ascent > 0 ? Math.round(sum.ascent) : "—", dict.summaryAscent);
+
+  const compare = document.getElementById("summaryCompare");
+  if (period === "all") {
+    compare.textContent = "";
+  } else {
+    const prev = summarize(inRange(periodRange(period, -1)));
+    compare.textContent = dict.summaryCompare(period, prev.km.toFixed(1),
+      prev.count || sum.count ? Number((sum.km - prev.km).toFixed(1)) : null);
+  }
+
+  document.getElementById("summaryByDisc").innerHTML = items.length === 0
+    ? `<p class="hint-text">${dict.summaryEmpty}</p>`
+    : DISCIPLINES
+      .map((disc) => {
+        const s = summarize(items.filter((item) => item.disc === disc));
+        return s.count
+          ? `<div class="summary-disc">${dict.summaryDiscLine(dict.discNames[disc], s.count, s.km.toFixed(1), s.min > 0 ? formatDuration(s.min) : "")}</div>`
+          : "";
+      })
+      .join("");
+
+  const st = streaks(history);
+  document.getElementById("streakTiles").innerHTML =
+    statTile(dict.days(st.current), dict.streakCurrent) + statTile(dict.days(st.best), dict.streakBest);
+
+  refreshRecords(history);
+}
+
+function bestBy(items, score) {
+  let best = null, bestScore = -Infinity;
+  items.forEach((item) => {
+    const value = score(item);
+    if (Number.isFinite(value) && value > 0 && value > bestScore) {
+      best = item;
+      bestScore = value;
+    }
+  });
+  return best ? { item: best, value: bestScore } : null;
+}
+
+function bestPeriodKm(history, keyOf) {
+  const totals = {};
+  history.forEach((item) => {
+    const key = keyOf(item.date);
+    totals[key] = (totals[key] || 0) + (parseFloat(item.dist) || 0);
+  });
+  let best = null;
+  Object.entries(totals).forEach(([key, km]) => {
+    if (km > 0 && (!best || km > best.km)) best = { key, km };
+  });
+  return best;
+}
+
+function refreshRecords(history) {
+  const list = document.getElementById("recordsList");
+  const dict = t();
+  if (history.length === 0) {
+    list.innerHTML = `<p class="hint-text">${dict.recordsEmpty}</p>`;
+    return;
+  }
+  const row = (label, value, date) =>
+    `<div class="record-row"><span>${label}</span><span><b>${value}</b> <span class="record-date">${escapeXml(date)}</span></span></div>`;
+
+  let html = "";
+  DISCIPLINES.forEach((disc) => {
+    const items = history.filter((item) => item.disc === disc);
+    if (items.length === 0) return;
+    const timed = items.filter((item) => parseFloat(item.dist) >= 1 && parseFloat(item.time) > 0);
+    const rows = [];
+    const dist = bestBy(items, (item) => parseFloat(item.dist));
+    if (dist) rows.push(row(dict.recLongestDist, `${dist.value.toFixed(2)} km`, dist.item.date));
+    const time = bestBy(items, (item) => parseFloat(item.time));
+    if (time) rows.push(row(dict.recLongestTime, formatDuration(time.value), time.item.date));
+    if (disc === "Bieg") {
+      const pace = bestBy(timed, (item) => parseFloat(item.dist) / parseFloat(item.time));
+      if (pace) rows.push(row(dict.recBestPace, formatPace(1 / pace.value), pace.item.date));
+    } else {
+      const speed = bestBy(timed, (item) => parseFloat(item.dist) / (parseFloat(item.time) / 60));
+      if (speed) rows.push(row(dict.recBestSpeed, `${speed.value.toFixed(1)} km/h`, speed.item.date));
+    }
+    const ascent = bestBy(items, entryAscent);
+    if (ascent) rows.push(row(dict.recMaxAscent, `${Math.round(ascent.value)} m`, ascent.item.date));
+    html += `<h3 class="records-disc">${dict.discNames[disc]}</h3>${rows.join("")}`;
+  });
+
+  const week = bestPeriodKm(history, (ymd) => toYmd(weekStart(parseYmd(ymd))));
+  const month = bestPeriodKm(history, (ymd) => ymd.slice(0, 7));
+  if (week || month) {
+    html += `<h3 class="records-disc">${dict.recordsOverall}</h3>`;
+    if (week) html += row(dict.recBestWeek, `${week.km.toFixed(1)} km`, dict.recWeekOf(week.key));
+    if (month) html += row(dict.recBestMonth, `${month.km.toFixed(1)} km`, month.key);
+  }
+  list.innerHTML = html;
+}
+
 // --- Historia ---
 function refreshHistoryList() {
+  refreshSummary();
   const list = document.getElementById("historyList");
   const history = getHistory();
   const dict = t();
@@ -2116,6 +2380,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("paceBtn").addEventListener("click", calcPace);
   document.getElementById("chartBtn").addEventListener("click", showChart);
   document.getElementById("exportBtn").addEventListener("click", exportCsv);
+  document.getElementById("summaryPeriod").addEventListener("change", refreshSummary);
   document.getElementById("backupBtn").addEventListener("click", createBackup);
   document.getElementById("restoreBtn").addEventListener("click", () => {
     document.getElementById("restoreFile").click();
