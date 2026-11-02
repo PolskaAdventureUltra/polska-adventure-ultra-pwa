@@ -15,6 +15,8 @@ const NICK_KEY = "pau_nick";
 const ROUTE_SHARE_TOKENS_KEY = "pau_route_share_tokens"; // { idTrasy: tokenUsuwania }
 const EVENT_TOKENS_KEY = "pau_event_tokens";     // { idWydarzenia: tokenZapisu }
 const ADMIN_KEY_KEY = "pau_admin_key";           // klucz organizatora (tylko na telefonie administratora)
+const CHALLENGE_KEY = "pau_challenge";              // { start: "YYYY-MM-DD" } - udział w wyzwaniu 4000 km
+const CHALLENGE_VARIANT_KEY = "pau_challenge_variant"; // wybrany wygląd ekranu wyzwania (test: a/b/c)
 const GOALS_KEY = "pau_goals"; // [{ period: "week"|"month", disc: "all"|"Bieg"|..., km }]
 
 // --- Społeczność (Supabase) ---
@@ -107,6 +109,41 @@ const TRANSLATIONS = {
     helpBtn: "Pomoc",
     helpTitle: "Pomoc i instrukcja",
     helpPrivacyBtn: "PEŁNA INFORMACJA O PRYWATNOŚCI (RODO)",
+    tabChallenge: "Wyzwanie",
+    variantLabel: "Wygląd (test):",
+    challengeJoinTitle: "Wyzwanie 4000 km",
+    challengeJoinText: "Polska Adventure Ultra: 4000 km dookoła Polski — biegiem, rowerem i kajakiem. Start i meta w Lublinie. Dołącz, a w aplikacji pojawi się zakładka „Wyzwanie” z Twoim postępem.",
+    challengeJoinBtn: "DOŁĄCZ DO WYZWANIA",
+    challengeStartLabel: "Początek Twojego wyzwania",
+    challengeStartHint: "Do wyzwania liczą się treningi od tej daty (wszystkie dyscypliny).",
+    challengeLeaveBtn: "Zrezygnuj z wyzwania",
+    confirmLeaveChallenge: "Zrezygnować z wyzwania? Zakładka Wyzwanie zniknie (treningi zostają w Historii).",
+    chKicker: (year) => `WYZWANIE ${year}`,
+    chOf: (pct) => `z 4 000 km · ${pct}%`,
+    chCaption: (day) => `Start i meta: <b>Lublin</b> · dzień ${day} wyzwania`,
+    chWeek: "TEN TYDZIEŃ",
+    chStreak: (n) => `${n} ${n === 1 ? "dzień" : "dni"} z rzędu w ruchu`,
+    chNoStreak: "Dodaj dziś trening i zacznij passę",
+    chNextEvent: "NAJBLIŻSZE WYDARZENIE",
+    chNoEvent: "Brak zaplanowanych wydarzeń.",
+    chBib: "NR 001",
+    chOnRoute: "● NA TRASIE",
+    chFinished: "● META!",
+    chDay: (day) => `DZIEŃ ${day}`,
+    chNextCp: (cp) => `NASTĘPNY PUNKT: ${cp} KM`,
+    chCpLeft: (km) => `za ${km} km`,
+    chStatWeek: "TYDZIEŃ",
+    chStatStreak: "PASSA",
+    chStatPerDay: "ŚR. / DZIEŃ",
+    chStartIn: (days) => `NASTĘPNY START · ${days}`,
+    chH1: "4000 km<br>dookoła Polski",
+    chMeta: "WYZWANIE · BIEG · ROWER · KAJAK",
+    chNow: (day) => `start i meta: Lublin<br>dzień ${day} wyzwania`,
+    chStatDays: "dni w wyzwaniu",
+    chStatAvg: "km dziennie",
+    chStatEta: "meta ok.",
+    chJoinEvent: "Biorę udział",
+    chJoined: "Bierzesz udział",
     eventsTitle: "📅 Wydarzenia",
     eventsHint: "Wspólne treningi, spływy i rajdy. Kliknij „Biorę udział”, żeby organizator wiedział, ilu osób się spodziewać.",
     noEvents: "Brak zaplanowanych wydarzeń — zajrzyj później.",
@@ -208,6 +245,13 @@ const TRANSLATIONS = {
           <li>Domyślny PIN to <b>1234</b> — zmień go od razu przyciskiem „Zmień PIN” na dole ekranu.</li>
           <li>Dodaj aplikację do ekranu głównego: <b>Android (Chrome)</b> — menu ⋮ → „Dodaj do ekranu głównego”; <b>iPhone (Safari)</b> — przycisk Udostępnij → „Do ekranu początkowego”.</li>
           <li>Po dodaniu aplikacja działa także bez internetu (poza mapami${community ? " i zakładką Aktywność" : ""}).</li>
+        </ul>
+      </details>
+      <details><summary>🇵🇱 Wyzwanie 4000 km</summary>
+        <ul>
+          <li>W zakładce <b>Trening</b> kliknij „DOŁĄCZ DO WYZWANIA”. Pojawi się dodatkowa zakładka <b>Wyzwanie</b> z Twoim postępem na pętli 4000 km (start i meta: Lublin).</li>
+          <li>Liczą się wszystkie treningi (bieg, rower, kajak) od daty początku wyzwania — datę zmienisz pod ekranem wyzwania.</li>
+          <li>Rezygnacja ukrywa zakładkę; treningi zostają w Historii.</li>
         </ul>
       </details>
       <details><summary>🏃 Zapisywanie treningu</summary>
@@ -440,6 +484,41 @@ const TRANSLATIONS = {
     helpBtn: "Help",
     helpTitle: "Help and guide",
     helpPrivacyBtn: "FULL PRIVACY INFORMATION (GDPR)",
+    tabChallenge: "Challenge",
+    variantLabel: "Look (test):",
+    challengeJoinTitle: "The 4000 km challenge",
+    challengeJoinText: "Polska Adventure Ultra: 4000 km around Poland — running, cycling and kayaking. Start and finish in Lublin. Join and a “Challenge” tab with your progress appears in the app.",
+    challengeJoinBtn: "JOIN THE CHALLENGE",
+    challengeStartLabel: "Start of your challenge",
+    challengeStartHint: "Trainings from this date count towards the challenge (all disciplines).",
+    challengeLeaveBtn: "Leave the challenge",
+    confirmLeaveChallenge: "Leave the challenge? The Challenge tab will disappear (your trainings stay in History).",
+    chKicker: (year) => `CHALLENGE ${year}`,
+    chOf: (pct) => `of 4,000 km · ${pct}%`,
+    chCaption: (day) => `Start and finish: <b>Lublin</b> · day ${day} of the challenge`,
+    chWeek: "THIS WEEK",
+    chStreak: (n) => `${n} ${n === 1 ? "day" : "days"} in a row`,
+    chNoStreak: "Add a training today to start a streak",
+    chNextEvent: "NEXT EVENT",
+    chNoEvent: "No events planned.",
+    chBib: "NO. 001",
+    chOnRoute: "● ON ROUTE",
+    chFinished: "● FINISHED!",
+    chDay: (day) => `DAY ${day}`,
+    chNextCp: (cp) => `NEXT CHECKPOINT: ${cp} KM`,
+    chCpLeft: (km) => `${km} km to go`,
+    chStatWeek: "WEEK",
+    chStatStreak: "STREAK",
+    chStatPerDay: "AVG / DAY",
+    chStartIn: (days) => `NEXT START · ${days}`,
+    chH1: "4000 km<br>around Poland",
+    chMeta: "CHALLENGE · RUN · BIKE · KAYAK",
+    chNow: (day) => `start and finish: Lublin<br>day ${day} of the challenge`,
+    chStatDays: "days in",
+    chStatAvg: "km per day",
+    chStatEta: "finish ~",
+    chJoinEvent: "I'm going",
+    chJoined: "You're going",
     eventsTitle: "📅 Events",
     eventsHint: "Group trainings, kayak trips and races. Tap “I'm going” so the organiser knows how many people to expect.",
     noEvents: "No events planned — check back later.",
@@ -541,6 +620,13 @@ const TRANSLATIONS = {
           <li>The default PIN is <b>1234</b> — change it right away with “Change PIN” at the bottom of the screen.</li>
           <li>Add the app to your home screen: <b>Android (Chrome)</b> — menu ⋮ → “Add to Home screen”; <b>iPhone (Safari)</b> — Share button → “Add to Home Screen”.</li>
           <li>Once added, the app also works offline (except maps${community ? " and the Activity tab" : ""}).</li>
+        </ul>
+      </details>
+      <details><summary>🇵🇱 The 4000 km challenge</summary>
+        <ul>
+          <li>In the <b>Training</b> tab tap “JOIN THE CHALLENGE”. An extra <b>Challenge</b> tab appears with your progress on the 4000 km loop (start and finish: Lublin).</li>
+          <li>All trainings (running, cycling, kayaking) from the challenge start date count — change the date below the challenge screen.</li>
+          <li>Leaving hides the tab; your trainings stay in History.</li>
         </ul>
       </details>
       <details><summary>🏃 Saving a training</summary>
@@ -784,6 +870,7 @@ function showMainApp() {
   refreshTotalLabel();
   refreshHistoryList();
   refreshSavedRoutesList();
+  refreshChallengeVisibility();
   document.getElementById("date").valueAsDate = new Date();
   initCommunity();
 }
@@ -803,6 +890,7 @@ function tryLogin() {
 
 // --- Zakładki ---
 const TAB_IDS = {
+  challenge: ["tabChallenge", "tabChallengeBtn"],
   train: ["tabTrain", "tabTrainBtn"],
   history: ["tabHistory", "tabHistoryBtn"],
   plan: ["tabPlan", "tabPlanBtn"],
@@ -1117,9 +1205,242 @@ function refreshRecords(history) {
   list.innerHTML = html;
 }
 
+// --- Wyzwanie 4000 km (dodatkowa zakładka dla uczestników) ---
+const CHALLENGE_KM = 4000;
+const CHALLENGE_CP_KM = 500;
+// Schematyczna pętla na konturze Polski (start i meta: Lublin). Do podmiany na prawdziwą trasę z GPX.
+const POLAND_OUTLINE_D = "M8.0 47.7 L18.8 45.4 L41.7 37.5 L64.5 30.6 L84.5 16.7 L113.0 6.0 L127.3 7.9 L138.7 16.7 L133.0 24.5 L144.4 28.3 L161.6 23.6 L184.4 26.4 L210.1 29.2 L252.9 27.8 L272.9 39.8 L272.9 58.4 L284.3 83.9 L284.3 104.8 L264.3 123.3 L277.2 134.0 L277.2 155.8 L290.0 183.6 L275.8 211.4 L247.2 248.5 L254.4 274.0 L230.1 267.0 L201.5 256.8 L175.9 267.0 L155.9 248.5 L140.2 253.1 L118.8 230.9 L107.3 216.0 L84.5 210.5 L70.2 199.8 L58.8 202.1 L41.7 192.9 L26.0 189.6 L30.3 174.3 L23.1 155.8 L18.8 132.6 L17.4 109.4 L6.0 97.8 L13.1 76.9 L8.0 47.7 Z";
+const CHALLENGE_ROUTE = [[246.3, 172.0], [282.9, 168.3], [277.2, 155.7], [277.2, 134.0], [264.3, 123.3], [284.3, 104.7],
+  [284.3, 83.9], [272.9, 58.4], [272.9, 39.8], [252.9, 27.8], [210.1, 29.2], [184.4, 26.4], [161.6, 23.6], [144.4, 28.3],
+  [133.0, 24.5], [138.7, 16.7], [127.3, 7.9], [113.0, 6.0], [84.5, 16.7], [64.5, 30.6], [41.7, 37.5], [18.8, 45.4],
+  [8.0, 47.7], [13.1, 76.9], [6.0, 97.8], [17.4, 109.4], [18.8, 132.6], [23.1, 155.7], [30.3, 174.3], [26.0, 189.6],
+  [41.7, 192.8], [58.8, 202.1], [70.2, 199.8], [84.5, 210.5], [107.3, 216.0], [118.7, 230.9], [140.2, 253.1],
+  [155.8, 248.5], [175.8, 267.0], [201.5, 256.8], [230.1, 267.0], [254.3, 274.0], [247.2, 248.5], [275.7, 211.4],
+  [290.0, 183.6], [282.9, 168.3], [246.3, 172.0]];
+const CHALLENGE_ROUTE_D = CHALLENGE_ROUTE.map(([x, y], i) => `${i ? "L" : "M"}${x} ${y}`).join(" ");
+const DISC_ICONS = {
+  Bieg: '<circle cx="15" cy="4.5" r="2"></circle><path d="M8 21l3-5 3 2v4"></path><path d="M11 16l1.5-6 3 2.5 3.5-.5"></path><path d="M7 11l3.5-2.5 2 1.5"></path>',
+  Rower: '<circle cx="5.5" cy="16.5" r="3.5"></circle><circle cx="18.5" cy="16.5" r="3.5"></circle><path d="M5.5 16.5L9 9h6l3.5 7.5"></path><path d="M9 9l3.5 7.5H5.5"></path><path d="M13.5 6h2.5"></path>',
+  Kajak: '<path d="M2 15c5 3.5 15 3.5 20 0"></path><path d="M5 5l14 13"></path><path d="M3.5 3.5l2.5 2.5"></path><path d="M18 17l2.5 2.5"></path>',
+};
+let challengeEventsLoaded = false;
+
+function discIcon(disc, size) {
+  return `<svg aria-hidden="true" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${DISC_ICONS[disc]}</svg>`;
+}
+
+function getChallenge() {
+  try {
+    const c = JSON.parse(localStorage.getItem(CHALLENGE_KEY));
+    return c && /^\d{4}-\d{2}-\d{2}$/.test(c.start) ? c : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function saveChallenge(challenge) {
+  if (challenge) localStorage.setItem(CHALLENGE_KEY, JSON.stringify(challenge));
+  else localStorage.removeItem(CHALLENGE_KEY);
+}
+
+function getChallengeVariant() {
+  const v = localStorage.getItem(CHALLENGE_VARIANT_KEY);
+  return ["a", "b", "c"].includes(v) ? v : "a";
+}
+
+function refreshChallengeVisibility() {
+  const joined = Boolean(getChallenge());
+  document.getElementById("tabChallengeBtn").style.display = joined ? "" : "none";
+  document.getElementById("challengeJoinCard").style.display = joined ? "none" : "block";
+  if (!joined && document.getElementById("tabChallenge").classList.contains("active")) showTab("train");
+}
+
+function joinChallenge() {
+  saveChallenge({ start: toYmd(new Date()) });
+  refreshChallengeVisibility();
+  showTab("challenge");
+  refreshChallenge();
+}
+
+function leaveChallenge() {
+  if (!confirm(t().confirmLeaveChallenge)) return;
+  saveChallenge(null);
+  refreshChallengeVisibility();
+}
+
+function pointAlongRoute(fraction) {
+  const lengths = [0];
+  for (let i = 1; i < CHALLENGE_ROUTE.length; i++) {
+    const [x1, y1] = CHALLENGE_ROUTE[i - 1], [x2, y2] = CHALLENGE_ROUTE[i];
+    lengths.push(lengths[i - 1] + Math.hypot(x2 - x1, y2 - y1));
+  }
+  const target = Math.max(0, Math.min(1, fraction)) * lengths[lengths.length - 1];
+  const i = Math.max(1, lengths.findIndex((l) => l >= target));
+  const t0 = (target - lengths[i - 1]) / (lengths[i] - lengths[i - 1] || 1);
+  const [x1, y1] = CHALLENGE_ROUTE[i - 1], [x2, y2] = CHALLENGE_ROUTE[i];
+  return [x1 + t0 * (x2 - x1), y1 + t0 * (y2 - y1)];
+}
+
+function challengeStats() {
+  const challenge = getChallenge();
+  const today = parseYmd(toYmd(new Date()));
+  const items = getHistory().filter((item) => /^\d{4}-\d{2}-\d{2}$/.test(item.date) && item.date >= challenge.start);
+  const byDisc = {};
+  DISCIPLINES.forEach((disc) => {
+    byDisc[disc] = summarize(items.filter((item) => item.disc === disc)).km;
+  });
+  const km = summarize(items).km;
+  const day = Math.max(1, Math.round((today - parseYmd(challenge.start)) / 86400000) + 1);
+  const perDay = km / day;
+  const weekGoal = getGoals().find((g) => g.period === "week");
+  const [weekFrom, weekTo] = periodRange("week", 0);
+  const weekKm = weekGoal ? goalProgressKm(weekGoal, getHistory())
+    : summarize(items.filter((item) => item.date >= weekFrom && item.date < weekTo)).km;
+  return {
+    km, byDisc, day, perDay, weekKm, weekGoal,
+    fraction: Math.min(km / CHALLENGE_KM, 1),
+    pct: Math.min(100, Math.floor((km / CHALLENGE_KM) * 100)),
+    streak: streaks(items).current,
+    nextCp: Math.min(CHALLENGE_KM, (Math.floor(km / CHALLENGE_CP_KM) + 1) * CHALLENGE_CP_KM),
+    eta: perDay > 0 && km < CHALLENGE_KM ? addDays(today, Math.ceil((CHALLENGE_KM - km) / perDay)) : null,
+  };
+}
+
+function challengeMapSvg(variant, fraction) {
+  const [dx, dy] = pointAlongRoute(fraction);
+  const dash = `${(fraction * 100).toFixed(2)} 100`;
+  const ticks = variant === "b"
+    ? `<path class="ch-ticks" d="${CHALLENGE_ROUTE_D}" pathLength="100" stroke-dasharray="0.01 12.5"></path>` : "";
+  const label = variant === "b" ? "START/META" : "Lublin";
+  return `<svg role="img" aria-label="${escapeXml(t().chOf(Math.round(fraction * 100)))}" viewBox="0 0 296 280">` +
+    `<path class="ch-outline" d="${POLAND_OUTLINE_D}"></path>` +
+    `<path class="ch-route-base" d="${CHALLENGE_ROUTE_D}"></path>${ticks}` +
+    (fraction > 0 ? `<path class="ch-progress" d="${CHALLENGE_ROUTE_D}" pathLength="100" stroke-dasharray="${dash}"></path>` : "") +
+    `<circle class="ch-start" cx="246.3" cy="172" r="7"></circle>` +
+    `<text class="ch-start-label" x="234" y="176.5" text-anchor="end">${label}</text>` +
+    `<circle class="ch-dot-halo" cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="11"></circle>` +
+    `<circle class="ch-dot" cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="5.5"></circle>` +
+    `</svg>`;
+}
+
+function nextChallengeEvent() {
+  return eventsCache.find((ev) => new Date(ev.starts_at) > new Date(Date.now() - 12 * 3600000)) || null;
+}
+
+function challengeEventHtml(variant) {
+  const dict = t();
+  const ev = nextChallengeEvent();
+  if (!isCommunityConfigured()) return "";
+  if (!ev) return `<p class="ch-empty">${dict.chNoEvent}</p>`;
+  const start = new Date(ev.starts_at);
+  const joined = Boolean(getEventTokens()[ev.id]);
+  const count = Number(ev.participants) || 0;
+  const when = start.toLocaleString(dict.dateLocale, { weekday: "short", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+  const btn = `<button class="ch-btn" data-event-id="${escapeXml(ev.id)}">${joined ? dict.chJoined : dict.chJoinEvent} · ${count}</button>`;
+  const title = `<span class="ch-event-title">${escapeXml(ev.title)}</span>`;
+  if (variant === "c") {
+    const month = start.toLocaleString(dict.dateLocale, { month: "short" }).replace(".", "").toUpperCase();
+    return `<div class="ch-event"><div class="ch-date-block"><span>${start.getDate()}</span><span>${escapeXml(month)}</span></div>` +
+      `<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">${title}` +
+      `<span class="ch-small">${escapeXml(when)} · ${escapeXml(ev.place)}</span></div>${btn}</div>`;
+  }
+  const kicker = variant === "b" ? `<span class="ch-mono" style="color:var(--ch-accent)">${dict.chStartIn(eventCountdown(start).toUpperCase())}</span>`
+    : `<span class="ch-kicker" style="color:#CFE0C9">${dict.chNextEvent}</span>`;
+  return `<div class="ch-event">${kicker}${title}<span class="ch-small">${escapeXml(when)} · ${escapeXml(ev.place)}</span>${btn}</div>`;
+}
+
+function challengeWeekHtml(st) {
+  const dict = t();
+  const goal = st.weekGoal;
+  const pct = goal ? Math.min(100, Math.round((st.weekKm / goal.km) * 100)) : 0;
+  return `<div class="ch-box"><div class="ch-row"><span class="ch-label">${dict.chWeek}</span>` +
+    `<span class="ch-small"><b style="color:var(--ch-fg)">${st.weekKm.toFixed(0)}</b>${goal ? ` / ${goal.km}` : ""} km</span></div>` +
+    (goal ? `<div class="ch-bar"><div class="ch-bar-fill" style="width:${pct}%"></div></div>` : "") +
+    `<span class="ch-note">${st.streak ? dict.chStreak(st.streak) : dict.chNoStreak}</span></div>`;
+}
+
+function renderChallenge() {
+  const el = document.getElementById("challengeScreen");
+  if (!el || !getChallenge()) return;
+  const dict = t();
+  const variant = getChallengeVariant();
+  const st = challengeStats();
+  const year = new Date().getFullYear();
+  const kmText = Math.round(st.km).toLocaleString(dict.dateLocale);
+  const map = challengeMapSvg(variant, st.fraction);
+  let html;
+  if (variant === "a") {
+    html =
+      `<div class="ch-head"><div><span class="ch-kicker">${dict.chKicker(year)}</span><span class="ch-title">POLSKA ADVENTURE ULTRA</span></div></div>` +
+      `<div class="ch-map">${map}<div class="ch-map-center"><span class="ch-big">${kmText}</span><span class="ch-sub">${dict.chOf(st.pct)}</span></div></div>` +
+      `<p class="ch-caption">${dict.chCaption(st.day)}</p>` +
+      `<div class="ch-tiles">${DISCIPLINES.map((d) => `<div class="ch-tile">${discIcon(d, 22)}<span class="ch-small">${dict.discNames[d]}</span>` +
+        `<span class="ch-tile-value">${Math.round(st.byDisc[d])} <small>km</small></span></div>`).join("")}</div>` +
+      challengeWeekHtml(st) + challengeEventHtml("a");
+  } else if (variant === "b") {
+    const colors = { Bieg: "var(--ch-accent)", Rower: "#F2F2EE", Kajak: "var(--ch-accent2)" };
+    html =
+      `<div class="ch-head"><span class="ch-title">POLSKA<br>ADVENTURE ULTRA</span><span class="ch-chip">EDYCJA ${year}</span></div>` +
+      `<div class="ch-bib"><div class="ch-row"><span class="ch-mono">${dict.chBib}${localStorage.getItem(NICK_KEY) ? " · " + escapeXml(localStorage.getItem(NICK_KEY).toUpperCase()) : ""}</span>` +
+      `<span class="ch-mono" style="color:var(--ch-accent)">${st.km >= CHALLENGE_KM ? dict.chFinished : dict.chOnRoute}</span></div>` +
+      `<div style="display:flex;align-items:baseline;gap:8px"><span class="ch-big">${String(Math.round(st.km)).padStart(5, "0")}</span><span class="ch-mono" style="font-size:15px">/ 4000 KM</span></div>` +
+      `<div class="ch-stack">${DISCIPLINES.map((d) => `<div style="width:${Math.min(100, (st.byDisc[d] / CHALLENGE_KM) * 100).toFixed(2)}%;background:${colors[d]}"></div>`).join("")}</div>` +
+      `<div class="ch-legend">${DISCIPLINES.map((d) => `<span><i style="background:${colors[d]}"></i>${dict.discNames[d]} ${Math.round(st.byDisc[d])}</span>`).join("")}</div></div>` +
+      `<div class="ch-map">${map}<div class="ch-map-center"><span class="ch-mono">${dict.chDay(st.day)}</span>` +
+      `<span class="ch-title" style="font-size:15px">${dict.chNextCp(st.nextCp)}</span>` +
+      `<span class="ch-mono" style="color:var(--ch-accent)">${dict.chCpLeft(Math.max(0, Math.round(st.nextCp - st.km)))}</span></div></div>` +
+      `<div class="ch-stats"><div><span class="ch-mono">${dict.chStatWeek}</span><span class="ch-stat-value">${st.weekKm.toFixed(0)}${st.weekGoal ? `<small>/${st.weekGoal.km}</small>` : "<small> km</small>"}</span></div>` +
+      `<div><span class="ch-mono">${dict.chStatStreak}</span><span class="ch-stat-value">${st.streak}<small> ${dict.days(st.streak).split(" ")[1]}</small></span></div>` +
+      `<div><span class="ch-mono">${dict.chStatPerDay}</span><span class="ch-stat-value">${st.perDay.toFixed(1)}<small> km</small></span></div></div>` +
+      challengeEventHtml("b");
+  } else {
+    const eta = st.eta ? st.eta.toLocaleDateString(dict.dateLocale, { day: "numeric", month: "short" }) : "—";
+    html =
+      `<div class="ch-flag" aria-hidden="true"><i style="background:#EEF0F4"></i><i style="background:var(--ch-accent)"></i></div>` +
+      `<div class="ch-head"><span class="ch-title" style="font-size:18px">Polska Adventure <span style="color:var(--ch-accent)">Ultra</span></span></div>` +
+      `<span class="ch-kicker" style="margin-top:10px">${dict.chMeta}</span><h2 class="ch-h1">${dict.chH1}</h2>` +
+      `<div class="ch-map" style="text-align:right">${map}<div class="ch-map-left"><span class="ch-big">${st.pct}%</span>` +
+      `<span class="ch-sub">${kmText} km</span><span class="ch-small">${dict.chNow(st.day)}</span></div></div>` +
+      `<div class="ch-pills">${DISCIPLINES.map((d) => `<div class="ch-pill">${discIcon(d, 18)}<b>${Math.round(st.byDisc[d])}</b> km</div>`).join("")}</div>` +
+      `<div class="ch-stats"><div><span class="ch-stat-value">${st.day}</span><span class="ch-mono">${dict.chStatDays}</span></div>` +
+      `<div><span class="ch-stat-value">${st.perDay.toFixed(1)}</span><span class="ch-mono">${dict.chStatAvg}</span></div>` +
+      `<div><span class="ch-stat-value">${escapeXml(eta)}</span><span class="ch-mono">${dict.chStatEta}</span></div></div>` +
+      challengeWeekHtml(st) + challengeEventHtml("c");
+  }
+  el.className = `challenge variant-${variant}`;
+  el.innerHTML = html;
+  el.querySelectorAll(".ch-btn[data-event-id]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const ev = eventsCache.find((e) => e.id === btn.dataset.eventId);
+      if (ev) {
+        await toggleJoinEvent(ev);
+        renderChallenge();
+      }
+    });
+  });
+  document.querySelectorAll(".variant-switch button").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.variant === variant);
+  });
+  document.getElementById("challengeStart").value = getChallenge().start;
+}
+
+async function refreshChallenge() {
+  renderChallenge();
+  if (!challengeEventsLoaded && isCommunityConfigured()) {
+    try {
+      eventsCache = (await rpc("list_events")) || [];
+      challengeEventsLoaded = true;
+      renderChallenge();
+    } catch (e) {
+      // Bez internetu ekran wyzwania działa dalej, tylko bez wydarzenia.
+    }
+  }
+}
+
 // --- Historia ---
 function refreshHistoryList() {
   refreshSummary();
+  renderChallenge();
   const list = document.getElementById("historyList");
   const history = getHistory();
   const dict = t();
@@ -1308,8 +1629,8 @@ function exportCsv() {
 // --- Kopia zapasowa (plik JSON z danymi z localStorage) ---
 // PIN, klucz organizatora, identyfikator urządzenia i zgoda na statystyki zostają celowo poza kopią.
 const BACKUP_FORMAT = "polska-adventure-ultra-backup";
-const BACKUP_KEYS = [HISTORY_KEY, PLANNED_ROUTES_KEY, GOALS_KEY, THEME_KEY, LANG_KEY, NICK_KEY, SHARE_TOKENS_KEY, ROUTE_SHARE_TOKENS_KEY, EVENT_TOKENS_KEY];
-const BACKUP_JSON_KEYS = { [HISTORY_KEY]: "array", [PLANNED_ROUTES_KEY]: "array", [GOALS_KEY]: "array", [EVENT_TOKENS_KEY]: "object", [SHARE_TOKENS_KEY]: "object", [ROUTE_SHARE_TOKENS_KEY]: "object" };
+const BACKUP_KEYS = [HISTORY_KEY, PLANNED_ROUTES_KEY, GOALS_KEY, CHALLENGE_KEY, THEME_KEY, LANG_KEY, NICK_KEY, SHARE_TOKENS_KEY, ROUTE_SHARE_TOKENS_KEY, EVENT_TOKENS_KEY];
+const BACKUP_JSON_KEYS = { [HISTORY_KEY]: "array", [PLANNED_ROUTES_KEY]: "array", [GOALS_KEY]: "array", [EVENT_TOKENS_KEY]: "object", [CHALLENGE_KEY]: "object", [SHARE_TOKENS_KEY]: "object", [ROUTE_SHARE_TOKENS_KEY]: "object" };
 
 async function createBackup() {
   const data = {};
@@ -2832,6 +3153,23 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("summaryPeriod").addEventListener("change", refreshSummary);
   document.getElementById("goalAddBtn").addEventListener("click", () => showGoalForm(true));
   document.getElementById("organizerBtn").addEventListener("click", toggleOrganizer);
+  document.getElementById("tabChallengeBtn").addEventListener("click", () => {
+    showTab("challenge");
+    refreshChallenge();
+  });
+  document.getElementById("challengeJoinBtn").addEventListener("click", joinChallenge);
+  document.getElementById("challengeLeaveBtn").addEventListener("click", leaveChallenge);
+  document.getElementById("challengeStart").addEventListener("change", (e) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) return;
+    saveChallenge({ ...getChallenge(), start: e.target.value });
+    renderChallenge();
+  });
+  document.querySelectorAll(".variant-switch button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      localStorage.setItem(CHALLENGE_VARIANT_KEY, btn.dataset.variant);
+      renderChallenge();
+    });
+  });
   document.getElementById("eventAddBtn").addEventListener("click", () => showEventForm(true));
   document.getElementById("eventCancelBtn").addEventListener("click", () => showEventForm(false));
   document.getElementById("eventSaveBtn").addEventListener("click", publishEvent);
