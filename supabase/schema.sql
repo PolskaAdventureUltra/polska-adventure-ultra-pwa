@@ -10,6 +10,8 @@
 --   Klucz dodaje się ręcznie: insert into public.admin_keys (key_hash, label) values ('<hash>', 'opis');
 -- * Kody zaproszenia pozwalają wybranym osobom dołączyć do wyzwania przed oficjalnymi zapisami
 --   (tylko hash SHA-256 kodu): insert into public.challenge_invites (code_hash, label) values ('<hash>', 'imię');
+--   Kod przypisuje się do pierwszego urządzenia; zwolnienie (np. nowy telefon):
+--   update public.challenge_invites set claimed_token_hash = null, claimed_at = null where label = 'imię';
 
 create table if not exists public.devices (
   id uuid primary key,
@@ -86,6 +88,9 @@ create table if not exists public.challenge_invites (
   label text,
   created_at timestamptz not null default now()
 );
+-- Kod działa tylko na jednym urządzeniu: hash losowego tokenu urządzenia, które wpisało go pierwsze.
+alter table public.challenge_invites add column if not exists claimed_token_hash text;
+alter table public.challenge_invites add column if not exists claimed_at timestamptz;
 
 alter table public.event_participants enable row level security;
 alter table public.challenge_invites enable row level security;
@@ -300,6 +305,31 @@ returns boolean language sql stable security definer set search_path = public as
     where code_hash = encode(sha256(convert_to(upper(replace(trim(p_code), ' ', '')), 'UTF8')), 'hex'));
 $$;
 
+-- Przypisuje kod do urządzenia przy pierwszym użyciu. true = kod ważny i należy do tego urządzenia;
+-- false = brak kodu (np. wycofany) albo kod przypisany już do innego urządzenia.
+create or replace function public.claim_challenge_invite(p_code text, p_token text)
+returns boolean language plpgsql security definer set search_path = public as $$
+declare
+  v_code_hash text;
+  v_token_hash text;
+  v_claimed text;
+begin
+  if coalesce(char_length(p_code), 0) < 8 or coalesce(char_length(p_token), 0) < 32 then
+    return false;
+  end if;
+  v_code_hash := encode(sha256(convert_to(upper(replace(trim(p_code), ' ', '')), 'UTF8')), 'hex');
+  v_token_hash := encode(sha256(convert_to(p_token, 'UTF8')), 'hex');
+  select claimed_token_hash into v_claimed from challenge_invites where code_hash = v_code_hash for update;
+  if not found then
+    return false;
+  end if;
+  if v_claimed is null then
+    update challenge_invites set claimed_token_hash = v_token_hash, claimed_at = now() where code_hash = v_code_hash;
+    return true;
+  end if;
+  return v_claimed = v_token_hash;
+end $$;
+
 -- Dostęp z aplikacji tylko do powyższych funkcji (bez is_admin).
 revoke execute on function public.ping(uuid), public.forget_device(uuid), public.get_stats(),
   public.share_activity(text, text, date, numeric, numeric, jsonb, text),
@@ -310,7 +340,7 @@ revoke execute on function public.ping(uuid), public.forget_device(uuid), public
   public.admin_create_event(text, text, text, timestamptz, text, double precision, double precision, text, text),
   public.admin_delete_event(text, uuid), public.list_events(),
   public.join_event(uuid, text), public.leave_event(uuid, text),
-  public.check_challenge_invite(text) from public;
+  public.check_challenge_invite(text), public.claim_challenge_invite(text, text) from public;
 grant execute on function public.ping(uuid), public.forget_device(uuid), public.get_stats(),
   public.share_activity(text, text, date, numeric, numeric, jsonb, text),
   public.delete_activity(uuid, text), public.list_activities(int),
@@ -320,4 +350,6 @@ grant execute on function public.ping(uuid), public.forget_device(uuid), public.
   public.admin_create_event(text, text, text, timestamptz, text, double precision, double precision, text, text),
   public.admin_delete_event(text, uuid), public.list_events(),
   public.join_event(uuid, text), public.leave_event(uuid, text),
-  public.check_challenge_invite(text) to anon;
+  public.claim_challenge_invite(text, text) to anon;
+-- Stara funkcja sprawdzania kodu (bez przypisania do urządzenia) była wcześniej dostępna - odbieramy ją wprost.
+revoke execute on function public.check_challenge_invite(text) from anon;
