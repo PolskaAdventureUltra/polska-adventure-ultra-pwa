@@ -16,6 +16,7 @@ const ROUTE_SHARE_TOKENS_KEY = "pau_route_share_tokens"; // { idTrasy: tokenUsuw
 const EVENT_TOKENS_KEY = "pau_event_tokens";     // { idWydarzenia: tokenZapisu }
 const ADMIN_KEY_KEY = "pau_admin_key";           // klucz organizatora (tylko na telefonie administratora)
 const CHALLENGE_INVITE_KEY = "pau_challenge_invite"; // kod zaproszenia: dołączenie przed oficjalnymi zapisami
+const CHALLENGE_INVITE_TOKEN_KEY = "pau_challenge_invite_token"; // losowy token urządzenia, do którego przypisano kod
 const CHALLENGE_KEY = "pau_challenge";              // { start: "YYYY-MM-DD" } - udział w wyzwaniu 4000 km
 const GOALS_KEY = "pau_goals"; // [{ period: "week"|"month", disc: "all"|"Bieg"|..., km }]
 
@@ -116,9 +117,9 @@ const TRANSLATIONS = {
     chDemoSub: "z 4000 km",
     chInviteLink: "Masz kod zaproszenia?",
     promptInvite: "Wpisz kod zaproszenia do wyzwania:",
-    inviteInvalid: "Nieprawidłowy kod zaproszenia.",
+    inviteInvalid: "Kod jest nieprawidłowy albo został już użyty na innym urządzeniu.",
     inviteOk: "Kod przyjęty — możesz dołączyć do wyzwania.",
-    inviteRevoked: "Twoje zaproszenie do wyzwania zostało wycofane przez organizatora. Treningi zostają w Historii.",
+    inviteRevoked: "Twoje zaproszenie do wyzwania zostało wycofane albo przeniesione na inne urządzenie. Treningi zostają w Historii.",
     chPartners: "PARTNERZY PROJEKTU",
     chPartnerCta: "Zostań partnerem →",
     chParticipantsOnly: "Postęp na żywo widzą tylko osoby biorące udział w wyzwaniu.",
@@ -249,7 +250,7 @@ const TRANSLATIONS = {
         <ul>
           <li>Zakładka <b>Wyzwanie</b> jest dostępna dla wszystkich: pokazuje trasę 4000 km (start i meta: Lublin) i zasady. Licznik na mapie jest poglądowy — prawdziwy postęp widzą tylko uczestnicy.</li>
           <li>Zapisy ruszają we wrześniu 2027. Po dołączeniu ekran pokazuje Twój postęp: kilometry w każdej dyscyplinie, miejsce na trasie i prognozę mety.</li>
-          <li>Masz kod zaproszenia od organizatora? Kliknij „Masz kod zaproszenia?” pod przyciskiem zapisów — po wpisaniu kodu możesz dołączyć wcześniej. Jeśli organizator wycofa kod, udział w wyzwaniu zostanie zakończony (treningi zostają w Historii).</li>
+          <li>Masz kod zaproszenia od organizatora? Kliknij „Masz kod zaproszenia?” pod przyciskiem zapisów — po wpisaniu kodu możesz dołączyć wcześniej. Kod działa tylko na jednym telefonie (przy zmianie telefonu przywróć kopię zapasową albo poproś organizatora o zwolnienie kodu). Jeśli organizator wycofa kod, udział w wyzwaniu zostanie zakończony (treningi zostają w Historii).</li>
           <li>Do postępu liczą się <b>tylko odcinki wyzwania</b>: przy zapisie treningu zaznacz „🏁 Odcinek wyzwania 4000 km”, a w Historii możesz oznaczyć lub odznaczyć trening przyciskiem 🏁. Codzienne treningi gdzie indziej trafiają tylko do Historii.</li>
           <li>Po rezygnacji ekran wraca do widoku dla obserwatorów; treningi zostają w Historii.</li>
         </ul>
@@ -491,9 +492,9 @@ const TRANSLATIONS = {
     chDemoSub: "of 4000 km",
     chInviteLink: "Have an invitation code?",
     promptInvite: "Enter your challenge invitation code:",
-    inviteInvalid: "Invalid invitation code.",
+    inviteInvalid: "The code is invalid or has already been used on another device.",
     inviteOk: "Code accepted — you can join the challenge.",
-    inviteRevoked: "Your challenge invitation was withdrawn by the organiser. Your trainings stay in History.",
+    inviteRevoked: "Your challenge invitation was withdrawn or moved to another device. Your trainings stay in History.",
     chPartners: "PROJECT PARTNERS",
     chPartnerCta: "Become a partner →",
     chParticipantsOnly: "Live progress is visible only to challenge participants.",
@@ -624,7 +625,7 @@ const TRANSLATIONS = {
         <ul>
           <li>The <b>Challenge</b> tab is open to everyone: it shows the 4000 km route (start and finish: Lublin) and the rules. The counter on the map is just an illustration — real progress is visible only to participants.</li>
           <li>Sign-ups open in September 2027. After joining, the screen shows your progress: kilometres per discipline, your place on the route and a finish forecast.</li>
-          <li>Got an invitation code from the organiser? Tap “Have an invitation code?” below the sign-up button — after entering it you can join early. If the organiser withdraws the code, your participation ends (your trainings stay in History).</li>
+          <li>Got an invitation code from the organiser? Tap “Have an invitation code?” below the sign-up button — after entering it you can join early. The code works on one phone only (when changing phones, restore your backup or ask the organiser to release the code). If the organiser withdraws the code, your participation ends (your trainings stay in History).</li>
           <li>Only <b>challenge stages</b> count towards progress: when saving a training tick “🏁 4000 km challenge stage”, and in History you can mark or unmark a training with the 🏁 button. Everyday trainings elsewhere go only to History.</li>
           <li>After leaving, the screen returns to the observer view; your trainings stay in History.</li>
         </ul>
@@ -1270,7 +1271,21 @@ function normalizeInviteCode(code) {
   return code.trim().replace(/\s+/g, "").toUpperCase();
 }
 
-// Przed oficjalnymi zapisami udział z kodu zaproszenia trwa tylko, dopóki organizator nie usunie kodu.
+function getInviteDeviceToken() {
+  let token = localStorage.getItem(CHALLENGE_INVITE_TOKEN_KEY);
+  if (!token) {
+    token = randomToken();
+    localStorage.setItem(CHALLENGE_INVITE_TOKEN_KEY, token);
+  }
+  return token;
+}
+
+function claimChallengeInvite(code) {
+  return rpc("claim_challenge_invite", { p_code: code, p_token: getInviteDeviceToken() });
+}
+
+// Przed oficjalnymi zapisami udział z kodu zaproszenia trwa tylko, dopóki organizator nie usunie kodu
+// (albo nie przypisze go do innego urządzenia).
 // Bez internetu nic nie zmieniamy - sprawdzimy przy następnej okazji.
 let challengeInviteChecked = false;
 
@@ -1280,7 +1295,7 @@ async function verifyChallengeInvite() {
   if (toYmd(new Date()) >= CHALLENGE_SIGNUP_FROM || getAdminKey()) return;
   let valid;
   try {
-    valid = await rpc("check_challenge_invite", { p_code: code });
+    valid = await claimChallengeInvite(code);
   } catch (e) {
     return;
   }
@@ -1299,7 +1314,7 @@ async function enterChallengeInvite() {
   if (!input) return;
   const code = normalizeInviteCode(input);
   try {
-    if (!(await rpc("check_challenge_invite", { p_code: code }))) {
+    if (!(await claimChallengeInvite(code))) {
       alert(dict.inviteInvalid);
       return;
     }
@@ -1694,7 +1709,7 @@ function exportCsv() {
 // --- Kopia zapasowa (plik JSON z danymi z localStorage) ---
 // PIN, klucz organizatora, identyfikator urządzenia i zgoda na statystyki zostają celowo poza kopią.
 const BACKUP_FORMAT = "polska-adventure-ultra-backup";
-const BACKUP_KEYS = [HISTORY_KEY, PLANNED_ROUTES_KEY, GOALS_KEY, CHALLENGE_KEY, CHALLENGE_INVITE_KEY, THEME_KEY, LANG_KEY, NICK_KEY, SHARE_TOKENS_KEY, ROUTE_SHARE_TOKENS_KEY, EVENT_TOKENS_KEY];
+const BACKUP_KEYS = [HISTORY_KEY, PLANNED_ROUTES_KEY, GOALS_KEY, CHALLENGE_KEY, CHALLENGE_INVITE_KEY, CHALLENGE_INVITE_TOKEN_KEY, THEME_KEY, LANG_KEY, NICK_KEY, SHARE_TOKENS_KEY, ROUTE_SHARE_TOKENS_KEY, EVENT_TOKENS_KEY];
 const BACKUP_JSON_KEYS = { [HISTORY_KEY]: "array", [PLANNED_ROUTES_KEY]: "array", [GOALS_KEY]: "array", [EVENT_TOKENS_KEY]: "object", [CHALLENGE_KEY]: "object", [SHARE_TOKENS_KEY]: "object", [ROUTE_SHARE_TOKENS_KEY]: "object" };
 
 async function createBackup() {
