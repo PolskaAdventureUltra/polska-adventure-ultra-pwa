@@ -1266,15 +1266,14 @@ const PARTNERS_PAGE_URL = "https://polskaadventureultra.pl/#partners";
 
 // Hasła wyzwania w płynącym pasku na górze karty Wyzwania (motto - po polsku w obu językach).
 const CHALLENGE_SLOGANS = [
-  "Pokaż światu, ile masz sił",
   "Polska Adventure Ultra",
-  "Już czas",
+  "Pokaż światu, ile masz sił",
   "Biegnij, jedź i płyń",
   "Ultra siostra, ultra brat",
   "Zatrzymaj czas",
+  "Nie pytaj, czy dasz radę — pokaż, ile jesteś wart",
   "Ultra DNA",
-  "Nie pytaj, czy dasz radę",
-  "Pokaż, ile jesteś wart",
+  "Już czas",
 ];
 let challengeDemoFrame = null; // animacja licznika 1-100% w widoku obserwatora
 
