@@ -253,6 +253,31 @@ body.dark .challenge { --ch-bg: #0A1322; --ch-band: #131E31; }
 .challenge button { width: auto; margin-top: 0; min-height: 44px; font-family: var(--ch-body); cursor: pointer; }
 .ch-flag { display: flex; height: 6px; margin: 0 -16px 14px; }
 .ch-flag i { flex: 1; }
+/* Płynący pasek z hasłami tuż pod paskiem flagi, na całą szerokość karty. */
+.ch-ticker {
+  margin: -14px -16px 14px; padding: 9px 0; overflow: hidden; cursor: pointer;
+  background: var(--ch-band); border-bottom: 1px solid var(--ch-line);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.ch-ticker:focus-visible { outline: 2px solid var(--ch-accent); outline-offset: -2px; }
+.ch-ticker-track { display: flex; width: max-content; animation: ch-ticker 45s linear infinite; }
+.ch-ticker:hover .ch-ticker-track, .ch-ticker.paused .ch-ticker-track { animation-play-state: paused; }
+.ch-ticker-run { display: flex; flex-shrink: 0; align-items: center; }
+.ch-ticker-run span {
+  font-family: var(--ch-display); font-weight: 700; font-size: 14px; letter-spacing: 0.06em;
+  text-transform: uppercase; white-space: nowrap; color: var(--ch-accent);
+}
+.ch-ticker-run i { font-style: normal; color: var(--ch-muted); padding: 0 14px; }
+@keyframes ch-ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+/* Ograniczenie ruchu: bez przewijania, hasła zawijają się statycznie (jedna kopia). */
+@media (prefers-reduced-motion: reduce) {
+  .ch-ticker { -webkit-mask-image: none; mask-image: none; padding: 9px 16px; cursor: default; }
+  .ch-ticker-track { animation: none; width: auto; }
+  .ch-ticker-run { flex-wrap: wrap; justify-content: center; row-gap: 4px; flex-shrink: 1; }
+  .ch-ticker-run + .ch-ticker-run { display: none; }
+  .ch-ticker-run i { padding: 0 8px; }
+}
 .ch-kicker { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--ch-muted); }
 .ch-h1 { margin: 6px 0 0; font-family: var(--ch-display); font-weight: 700; font-size: 32px; line-height: 1.02; letter-spacing: -0.02em; }
 /* Lewa kolumna (licznik + partnerzy) obok mapy - nic nie nachodzi na kontur. */
