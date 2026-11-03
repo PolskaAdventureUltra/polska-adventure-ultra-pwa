@@ -1263,6 +1263,19 @@ const CHALLENGE_PARTNERS = [
 const PARTNER_LOGO_AREA = 750; // px² - każde logo zajmuje mniej więcej tyle samo miejsca
 const PARTNER_LOGO_MAX_W = 62;
 const PARTNERS_PAGE_URL = "https://polskaadventureultra.pl/#partners";
+
+// Hasła wyzwania w płynącym pasku na górze karty Wyzwania (motto - po polsku w obu językach).
+const CHALLENGE_SLOGANS = [
+  "Pokaż światu, ile masz sił",
+  "Polska Adventure Ultra",
+  "Już czas",
+  "Biegnij, jedź i płyń",
+  "Ultra siostra, ultra brat",
+  "Zatrzymaj czas",
+  "Ultra DNA",
+  "Nie pytaj, czy dasz radę",
+  "Pokaż, ile jesteś wart",
+];
 let challengeDemoFrame = null; // animacja licznika 1-100% w widoku obserwatora
 
 function discIcon(disc, size) {
@@ -1412,7 +1425,26 @@ function challengeMapSvg(fraction, showDot) {
 function challengeHeadHtml() {
   const dict = t();
   return `<div class="ch-flag" aria-hidden="true"><i style="background:var(--ch-stripe)"></i><i style="background:var(--ch-accent)"></i></div>` +
+    challengeTickerHtml() +
     `<span class="ch-kicker">${dict.chMeta}</span><h2 class="ch-h1">${dict.chH1}</h2>`;
+}
+
+// Pasek z hasłami: treść powtórzona 2x, animacja przesuwa o połowę -> pętla bez skoku.
+// Dotknięcie zatrzymuje/wznawia; przy "ograniczeniu ruchu" w systemie pasek stoi (CSS).
+function challengeTickerHtml() {
+  const run = CHALLENGE_SLOGANS.map((s) => `<span>${escapeXml(s)}</span><i aria-hidden="true">•</i>`).join("");
+  return `<div class="ch-ticker" role="marquee" tabindex="0" aria-label="${escapeXml(CHALLENGE_SLOGANS.join(". "))}">` +
+    `<div class="ch-ticker-track" aria-hidden="true"><div class="ch-ticker-run">${run}</div><div class="ch-ticker-run">${run}</div></div></div>`;
+}
+
+function bindChallengeTicker(root) {
+  const ticker = root.querySelector(".ch-ticker");
+  if (!ticker) return;
+  const toggle = () => ticker.classList.toggle("paused");
+  ticker.addEventListener("click", toggle);
+  ticker.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+  });
 }
 
 function challengePartnersHtml() {
@@ -1507,6 +1539,7 @@ function renderChallenge() {
   document.getElementById("challengeSettings").style.display = challenge ? "block" : "none";
   document.getElementById("challengeFlagRow").style.display = challenge ? "flex" : "none";
   el.innerHTML = challenge ? challengeParticipantHtml() : challengeObserverHtml();
+  bindChallengeTicker(el);
   if (challenge) {
     document.getElementById("challengeStart").value = challenge.start;
   } else {
