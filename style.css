@@ -335,6 +335,8 @@ body.dark .challenge { --ch-bg: #0A1322; --ch-band: #131E31; }
 .copyright { margin: 14px 0 4px; text-align: center; font-size: 11px; color: var(--subtle-fg); }
 .event-actions .done-btn.done { background: var(--accent); color: var(--on-accent); }
 .event-item.event-done .event-title { opacity: 0.75; }
+.event-result { margin-top: 4px; font-size: 14px; }
+.event-result b, .event-result-km { color: var(--hl); font-family: var(--display); }
 .events-done { margin-top: 10px; font-size: 14px; }
 .events-done summary { cursor: pointer; font-weight: bold; }
 .events-done ul { list-style: none; padding: 0; margin: 6px 0 0; }

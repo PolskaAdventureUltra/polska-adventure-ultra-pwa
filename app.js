@@ -190,6 +190,8 @@ const TRANSLATIONS = {
     eventDoneFillTraining: (title) => `📅 ${title} — uzupełnij dystans i czas, żeby trening trafił do Historii (albo pomiń, jeśli importujesz go z zegarka).`,
     hintCloseLabel: "Zamknij",
     eventDoneSharedTag: "(widoczne dla wszystkich)",
+    eventYourResult: "🏁 Twój wynik:",
+    eventNoResult: "Brak treningu z tego dnia w Historii — zapisz go, a dystans pojawi się tutaj.",
     eventWent: (n) => `🙋 Zapisanych: ${n}`,
     eventsPastTitle: "🏁 Zakończone (ostatnie 7 dni)",
     eventUndoneTitle: "Kliknij, aby cofnąć",
@@ -592,6 +594,8 @@ const TRANSLATIONS = {
     eventDoneFillTraining: (title) => `📅 ${title} — fill in distance and time so the training lands in your History (or skip it if you import it from your watch).`,
     hintCloseLabel: "Close",
     eventDoneSharedTag: "(visible to everyone)",
+    eventYourResult: "🏁 Your result:",
+    eventNoResult: "No training from that day in your History — save it and the distance will show up here.",
     eventWent: (n) => `🙋 Signed up: ${n}`,
     eventsPastTitle: "🏁 Finished (last 7 days)",
     eventUndoneTitle: "Tap to undo",
@@ -1710,6 +1714,7 @@ function saveTraining() {
   clearFieldState("dist");
   clearFieldState("time");
   hideTrainHint();
+  const linkedEvent = pendingEventDone;
 
   const entry = {
     date: document.getElementById("date").value || new Date().toISOString().slice(0, 10),
@@ -1722,6 +1727,7 @@ function saveTraining() {
     notes: document.getElementById("notes").value.trim(),
   };
   if (pendingRoute) entry.route = pendingRoute;
+  if (pendingEventDone && entry.date === pendingEventDone.ymd) entry.event = pendingEventDone.id;
   if (getChallenge() && document.getElementById("challengeFlag").checked) entry.challenge = true;
 
   const history = getHistory();
@@ -1734,9 +1740,11 @@ function saveTraining() {
   document.getElementById("notes").value = "";
   document.getElementById("challengeFlag").checked = false;
   pendingRoute = null;
+  pendingEventDone = null;
 
   refreshTotalLabel();
   refreshHistoryList();
+  if (linkedEvent && entry.event) renderEvents();
   alert(t().alertSaved);
   if (newlyReached.length) alert(t().goalReached(newlyReached.map(goalLabel)));
 }
@@ -2002,6 +2010,8 @@ function drawElevationProfile(prefix, track) {
 
 // --- Trasa (z importu GPX/TCX) ---
 let pendingRoute = null;
+// Wydarzenie, z którego otwarto formularz („Zrobione”) - zapisany trening dostaje jego id.
+let pendingEventDone = null;
 let routeMapInstance = null;
 let routeLayerGroup = null;
 
@@ -2755,6 +2765,7 @@ function openTrainingFromEvent(ev) {
   clearFieldState("dist");
   clearFieldState("time");
   showTrainHint(t().eventDoneFillTraining(ev.title));
+  pendingEventDone = { id: ev.id, ymd: toYmd(new Date(ev.starts_at)) };
   window.scrollTo(0, 0);
   if (!document.getElementById("dist").value) markFieldAttention("dist");
   if (!document.getElementById("time").value) markFieldAttention("time");
@@ -2781,6 +2792,19 @@ async function removeEventDone(id) {
   renderEvents();
 }
 
+// Twój wynik z wydarzenia = trening z Historii powiązany z nim (pole event) albo - dla starszych
+// wpisów - trening z tego dnia z notatką „📅 nazwa”. Usunięcie treningu usuwa też wynik.
+function eventResult(id, ev) {
+  const ymd = toYmd(new Date(ev.starts_at));
+  const prefix = `📅 ${ev.title}`;
+  const history = getHistory();
+  const match = history.find((h) => h.event === id) ||
+    history.find((h) => !h.event && h.date === ymd && typeof h.notes === "string" && h.notes.startsWith(prefix));
+  if (!match || !(parseFloat(match.dist) > 0)) return "";
+  const time = parseFloat(match.time);
+  return `${parseFloat(match.dist).toFixed(1)} km` + (time > 0 ? ` · ${formatDuration(time)}` : "");
+}
+
 // Lista ukończonych wydarzeń - trzymana lokalnie, bo serwer usuwa wydarzenia po 30 dniach.
 function eventsDoneHtml(dict) {
   const entries = Object.entries(getEventsDone())
@@ -2788,7 +2812,9 @@ function eventsDoneHtml(dict) {
   if (entries.length === 0) return "";
   const items = entries.map(([id, ev]) => {
     const when = new Date(ev.starts_at).toLocaleDateString(dict.dateLocale, { day: "numeric", month: "long", year: "numeric" });
+    const result = eventResult(id, ev);
     return `<li>✅ <b>${escapeXml(ev.title)}</b> · ${dict.discNames[ev.disc] || escapeXml(ev.disc)} · ${escapeXml(when)}` +
+      (result ? ` · <b class="event-result-km">${escapeXml(result)}</b>` : "") +
       (ev.token ? ` <span class="hint-text">${dict.eventDoneSharedTag}</span>` : "") +
       ` <button class="done-remove-btn" data-id="${escapeXml(id)}" title="${dict.eventDoneRemoveTitle}">✕</button></li>`;
   }).join("");
@@ -2817,6 +2843,13 @@ function eventCountdown(startsAt) {
   if (days <= 0) return dict.eventToday;
   if (days === 1) return dict.eventTomorrow;
   return dict.eventInDays(days);
+}
+
+function eventResultLine(id, doneEntry, dict) {
+  const result = eventResult(id, doneEntry);
+  return result
+    ? `<div class="event-result">${dict.eventYourResult} <b>${escapeXml(result)}</b></div>`
+    : `<div class="event-result hint-text">${dict.eventNoResult}</div>`;
 }
 
 function eventItemHtml(ev, index, ctx) {
@@ -2853,6 +2886,7 @@ function eventItemHtml(ev, index, ctx) {
     `<div class="event-date">📅 ${escapeXml(when)}${active ? `<span class="event-countdown">${eventCountdown(start)}</span>` : ""}</div>` +
     `<div class="event-title"><b>${escapeXml(ev.title)}</b> · ${dict.discNames[ev.disc] || escapeXml(ev.disc)}</div>` +
     `<div class="hint-text">📍 ${escapeXml(ev.place)}</div>` +
+    (isDone ? eventResultLine(ev.id, doneMap[ev.id], dict) : "") +
     (active && ev.description ? `<div class="event-desc">${escapeXml(ev.description)}</div>` : "") +
     `<div class="event-actions">${join}${doneBtn}${nav}${link}${ics}${del}</div>` +
     `</div>`;
