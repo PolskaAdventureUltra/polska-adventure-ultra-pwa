@@ -84,6 +84,13 @@ create table if not exists public.event_completions (
   created_at timestamptz not null default now(),
   primary key (event_id, token_hash)
 );
+-- Wynik z wydarzenia (opcjonalny, wysyła go autor ukończenia): nick (null = anonimowo), dystans, czas
+-- i profil wysokości jako [[km, m n.p.m.], ...] - bez współrzędnych, więc nie zdradza miejsca.
+alter table public.event_completions add column if not exists nick text;
+alter table public.event_completions add column if not exists dist_km numeric;
+alter table public.event_completions add column if not exists time_min numeric;
+alter table public.event_completions add column if not exists elev jsonb;
+alter table public.event_completions add column if not exists result_at timestamptz;
 
 alter table public.devices enable row level security;
 alter table public.activities enable row level security;
@@ -322,6 +329,60 @@ begin
   return (select count(*) from event_completions where event_id = p_id);
 end $$;
 
+-- Wynik z wydarzenia - tylko właściciel tokenu ukończenia; p_dist_km null = usuń wynik.
+create or replace function public.set_event_result(
+  p_id uuid, p_token text, p_nick text, p_dist_km numeric, p_time_min numeric, p_elev jsonb
+) returns boolean language plpgsql security definer set search_path = public as $$
+declare
+  v_nick text := nullif(trim(p_nick), '');
+begin
+  if p_token is null or char_length(p_token) < 32 then
+    raise exception 'invalid token';
+  end if;
+  if v_nick is not null and char_length(v_nick) > 30 then
+    raise exception 'invalid nick';
+  end if;
+  if p_dist_km is not null and (p_dist_km <= 0 or p_dist_km > 1000) then
+    raise exception 'invalid distance';
+  end if;
+  if p_time_min is not null and (p_time_min < 0 or p_time_min > 20000) then
+    raise exception 'invalid time';
+  end if;
+  if p_elev is not null and (
+       jsonb_typeof(p_elev) <> 'array' or jsonb_array_length(p_elev) > 150
+       or octet_length(p_elev::text) > 4000
+       or exists (select 1 from jsonb_array_elements(p_elev) x
+                  where jsonb_typeof(x) <> 'array' or jsonb_array_length(x) <> 2
+                     or jsonb_typeof(x -> 0) <> 'number' or jsonb_typeof(x -> 1) <> 'number'
+                     or (x ->> 0)::numeric not between 0 and 1000
+                     or (x ->> 1)::numeric not between -500 and 9000)) then
+    raise exception 'invalid elevation';
+  end if;
+  if not exists (select 1 from events where id = p_id and starts_at > now() - interval '7 days') then
+    raise exception 'event not found';
+  end if;
+  update event_completions
+  set nick = v_nick,
+      dist_km = round(p_dist_km, 2),
+      time_min = case when p_dist_km is null then null else round(p_time_min, 1) end,
+      elev = case when p_dist_km is null then null else p_elev end,
+      result_at = case when p_dist_km is null then null else now() end
+  where event_id = p_id and token_hash = encode(sha256(convert_to(p_token, 'UTF8')), 'hex');
+  return found;
+end $$;
+
+-- Wyniki wydarzenia dla wszystkich, w kolejności ukończenia (bez rankingu).
+create or replace function public.list_event_results(p_id uuid)
+returns table (nick text, dist_km numeric, time_min numeric, elev jsonb, done_at timestamptz)
+language sql stable security definer set search_path = public as $$
+  select c.nick, c.dist_km, c.time_min, c.elev, c.created_at
+  from event_completions c
+  join events e on e.id = c.event_id
+  where c.event_id = p_id and c.dist_km is not null and e.starts_at > now() - interval '7 days'
+  order by c.created_at
+  limit 200;
+$$;
+
 -- Zapis / wypis; zwraca aktualną liczbę chętnych.
 create or replace function public.join_event(p_id uuid, p_token text)
 returns bigint language plpgsql security definer set search_path = public as $$
@@ -394,6 +455,7 @@ revoke execute on function public.ping(uuid), public.forget_device(uuid), public
   public.admin_delete_event(text, uuid), public.list_events(),
   public.join_event(uuid, text), public.leave_event(uuid, text),
   public.list_events_v2(), public.complete_event(uuid, text), public.uncomplete_event(uuid, text),
+  public.set_event_result(uuid, text, text, numeric, numeric, jsonb), public.list_event_results(uuid),
   public.check_challenge_invite(text), public.claim_challenge_invite(text, text) from public;
 grant execute on function public.ping(uuid), public.forget_device(uuid), public.get_stats(),
   public.share_activity(text, text, date, numeric, numeric, jsonb, text),
@@ -405,6 +467,7 @@ grant execute on function public.ping(uuid), public.forget_device(uuid), public.
   public.admin_delete_event(text, uuid), public.list_events(),
   public.join_event(uuid, text), public.leave_event(uuid, text),
   public.list_events_v2(), public.complete_event(uuid, text), public.uncomplete_event(uuid, text),
+  public.set_event_result(uuid, text, text, numeric, numeric, jsonb), public.list_event_results(uuid),
   public.claim_challenge_invite(text, text) to anon;
 -- Stara funkcja sprawdzania kodu (bez przypisania do urządzenia) była wcześniej dostępna - odbieramy ją wprost.
 revoke execute on function public.check_challenge_invite(text) from anon;

@@ -67,7 +67,7 @@ const TRANSLATIONS = {
     confirmDelete: "Usunąć ten wpis z historii?",
     alertDistRequired: "Podaj dystans większy od 0.",
     alertSaved: "Zapisano trening!",
-    alertDistTimeRequired: "Podaj dystans i czas.",
+    alertTimeRequired: "Podaj czas większy od 0.",
     paceResult: (min, sec) => `Tempo: ${min}:${sec} min/km`,
     speedResult: (v) => `Prędkość: ${v} km/h`,
     alertNoHistoryChart: "Brak danych historycznych.",
@@ -182,13 +182,23 @@ const TRANSLATIONS = {
     eventDoneMark: (n) => `✅ Ukończone · ${n}`,
     eventDoneTitle: "Zaznacz, że masz to wydarzenie za sobą — liczba obok to osoby, które je ukończyły",
     eventDoneDialogTitle: "Gratulacje! 🎉",
-    eventDoneDialogText: "Pokazać wszystkim, że masz to wydarzenie za sobą? Widać tylko liczbę osób — bez nicku.",
-    eventDoneShareBtn: "👥 Pokaż wszystkim",
+    eventDoneDialogText: "Pokazać wszystkim, że masz to wydarzenie za sobą? Razem z Twoim wynikiem: dystans, czas i profil wysokości (bez mapy trasy).",
+    eventDoneShareBtn: "👥 Pokaż z nickiem",
+    eventDoneShareAnonBtn: "👥 Pokaż anonimowo",
     eventDoneLocalBtn: "🔒 Tylko u mnie",
     eventDoneCancelBtn: "Anuluj",
     eventDoneShareFailed: "Nie udało się wysłać na serwer (sprawdź internet) — zapisano tylko na Twoim telefonie.",
-    eventDoneFillTraining: "Uzupełnij dystans i czas, żeby trening trafił do Historii (albo pomiń, jeśli już go importujesz z zegarka).",
+    eventDoneFillTraining: (title) => `📅 ${title} — uzupełnij dystans i czas, żeby trening trafił do Historii (albo pomiń, jeśli importujesz go z zegarka).`,
+    hintCloseLabel: "Zamknij",
     eventDoneSharedTag: "(widoczne dla wszystkich)",
+    eventYourResult: "🏁 Twój wynik:",
+    eventResultsBtn: (n) => `📊 Wyniki · ${n}`,
+    eventResultsTitle: (title) => `📊 Wyniki — ${title}`,
+    eventResultsEmpty: "Nikt jeszcze nie podał wyniku.",
+    eventResultsAnon: "Anonim",
+    eventResultsProfile: "📈 Profil",
+    eventResultsClose: "Zamknij",
+    eventNoResult: "Brak treningu z tego dnia w Historii — zapisz go, a dystans pojawi się tutaj.",
     eventWent: (n) => `🙋 Zapisanych: ${n}`,
     eventsPastTitle: "🏁 Zakończone (ostatnie 7 dni)",
     eventUndoneTitle: "Kliknij, aby cofnąć",
@@ -321,7 +331,7 @@ const TRANSLATIONS = {
       ${community ? `<details><summary>🌍 Aktywność i społeczność</summary>
         <ul>
           <li>Zakładka <b>Aktywność</b> pokazuje statystyki społeczności i treningi udostępnione przez innych użytkowników.</li>
-          <li><b>📅 Wydarzenia</b> (na górze zakładki): wspólne treningi, spływy i rajdy ogłaszane przez organizatora. „🙋 Biorę udział” zapisuje Cię anonimowo — widać tylko liczbę chętnych; kliknij ponownie, żeby się wypisać. „📍 Dojazd” otwiera nawigację do miejsca zbiórki, „📆 Do kalendarza” dodaje wydarzenie do kalendarza w telefonie. Gdy wydarzenie się zacznie, pojawi się „🏁 Zrobione” z liczbą osób, które je ukończyły. Po kliknięciu sam decydujesz, czy pokazać innym, że masz je za sobą (anonimowo — widać tylko liczbę), a aplikacja otworzy formularz treningu z dyscypliną i datą. Zakończone wydarzenia widać jeszcze 7 dni w sekcji „🏁 Zakończone”, a Twoje ukończone zostają w liście „🏅 Twoje ukończone wydarzenia” (także w kopii zapasowej).</li>
+          <li><b>📅 Wydarzenia</b> (na górze zakładki): wspólne treningi, spływy i rajdy ogłaszane przez organizatora. „🙋 Biorę udział” zapisuje Cię anonimowo — widać tylko liczbę chętnych; kliknij ponownie, żeby się wypisać. „📍 Dojazd” otwiera nawigację do miejsca zbiórki, „📆 Do kalendarza” dodaje wydarzenie do kalendarza w telefonie. Gdy wydarzenie się zacznie, pojawi się „🏁 Zrobione” z liczbą osób, które je ukończyły. Po kliknięciu sam decydujesz, czy pokazać innym, że masz je za sobą — z nickiem albo anonimowo — czy zostawić to tylko u siebie. Aplikacja otworzy formularz treningu z dyscypliną i datą; gdy go zapiszesz, Twój wynik (dystans, czas i profil wysokości z importu z zegarka) pojawi się przy wydarzeniu, a jeśli wybrałeś „pokaż”, także w „📊 Wyniki” dla wszystkich — w kolejności ukończenia, bez rankingu. Mapy trasy nie udostępniamy. Zakończone wydarzenia widać jeszcze 7 dni w sekcji „🏁 Zakończone”, a Twoje ukończone zostają w liście „🏅 Twoje ukończone wydarzenia” (także w kopii zapasowej).</li>
           <li>Udostępniasz tylko wtedy, gdy sam klikniesz 📤 przy treningu. Wybierasz dowolny nick (1–30 znaków).</li>
           <li><b>Trasy społeczności:</b> zaplanowaną trasę udostępnisz przyciskiem 📤 przy zapisanej trasie w zakładce Trasy. Przy trasach innych osób: 🗺 — podgląd na mapie, GPX — pobranie do zegarka, ➕ — kopia do Twoich tras (możesz ją dalej edytować).</li>
           <li>Swój wpis usuniesz przyciskiem 🗑 w Aktywności, przyciskiem 🌍 w Historii lub w Trasach albo wszystkie naraz w oknie „Prywatność”.</li>
@@ -429,7 +439,7 @@ const TRANSLATIONS = {
         <li><b>Udostępnione aktywności</b> (tylko te, które sam udostępnisz): nick, dyscyplina, data, dystans, czas i trasa bez pierwszych/ostatnich 300 m. Nie są powiązane z identyfikatorem urządzenia. Przechowywane do czasu, aż je usuniesz. Widoczne dla wszystkich użytkowników aplikacji.</li>
         <li><b>Udostępnione trasy</b> (tylko te, które sam udostępnisz): nick, nazwa trasy, rodzaj, dystans i cała trasa. Nie są powiązane z identyfikatorem urządzenia. Przechowywane do czasu, aż je usuniesz. Widoczne dla wszystkich i możliwe do pobrania przez innych użytkowników.</li>
         <li><b>Zapisy na wydarzenia</b> (tylko gdy klikniesz „Biorę udział”): wyłącznie skrót (hash) losowego znacznika zapisanego na Twoim telefonie — bez nicku i identyfikatora urządzenia. Służy do policzenia chętnych i umożliwia wypisanie się. Usuwany po wypisaniu się albo razem z wydarzeniem, najpóźniej 30 dni po jego terminie.</li>
-        <li><b>Ukończenie wydarzenia</b> (tylko gdy po kliknięciu „Zrobione” wybierzesz „pokaż wszystkim”): tak samo wyłącznie skrót (hash) losowego znacznika z Twojego telefonu. Służy do pokazania liczby osób, które ukończyły wydarzenie. Usuwany po cofnięciu albo razem z wydarzeniem, najpóźniej 30 dni po jego terminie.</li>
+        <li><b>Ukończenie wydarzenia</b> (tylko gdy po kliknięciu „Zrobione” wybierzesz „pokaż wszystkim”): skrót (hash) losowego znacznika z Twojego telefonu, a po zapisaniu treningu także Twój wynik: dystans, czas, profil wysokości (wysokość względem przebytych kilometrów — bez współrzędnych i mapy trasy) oraz nick, jeśli wybrałeś „Pokaż z nickiem”. Służy do pokazania liczby osób, które ukończyły wydarzenie, i listy wyników. Usunięcie treningu z Historii usuwa też wynik z serwera. Usuwany po cofnięciu albo razem z wydarzeniem, najpóźniej 30 dni po jego terminie.</li>
       </ul>
       <p>Podstawa prawna: Twoja zgoda (art. 6 ust. 1 lit. a RODO) — możesz ją wycofać w dowolnym momencie poniżej. Dane są przechowywane w usłudze Supabase w Unii Europejskiej; dostawca, jak każdy serwer, technicznie rejestruje adresy IP w logach.</p>
       ` : ""}
@@ -468,7 +478,7 @@ const TRANSLATIONS = {
     confirmDelete: "Delete this entry from history?",
     alertDistRequired: "Enter a distance greater than 0.",
     alertSaved: "Training saved!",
-    alertDistTimeRequired: "Enter distance and time.",
+    alertTimeRequired: "Enter a time greater than 0.",
     paceResult: (min, sec) => `Pace: ${min}:${sec} min/km`,
     speedResult: (v) => `Speed: ${v} km/h`,
     alertNoHistoryChart: "No historical data.",
@@ -583,13 +593,23 @@ const TRANSLATIONS = {
     eventDoneMark: (n) => `✅ Completed · ${n}`,
     eventDoneTitle: "Mark this event as completed — the number shows how many people completed it",
     eventDoneDialogTitle: "Congratulations! 🎉",
-    eventDoneDialogText: "Show everyone that you completed this event? Only the number of people is shown — no nickname.",
-    eventDoneShareBtn: "👥 Show everyone",
+    eventDoneDialogText: "Show everyone that you completed this event? Together with your result: distance, time and elevation profile (no route map).",
+    eventDoneShareBtn: "👥 Show with my nickname",
+    eventDoneShareAnonBtn: "👥 Show anonymously",
     eventDoneLocalBtn: "🔒 Only on my phone",
     eventDoneCancelBtn: "Cancel",
     eventDoneShareFailed: "Could not send to the server (check your connection) — saved only on your phone.",
-    eventDoneFillTraining: "Fill in distance and time so the training lands in your History (or skip it if you import it from your watch).",
+    eventDoneFillTraining: (title) => `📅 ${title} — fill in distance and time so the training lands in your History (or skip it if you import it from your watch).`,
+    hintCloseLabel: "Close",
     eventDoneSharedTag: "(visible to everyone)",
+    eventYourResult: "🏁 Your result:",
+    eventResultsBtn: (n) => `📊 Results · ${n}`,
+    eventResultsTitle: (title) => `📊 Results — ${title}`,
+    eventResultsEmpty: "Nobody has posted a result yet.",
+    eventResultsAnon: "Anonymous",
+    eventResultsProfile: "📈 Profile",
+    eventResultsClose: "Close",
+    eventNoResult: "No training from that day in your History — save it and the distance will show up here.",
     eventWent: (n) => `🙋 Signed up: ${n}`,
     eventsPastTitle: "🏁 Finished (last 7 days)",
     eventUndoneTitle: "Tap to undo",
@@ -722,7 +742,7 @@ const TRANSLATIONS = {
       ${community ? `<details><summary>🌍 Activity and community</summary>
         <ul>
           <li>The <b>Activity</b> tab shows community statistics and trainings shared by other users.</li>
-          <li><b>📅 Events</b> (at the top of the tab): group trainings, kayak trips and races announced by the organiser. “🙋 I'm going” signs you up anonymously — only the number of people is shown; tap again to cancel. “📍 Directions” opens navigation to the meeting point, “📆 Add to calendar” adds the event to your phone's calendar. Once the event has started, “🏁 Done” appears with the number of people who completed it. When you tap it, you decide whether to show others that you completed it (anonymously — only the number is shown), and the app opens the training form with discipline and date filled in. Finished events stay visible for 7 days under “🏁 Finished”, and yours stay in “🏅 Your completed events” (also in the backup).</li>
+          <li><b>📅 Events</b> (at the top of the tab): group trainings, kayak trips and races announced by the organiser. “🙋 I'm going” signs you up anonymously — only the number of people is shown; tap again to cancel. “📍 Directions” opens navigation to the meeting point, “📆 Add to calendar” adds the event to your phone's calendar. Once the event has started, “🏁 Done” appears with the number of people who completed it. When you tap it, you decide whether to show others that you completed it — with your nickname or anonymously — or keep it to yourself. The app opens the training form with discipline and date filled in; once you save it, your result (distance, time and the elevation profile from a watch import) appears next to the event, and if you chose to show it, also under “📊 Results” for everyone — in order of completion, no ranking. The route map is never shared. Finished events stay visible for 7 days under “🏁 Finished”, and yours stay in “🏅 Your completed events” (also in the backup).</li>
           <li>You share only when you tap 📤 next to a training yourself. Choose any nickname (1–30 characters).</li>
           <li><b>Community routes:</b> share a planned route with the 📤 button next to a saved route in the Routes tab. For other people's routes: 🗺 — map preview, GPX — download to your watch, ➕ — copy to your routes (you can edit it further).</li>
           <li>Delete your entry with 🗑 in Activity, 🌍 in History or Routes, or all at once in the “Privacy” window.</li>
@@ -830,7 +850,7 @@ const TRANSLATIONS = {
         <li><b>Shared activities</b> (only those you share yourself): nickname, discipline, date, distance, time and the route without the first/last 300 m. Not linked to the device ID. Kept until you delete them. Visible to all app users.</li>
         <li><b>Shared routes</b> (only those you share yourself): nickname, route name, type, distance and the whole route. Not linked to the device ID. Kept until you delete them. Visible to and downloadable by all app users.</li>
         <li><b>Event sign-ups</b> (only when you tap “I'm going”): only a hash of a random marker stored on your phone — no nickname or device ID. Used to count participants and to let you cancel. Deleted when you cancel or together with the event, at the latest 30 days after it takes place.</li>
-        <li><b>Event completions</b> (only when you choose “show everyone” after tapping “Done”): likewise only a hash of a random marker from your phone. Used to show how many people completed the event. Deleted when you undo it or together with the event, at the latest 30 days after it takes place.</li>
+        <li><b>Event completions</b> (only when you choose “show everyone” after tapping “Done”): a hash of a random marker from your phone and, once you save the training, your result: distance, time, elevation profile (elevation against distance covered — no coordinates or route map) and your nickname if you chose “Show with my nickname”. Used to show how many people completed the event and the list of results. Deleting the training from your History also removes the result from the server. Deleted when you undo it or together with the event, at the latest 30 days after it takes place.</li>
       </ul>
       <p>Legal basis: your consent (Art. 6(1)(a) GDPR) — you can withdraw it at any time below. Data is stored with Supabase in the European Union; like any server, the provider technically records IP addresses in logs.</p>
       ` : ""}
@@ -853,6 +873,10 @@ function applyLanguage() {
     el.textContent = dict[el.dataset.i18n];
   });
   document.getElementById("langBtn").textContent = dict.langBtnTarget;
+  document.getElementById("trainHintClose").setAttribute("aria-label", dict.hintCloseLabel);
+  hideTrainHint();
+  clearFieldState("dist");
+  clearFieldState("time");
 }
 
 function toggleLanguage() {
@@ -1650,13 +1674,61 @@ function deleteTraining(index) {
   refreshHistoryList();
 }
 
+// --- Podpowiedzi przy polach formularza (zamiast alertów) ---
+// Błąd: czerwona ramka + komunikat pod polem. Uwaga: pomarańczowa, pulsująca ramka.
+// Oba stany znikają, gdy użytkownik zacznie pisać w polu.
+function setFieldError(id, message) {
+  const input = document.getElementById(id);
+  const err = document.getElementById(id + "Error");
+  input.classList.remove("field-attn");
+  input.classList.add("field-invalid");
+  input.setAttribute("aria-invalid", "true");
+  err.textContent = message;
+  err.hidden = false;
+}
+
+function markFieldAttention(id) {
+  const input = document.getElementById(id);
+  input.classList.remove("field-invalid", "field-attn");
+  void input.offsetWidth; // restart animacji przy ponownym oznaczeniu
+  input.classList.add("field-attn");
+}
+
+function clearFieldState(id) {
+  const input = document.getElementById(id);
+  const err = document.getElementById(id + "Error");
+  input.classList.remove("field-invalid", "field-attn");
+  input.removeAttribute("aria-invalid");
+  if (err) { err.hidden = true; err.textContent = ""; }
+}
+
+function showTrainHint(text) {
+  document.getElementById("trainHintText").textContent = text;
+  document.getElementById("trainHint").hidden = false;
+}
+
+function hideTrainHint() {
+  document.getElementById("trainHint").hidden = true;
+}
+
+function focusField(id) {
+  const input = document.getElementById(id);
+  if (input.scrollIntoView) input.scrollIntoView({ block: "center", behavior: "smooth" });
+  if (input.focus) input.focus({ preventScroll: true });
+}
+
 // --- Zapis treningu ---
 function saveTraining() {
   const dist = document.getElementById("dist").value;
   if (!dist || parseFloat(dist) <= 0) {
-    alert(t().alertDistRequired);
+    setFieldError("dist", t().alertDistRequired);
+    focusField("dist");
     return;
   }
+  clearFieldState("dist");
+  clearFieldState("time");
+  hideTrainHint();
+  const linkedEvent = pendingEventDone;
 
   const entry = {
     date: document.getElementById("date").value || new Date().toISOString().slice(0, 10),
@@ -1669,6 +1741,7 @@ function saveTraining() {
     notes: document.getElementById("notes").value.trim(),
   };
   if (pendingRoute) entry.route = pendingRoute;
+  if (pendingEventDone && entry.date === pendingEventDone.ymd) entry.event = pendingEventDone.id;
   if (getChallenge() && document.getElementById("challengeFlag").checked) entry.challenge = true;
 
   const history = getHistory();
@@ -1681,9 +1754,14 @@ function saveTraining() {
   document.getElementById("notes").value = "";
   document.getElementById("challengeFlag").checked = false;
   pendingRoute = null;
+  pendingEventDone = null;
 
   refreshTotalLabel();
   refreshHistoryList();
+  if (linkedEvent && entry.event) {
+    renderEvents();
+    syncEventResult(entry.event);
+  }
   alert(t().alertSaved);
   if (newlyReached.length) alert(t().goalReached(newlyReached.map(goalLabel)));
 }
@@ -1694,8 +1772,14 @@ function calcPace() {
   const time = parseFloat(document.getElementById("time").value);
   const disc = document.getElementById("discipline").value;
 
-  if (!dist || !time || dist <= 0 || time <= 0) {
-    alert(t().alertDistTimeRequired);
+  const distOk = dist > 0;
+  const timeOk = time > 0;
+  if (!distOk) setFieldError("dist", t().alertDistRequired);
+  else clearFieldState("dist");
+  if (!timeOk) setFieldError("time", t().alertTimeRequired);
+  else clearFieldState("time");
+  if (!distOk || !timeOk) {
+    focusField(distOk ? "time" : "dist");
     return;
   }
 
@@ -1875,11 +1959,25 @@ function redrawElevations() {
   Object.entries(elevationTracks).forEach(([prefix, track]) => drawElevationProfile(prefix, track));
 }
 
+// Trasa {lat, lon, ele} -> punkty profilu {km, ele}.
+function profileFromTrack(track) {
+  let km = 0;
+  return track.map((p, i) => {
+    if (i > 0) km += haversineKm(track[i - 1].lat, track[i - 1].lon, p.lat, p.lon);
+    return { km, ele: p.ele };
+  });
+}
+
 function drawElevationProfile(prefix, track) {
-  const dist = [0];
-  for (let i = 1; i < track.length; i++) {
-    dist.push(dist[i - 1] + haversineKm(track[i - 1].lat, track[i - 1].lon, track[i].lat, track[i].lon));
-  }
+  drawProfile(document.getElementById(`${prefix}ElevationCanvas`), document.getElementById(`${prefix}ElevationStats`),
+    profileFromTrack(track));
+}
+
+// Rysuje profil {km, ele} na canvasie i wpisuje podejścia/zejścia do statsEl.
+function drawProfile(canvas, statsEl, points) {
+  if (!canvas || points.length < 2) return;
+  const track = points;
+  const dist = points.map((p) => p.km);
   const totalKm = dist[dist.length - 1] || 1;
   const eles = track.map((p) => p.ele);
   const minEle = Math.min(...eles), maxEle = Math.max(...eles);
@@ -1887,10 +1985,9 @@ function drawElevationProfile(prefix, track) {
   for (let i = 1; i < track.length; i++) {
     if (track[i].ele < track[i - 1].ele) down += track[i - 1].ele - track[i].ele;
   }
-  document.getElementById(`${prefix}ElevationStats`).textContent =
+  if (statsEl) statsEl.textContent =
     t().elevationStats(trackAscentM(track), Math.round(down), Math.round(minEle), Math.round(maxEle));
 
-  const canvas = document.getElementById(`${prefix}ElevationCanvas`);
   const dpr = window.devicePixelRatio || 1;
   const cssW = canvas.clientWidth || 600, cssH = canvas.clientHeight || 160;
   canvas.width = Math.round(cssW * dpr);
@@ -1943,6 +2040,8 @@ function drawElevationProfile(prefix, track) {
 
 // --- Trasa (z importu GPX/TCX) ---
 let pendingRoute = null;
+// Wydarzenie, z którego otwarto formularz („Zrobione”) - zapisany trening dostaje jego id.
+let pendingEventDone = null;
 let routeMapInstance = null;
 let routeLayerGroup = null;
 
@@ -2639,12 +2738,18 @@ async function toggleEventDone(ev) {
   }
   const choice = await askEventDoneShare();
   if (!choice) return; // Anuluj - nic nie zaznaczamy
-  const newEntry = { title: ev.title, disc: ev.disc, starts_at: ev.starts_at, done_at: new Date().toISOString() };
+  let nick = null;
   if (choice === "share") {
+    nick = askNick();
+    if (!nick) return; // bez nicku nic nie zaznaczamy - można wybrać jeszcze raz
+  }
+  const newEntry = { title: ev.title, disc: ev.disc, starts_at: ev.starts_at, done_at: new Date().toISOString() };
+  if (choice === "share" || choice === "anon") {
     const token = randomToken();
     try {
       ev.completed = await rpc("complete_event", { p_id: ev.id, p_token: token });
       newEntry.token = token;
+      newEntry.nick = nick;
     } catch (e) {
       alert(dict.eventDoneShareFailed);
     }
@@ -2655,7 +2760,7 @@ async function toggleEventDone(ev) {
   openTrainingFromEvent(ev);
 }
 
-// Okno wyboru po „Zrobione”: "share" / "local" / null (anulowano: Anuluj, tło albo Esc).
+// Okno wyboru po „Zrobione”: "share" (z nickiem) / "anon" / "local" / null (anulowano: Anuluj, tło albo Esc).
 function askEventDoneShare() {
   const dict = t();
   return new Promise((resolve) => {
@@ -2666,6 +2771,7 @@ function askEventDoneShare() {
       `<h3 id="eventDoneDialogTitle">${dict.eventDoneDialogTitle}</h3>` +
       `<p>${dict.eventDoneDialogText}</p>` +
       `<button class="primary" data-choice="share">${dict.eventDoneShareBtn}</button>` +
+      `<button data-choice="anon">${dict.eventDoneShareAnonBtn}</button>` +
       `<button data-choice="local">${dict.eventDoneLocalBtn}</button>` +
       `<button class="link-btn" data-choice="">${dict.eventDoneCancelBtn}</button>` +
       `</div>`;
@@ -2686,6 +2792,57 @@ function askEventDoneShare() {
   });
 }
 
+// Lista wyników wydarzenia (dla wszystkich) - w kolejności ukończenia, z profilem wysokości.
+async function showEventResults(ev) {
+  const dict = t();
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+  overlay.innerHTML =
+    `<div class="card modal-card results-card" role="dialog" aria-modal="true" aria-labelledby="eventResultsTitle">` +
+    `<h3 id="eventResultsTitle">${escapeXml(dict.eventResultsTitle(ev.title))}</h3>` +
+    `<div class="results-body"><p>${dict.loading}</p></div>` +
+    `<button class="link-btn results-close">${dict.eventResultsClose}</button></div>`;
+  const close = () => { document.removeEventListener("keydown", onKey); overlay.remove(); };
+  const onKey = (e) => { if (e.key === "Escape") close(); };
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay || e.target.closest(".results-close")) close();
+  });
+  document.addEventListener("keydown", onKey);
+  document.body.appendChild(overlay);
+  overlay.querySelector(".results-close").focus();
+  const body = overlay.querySelector(".results-body");
+  let rows;
+  try {
+    rows = (await rpc("list_event_results", { p_id: ev.id })) || [];
+  } catch (e) {
+    body.innerHTML = `<p>${dict.communityError}</p>`;
+    return;
+  }
+  if (rows.length === 0) {
+    body.innerHTML = `<p class="hint-text">${dict.eventResultsEmpty}</p>`;
+    return;
+  }
+  body.innerHTML = `<ol class="results-list">` + rows.map((r, i) => {
+    const hasElev = Array.isArray(r.elev) && r.elev.length >= 2;
+    return `<li><div class="results-row"><span class="results-nick">${escapeXml(r.nick || dict.eventResultsAnon)}</span>` +
+      `<b>${escapeXml(formatResult(r.dist_km, r.time_min))}</b>` +
+      (hasElev ? `<button class="results-elev-btn" data-i="${i}">${dict.eventResultsProfile}</button>` : "") +
+      `</div><div class="results-elev" data-i="${i}" hidden><canvas class="elevation-canvas"></canvas><p class="elevation-stats"></p></div></li>`;
+  }).join("") + `</ol>`;
+  body.querySelectorAll(".results-elev-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const box = body.querySelector(`.results-elev[data-i="${btn.dataset.i}"]`);
+      box.hidden = !box.hidden;
+      if (!box.hidden) {
+        const pts = rows[parseInt(btn.dataset.i, 10)].elev
+          .filter((p) => Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1]))
+          .map((p) => ({ km: p[0], ele: p[1] }));
+        requestAnimationFrame(() => drawProfile(box.querySelector("canvas"), box.querySelector("p"), pts));
+      }
+    });
+  });
+}
+
 // Po „Zrobione” - formularz treningu z dyscypliną, datą i nazwą wydarzenia w notatkach.
 function openTrainingFromEvent(ev) {
   showTab("train");
@@ -2693,10 +2850,15 @@ function openTrainingFromEvent(ev) {
   document.getElementById("date").value = toYmd(new Date(ev.starts_at));
   const notes = document.getElementById("notes");
   if (!notes.value.trim()) notes.value = `📅 ${ev.title}`;
+  clearFieldState("dist");
+  clearFieldState("time");
+  showTrainHint(t().eventDoneFillTraining(ev.title));
+  pendingEventDone = { id: ev.id, ymd: toYmd(new Date(ev.starts_at)) };
   window.scrollTo(0, 0);
+  if (!document.getElementById("dist").value) markFieldAttention("dist");
+  if (!document.getElementById("time").value) markFieldAttention("time");
   const dist = document.getElementById("dist");
-  if (dist.focus) dist.focus();
-  alert(t().eventDoneFillTraining);
+  if (dist.focus) dist.focus({ preventScroll: true });
 }
 
 async function removeEventDone(id) {
@@ -2718,6 +2880,68 @@ async function removeEventDone(id) {
   renderEvents();
 }
 
+// Twój wynik z wydarzenia = trening z Historii powiązany z nim (pole event) albo - dla starszych
+// wpisów - trening z tego dnia z notatką „📅 nazwa”. Usunięcie treningu usuwa też wynik.
+function eventResultTraining(id, ev) {
+  const ymd = toYmd(new Date(ev.starts_at));
+  const prefix = `📅 ${ev.title}`;
+  const history = getHistory();
+  const match = history.find((h) => h.event === id) ||
+    history.find((h) => !h.event && h.date === ymd && typeof h.notes === "string" && h.notes.startsWith(prefix));
+  return match && parseFloat(match.dist) > 0 ? match : null;
+}
+
+function formatResult(dist, time) {
+  const mins = parseFloat(time);
+  return `${parseFloat(dist).toFixed(1)} km` + (mins > 0 ? ` · ${formatDuration(mins)}` : "");
+}
+
+function eventResult(id, ev) {
+  const match = eventResultTraining(id, ev);
+  return match ? formatResult(match.dist, match.time) : "";
+}
+
+// Profil wysokości do wysłania: [[km, m], ...] (≤150 punktów, bez współrzędnych).
+function elevationProfilePoints(track, maxPoints = 150) {
+  const pts = profileFromTrack((track || []).filter((p) => Number.isFinite(p.ele)));
+  if (pts.length < 2) return null;
+  const step = Math.max(1, Math.ceil(pts.length / maxPoints));
+  const picked = pts.filter((_, i) => i % step === 0);
+  if (picked[picked.length - 1] !== pts[pts.length - 1]) picked.push(pts[pts.length - 1]);
+  return picked.slice(-maxPoints).map((p) => [Math.round(p.km * 100) / 100, Math.round(p.ele)]);
+}
+
+// Wysyła (albo usuwa) publiczny wynik dla ukończeń udostępnionych wszystkim. Wysyła tylko,
+// gdy wynik się zmienił od ostatniego wysłania; błąd sieci = spróbujemy przy kolejnym odświeżeniu.
+async function syncEventResult(id) {
+  const done = getEventsDone();
+  const entry = done[id];
+  if (!entry || !entry.token) return;
+  const match = eventResultTraining(id, entry);
+  const payload = match
+    ? { dist: Math.round(parseFloat(match.dist) * 100) / 100, time: parseFloat(match.time) > 0 ? parseFloat(match.time) : null,
+        elev: elevationProfilePoints(match.route) }
+    : null;
+  const sig = JSON.stringify([entry.nick || null, payload]);
+  if (entry.sentSig === sig) return;
+  if (!payload && !entry.sentSig) return; // nic nie wysłano, nic do usuwania
+  try {
+    await rpc("set_event_result", {
+      p_id: id, p_token: entry.token, p_nick: entry.nick || null,
+      p_dist_km: payload ? payload.dist : null, p_time_min: payload ? payload.time : null, p_elev: payload ? payload.elev : null,
+    });
+    const fresh = getEventsDone();
+    if (fresh[id]) { fresh[id].sentSig = sig; saveEventsDone(fresh); }
+  } catch (e) {
+    // offline albo wydarzenie już poza oknem 7 dni - zostawiamy, spróbujemy później
+  }
+}
+
+function syncAllEventResults() {
+  const visible = new Set(eventsCache.map((ev) => ev.id));
+  Object.keys(getEventsDone()).filter((id) => visible.has(id)).forEach((id) => syncEventResult(id));
+}
+
 // Lista ukończonych wydarzeń - trzymana lokalnie, bo serwer usuwa wydarzenia po 30 dniach.
 function eventsDoneHtml(dict) {
   const entries = Object.entries(getEventsDone())
@@ -2725,7 +2949,9 @@ function eventsDoneHtml(dict) {
   if (entries.length === 0) return "";
   const items = entries.map(([id, ev]) => {
     const when = new Date(ev.starts_at).toLocaleDateString(dict.dateLocale, { day: "numeric", month: "long", year: "numeric" });
+    const result = eventResult(id, ev);
     return `<li>✅ <b>${escapeXml(ev.title)}</b> · ${dict.discNames[ev.disc] || escapeXml(ev.disc)} · ${escapeXml(when)}` +
+      (result ? ` · <b class="event-result-km">${escapeXml(result)}</b>` : "") +
       (ev.token ? ` <span class="hint-text">${dict.eventDoneSharedTag}</span>` : "") +
       ` <button class="done-remove-btn" data-id="${escapeXml(id)}" title="${dict.eventDoneRemoveTitle}">✕</button></li>`;
   }).join("");
@@ -2743,6 +2969,7 @@ async function refreshEvents() {
   try {
     eventsCache = (await rpc("list_events_v2")) || [];
     renderEvents();
+    syncAllEventResults();
   } catch (e) {
     listEl.innerHTML = `<p>${dict.communityError}</p>`;
   }
@@ -2754,6 +2981,13 @@ function eventCountdown(startsAt) {
   if (days <= 0) return dict.eventToday;
   if (days === 1) return dict.eventTomorrow;
   return dict.eventInDays(days);
+}
+
+function eventResultLine(id, doneEntry, dict) {
+  const result = eventResult(id, doneEntry);
+  return result
+    ? `<div class="event-result">${dict.eventYourResult} <b>${escapeXml(result)}</b></div>`
+    : `<div class="event-result hint-text">${dict.eventNoResult}</div>`;
 }
 
 function eventItemHtml(ev, index, ctx) {
@@ -2786,12 +3020,15 @@ function eventItemHtml(ev, index, ctx) {
       `${isDone ? dict.eventDoneMark(completed) : dict.eventDoneBtn(completed)}</button>`
     : "";
   const ics = active ? `<button class="ics-btn" data-index="${index}">${dict.eventCalendar}</button>` : "";
+  const results = start.getTime() <= now && completed > 0
+    ? `<button class="results-btn" data-index="${index}">${dict.eventResultsBtn(completed)}</button>` : "";
   return `<div class="event-item${isDone ? " event-done" : ""}${active ? "" : " event-past"}">` +
     `<div class="event-date">📅 ${escapeXml(when)}${active ? `<span class="event-countdown">${eventCountdown(start)}</span>` : ""}</div>` +
     `<div class="event-title"><b>${escapeXml(ev.title)}</b> · ${dict.discNames[ev.disc] || escapeXml(ev.disc)}</div>` +
     `<div class="hint-text">📍 ${escapeXml(ev.place)}</div>` +
+    (isDone ? eventResultLine(ev.id, doneMap[ev.id], dict) : "") +
     (active && ev.description ? `<div class="event-desc">${escapeXml(ev.description)}</div>` : "") +
-    `<div class="event-actions">${join}${doneBtn}${nav}${link}${ics}${del}</div>` +
+    `<div class="event-actions">${join}${doneBtn}${results}${nav}${link}${ics}${del}</div>` +
     `</div>`;
 }
 
@@ -2822,6 +3059,7 @@ function renderEvents() {
   on(".ics-btn", downloadEventIcs);
   on(".delete-btn", deleteEvent);
   on(".done-btn", toggleEventDone);
+  on(".results-btn", showEventResults);
   listEl.querySelectorAll(".done-remove-btn").forEach((btn) => {
     btn.addEventListener("click", () => removeEventDone(btn.dataset.id));
   });
@@ -3497,6 +3735,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("planExportBtn").addEventListener("click", exportCurrentPlan);
 
   document.getElementById("saveBtn").addEventListener("click", saveTraining);
+  ["dist", "time"].forEach((id) => document.getElementById(id).addEventListener("input", () => clearFieldState(id)));
+  document.getElementById("trainHintClose").addEventListener("click", hideTrainHint);
   document.getElementById("paceBtn").addEventListener("click", calcPace);
   document.getElementById("chartBtn").addEventListener("click", showChart);
   document.getElementById("exportBtn").addEventListener("click", exportCsv);

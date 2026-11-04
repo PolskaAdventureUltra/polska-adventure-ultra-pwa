@@ -61,6 +61,10 @@
 
   <div id="tabTrain" class="tab-content active">
     <div class="card">
+      <div class="form-hint" id="trainHint" role="status" hidden>
+        <span id="trainHintText"></span>
+        <button type="button" class="form-hint-close" id="trainHintClose" aria-label="Zamknij">✕</button>
+      </div>
       <label data-i18n="labelDiscipline">Dyscyplina</label>
       <select id="discipline">
         <option value="Bieg" data-i18n="optBieg">Bieg</option>
@@ -72,10 +76,12 @@
       <input id="date" type="date">
 
       <label data-i18n="labelDist">Dystans (km)</label>
-      <input id="dist" type="number" step="0.01" inputmode="decimal">
+      <input id="dist" type="number" step="0.01" inputmode="decimal" aria-describedby="distError">
+      <p class="field-error" id="distError" role="alert" hidden></p>
 
       <label data-i18n="labelTime">Czas (min)</label>
-      <input id="time" type="number" step="0.1" inputmode="decimal">
+      <input id="time" type="number" step="0.1" inputmode="decimal" aria-describedby="timeError">
+      <p class="field-error" id="timeError" role="alert" hidden></p>
 
       <label data-i18n="labelHr">Śr. tętno (bpm)</label>
       <input id="hr" type="number" inputmode="numeric">
