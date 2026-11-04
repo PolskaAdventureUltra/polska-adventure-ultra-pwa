@@ -321,3 +321,15 @@ body.dark .challenge { --ch-bg: #0A1322; --ch-band: #131E31; }
 .ch-partner-cta { display: inline-block; margin-top: 4px; padding: 6px 0; font-size: 11px; font-weight: 600; color: var(--ch-accent); text-decoration: none; }
 .challenge .ch-invite { display: block; width: 100%; margin-top: 4px; background: none; border: none; color: var(--ch-muted); font-size: 13px; font-weight: 600; text-decoration: underline; }
 .copyright { margin: 14px 0 4px; text-align: center; font-size: 11px; color: var(--subtle-fg); }
+.event-actions .done-btn.done { background: var(--accent); color: var(--on-accent); }
+.event-item.event-done .event-title { opacity: 0.75; }
+.events-done { margin-top: 10px; font-size: 14px; }
+.events-done summary { cursor: pointer; font-weight: bold; }
+.events-done ul { list-style: none; padding: 0; margin: 6px 0 0; }
+.events-done li { padding: 4px 0; border-bottom: 1px solid var(--border); }
+.events-done .done-remove-btn {
+  width: auto; margin: 0 0 0 4px; padding: 0 6px; font-size: 12px; background: none; color: var(--subtle-fg);
+}
+.events-past-title { margin: 14px 0 0; font-size: 15px; }
+.event-item.event-past .event-date { color: var(--subtle-fg); }
+.event-actions .event-stat { font-size: 13px; padding: 6px 4px; color: var(--subtle-fg); }

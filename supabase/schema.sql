@@ -77,6 +77,14 @@ create table if not exists public.event_participants (
   primary key (event_id, token_hash)
 );
 
+-- Anonimowe "Ukończyłem": tylko hash losowego tokenu z telefonu (zapis opcjonalny - użytkownik decyduje).
+create table if not exists public.event_completions (
+  event_id uuid not null references public.events (id) on delete cascade,
+  token_hash text not null,
+  created_at timestamptz not null default now(),
+  primary key (event_id, token_hash)
+);
+
 alter table public.devices enable row level security;
 alter table public.activities enable row level security;
 alter table public.community_routes enable row level security;
@@ -93,9 +101,10 @@ alter table public.challenge_invites add column if not exists claimed_token_hash
 alter table public.challenge_invites add column if not exists claimed_at timestamptz;
 
 alter table public.event_participants enable row level security;
+alter table public.event_completions enable row level security;
 alter table public.challenge_invites enable row level security;
 revoke all on public.devices, public.activities, public.community_routes,
-  public.admin_keys, public.events, public.event_participants, public.challenge_invites from anon, authenticated;
+  public.admin_keys, public.events, public.event_participants, public.event_completions, public.challenge_invites from anon, authenticated;
 
 -- Zliczanie użytkowników (tylko za zgodą użytkownika w aplikacji). Przy okazji kasuje urządzenia
 -- nieaktywne dłużej niż 13 miesięcy (retencja danych).
@@ -269,6 +278,50 @@ language sql stable security definer set search_path = public as $$
   limit 100;
 $$;
 
+-- Wersja 2: nadchodzące + zakończone w ostatnich 7 dniach, z liczbą chętnych i liczbą ukończeń.
+-- (list_events zostaje bez zmian dla starszych wersji aplikacji w cache telefonów.)
+create or replace function public.list_events_v2()
+returns table (id uuid, title text, disc text, starts_at timestamptz, place text,
+               lat double precision, lon double precision, description text, link text,
+               participants bigint, completed bigint)
+language sql stable security definer set search_path = public as $$
+  select e.id, e.title, e.disc, e.starts_at, e.place, e.lat, e.lon, e.description, e.link,
+         (select count(*) from event_participants p where p.event_id = e.id),
+         (select count(*) from event_completions c where c.event_id = e.id)
+  from events e
+  where e.starts_at > now() - interval '7 days'
+  order by e.starts_at
+  limit 100;
+$$;
+
+-- "Ukończyłem" / cofnięcie; zwraca aktualną liczbę ukończeń. Tylko po starcie, max 7 dni po.
+create or replace function public.complete_event(p_id uuid, p_token text)
+returns bigint language plpgsql security definer set search_path = public as $$
+begin
+  if p_token is null or char_length(p_token) < 32 then
+    raise exception 'invalid token';
+  end if;
+  if not exists (select 1 from events where id = p_id
+                 and starts_at <= now() and starts_at > now() - interval '7 days') then
+    raise exception 'event not found';
+  end if;
+  if (select count(*) from event_completions where created_at > now() - interval '1 minute') >= 60 then
+    raise exception 'rate limit';
+  end if;
+  insert into event_completions (event_id, token_hash)
+  values (p_id, encode(sha256(convert_to(p_token, 'UTF8')), 'hex'))
+  on conflict do nothing;
+  return (select count(*) from event_completions where event_id = p_id);
+end $$;
+
+create or replace function public.uncomplete_event(p_id uuid, p_token text)
+returns bigint language plpgsql security definer set search_path = public as $$
+begin
+  delete from event_completions
+  where event_id = p_id and token_hash = encode(sha256(convert_to(p_token, 'UTF8')), 'hex');
+  return (select count(*) from event_completions where event_id = p_id);
+end $$;
+
 -- Zapis / wypis; zwraca aktualną liczbę chętnych.
 create or replace function public.join_event(p_id uuid, p_token text)
 returns bigint language plpgsql security definer set search_path = public as $$
@@ -340,6 +393,7 @@ revoke execute on function public.ping(uuid), public.forget_device(uuid), public
   public.admin_create_event(text, text, text, timestamptz, text, double precision, double precision, text, text),
   public.admin_delete_event(text, uuid), public.list_events(),
   public.join_event(uuid, text), public.leave_event(uuid, text),
+  public.list_events_v2(), public.complete_event(uuid, text), public.uncomplete_event(uuid, text),
   public.check_challenge_invite(text), public.claim_challenge_invite(text, text) from public;
 grant execute on function public.ping(uuid), public.forget_device(uuid), public.get_stats(),
   public.share_activity(text, text, date, numeric, numeric, jsonb, text),
@@ -350,6 +404,7 @@ grant execute on function public.ping(uuid), public.forget_device(uuid), public.
   public.admin_create_event(text, text, text, timestamptz, text, double precision, double precision, text, text),
   public.admin_delete_event(text, uuid), public.list_events(),
   public.join_event(uuid, text), public.leave_event(uuid, text),
+  public.list_events_v2(), public.complete_event(uuid, text), public.uncomplete_event(uuid, text),
   public.claim_challenge_invite(text, text) to anon;
 -- Stara funkcja sprawdzania kodu (bez przypisania do urządzenia) była wcześniej dostępna - odbieramy ją wprost.
 revoke execute on function public.check_challenge_invite(text) from anon;
