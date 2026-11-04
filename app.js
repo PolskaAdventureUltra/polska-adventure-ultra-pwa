@@ -514,7 +514,7 @@ const TRANSLATIONS = {
     planModeLabel: "Route guidance",
     planModeFoot: "Follow footpaths and mountain trails (running, hiking)",
     planModeBike: "Follow cycle roads (cycling)",
-    planModeStraight: "Straight lines (kayak / off-road)",
+    planModeStraight: "Straight lines (kayak, swimming, off-road)",
     planUndoBtn: "Undo point",
     planClearBtn: "Clear",
     planSaveBtn: "SAVE ROUTE",
