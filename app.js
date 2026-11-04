@@ -67,7 +67,7 @@ const TRANSLATIONS = {
     confirmDelete: "Usunąć ten wpis z historii?",
     alertDistRequired: "Podaj dystans większy od 0.",
     alertSaved: "Zapisano trening!",
-    alertDistTimeRequired: "Podaj dystans i czas.",
+    alertTimeRequired: "Podaj czas większy od 0.",
     paceResult: (min, sec) => `Tempo: ${min}:${sec} min/km`,
     speedResult: (v) => `Prędkość: ${v} km/h`,
     alertNoHistoryChart: "Brak danych historycznych.",
@@ -187,7 +187,8 @@ const TRANSLATIONS = {
     eventDoneLocalBtn: "🔒 Tylko u mnie",
     eventDoneCancelBtn: "Anuluj",
     eventDoneShareFailed: "Nie udało się wysłać na serwer (sprawdź internet) — zapisano tylko na Twoim telefonie.",
-    eventDoneFillTraining: "Uzupełnij dystans i czas, żeby trening trafił do Historii (albo pomiń, jeśli już go importujesz z zegarka).",
+    eventDoneFillTraining: (title) => `📅 ${title} — uzupełnij dystans i czas, żeby trening trafił do Historii (albo pomiń, jeśli importujesz go z zegarka).`,
+    hintCloseLabel: "Zamknij",
     eventDoneSharedTag: "(widoczne dla wszystkich)",
     eventWent: (n) => `🙋 Zapisanych: ${n}`,
     eventsPastTitle: "🏁 Zakończone (ostatnie 7 dni)",
@@ -468,7 +469,7 @@ const TRANSLATIONS = {
     confirmDelete: "Delete this entry from history?",
     alertDistRequired: "Enter a distance greater than 0.",
     alertSaved: "Training saved!",
-    alertDistTimeRequired: "Enter distance and time.",
+    alertTimeRequired: "Enter a time greater than 0.",
     paceResult: (min, sec) => `Pace: ${min}:${sec} min/km`,
     speedResult: (v) => `Speed: ${v} km/h`,
     alertNoHistoryChart: "No historical data.",
@@ -588,7 +589,8 @@ const TRANSLATIONS = {
     eventDoneLocalBtn: "🔒 Only on my phone",
     eventDoneCancelBtn: "Cancel",
     eventDoneShareFailed: "Could not send to the server (check your connection) — saved only on your phone.",
-    eventDoneFillTraining: "Fill in distance and time so the training lands in your History (or skip it if you import it from your watch).",
+    eventDoneFillTraining: (title) => `📅 ${title} — fill in distance and time so the training lands in your History (or skip it if you import it from your watch).`,
+    hintCloseLabel: "Close",
     eventDoneSharedTag: "(visible to everyone)",
     eventWent: (n) => `🙋 Signed up: ${n}`,
     eventsPastTitle: "🏁 Finished (last 7 days)",
@@ -853,6 +855,10 @@ function applyLanguage() {
     el.textContent = dict[el.dataset.i18n];
   });
   document.getElementById("langBtn").textContent = dict.langBtnTarget;
+  document.getElementById("trainHintClose").setAttribute("aria-label", dict.hintCloseLabel);
+  hideTrainHint();
+  clearFieldState("dist");
+  clearFieldState("time");
 }
 
 function toggleLanguage() {
@@ -1650,13 +1656,60 @@ function deleteTraining(index) {
   refreshHistoryList();
 }
 
+// --- Podpowiedzi przy polach formularza (zamiast alertów) ---
+// Błąd: czerwona ramka + komunikat pod polem. Uwaga: pomarańczowa, pulsująca ramka.
+// Oba stany znikają, gdy użytkownik zacznie pisać w polu.
+function setFieldError(id, message) {
+  const input = document.getElementById(id);
+  const err = document.getElementById(id + "Error");
+  input.classList.remove("field-attn");
+  input.classList.add("field-invalid");
+  input.setAttribute("aria-invalid", "true");
+  err.textContent = message;
+  err.hidden = false;
+}
+
+function markFieldAttention(id) {
+  const input = document.getElementById(id);
+  input.classList.remove("field-invalid", "field-attn");
+  void input.offsetWidth; // restart animacji przy ponownym oznaczeniu
+  input.classList.add("field-attn");
+}
+
+function clearFieldState(id) {
+  const input = document.getElementById(id);
+  const err = document.getElementById(id + "Error");
+  input.classList.remove("field-invalid", "field-attn");
+  input.removeAttribute("aria-invalid");
+  if (err) { err.hidden = true; err.textContent = ""; }
+}
+
+function showTrainHint(text) {
+  document.getElementById("trainHintText").textContent = text;
+  document.getElementById("trainHint").hidden = false;
+}
+
+function hideTrainHint() {
+  document.getElementById("trainHint").hidden = true;
+}
+
+function focusField(id) {
+  const input = document.getElementById(id);
+  if (input.scrollIntoView) input.scrollIntoView({ block: "center", behavior: "smooth" });
+  if (input.focus) input.focus({ preventScroll: true });
+}
+
 // --- Zapis treningu ---
 function saveTraining() {
   const dist = document.getElementById("dist").value;
   if (!dist || parseFloat(dist) <= 0) {
-    alert(t().alertDistRequired);
+    setFieldError("dist", t().alertDistRequired);
+    focusField("dist");
     return;
   }
+  clearFieldState("dist");
+  clearFieldState("time");
+  hideTrainHint();
 
   const entry = {
     date: document.getElementById("date").value || new Date().toISOString().slice(0, 10),
@@ -1694,8 +1747,14 @@ function calcPace() {
   const time = parseFloat(document.getElementById("time").value);
   const disc = document.getElementById("discipline").value;
 
-  if (!dist || !time || dist <= 0 || time <= 0) {
-    alert(t().alertDistTimeRequired);
+  const distOk = dist > 0;
+  const timeOk = time > 0;
+  if (!distOk) setFieldError("dist", t().alertDistRequired);
+  else clearFieldState("dist");
+  if (!timeOk) setFieldError("time", t().alertTimeRequired);
+  else clearFieldState("time");
+  if (!distOk || !timeOk) {
+    focusField(distOk ? "time" : "dist");
     return;
   }
 
@@ -2693,10 +2752,14 @@ function openTrainingFromEvent(ev) {
   document.getElementById("date").value = toYmd(new Date(ev.starts_at));
   const notes = document.getElementById("notes");
   if (!notes.value.trim()) notes.value = `📅 ${ev.title}`;
+  clearFieldState("dist");
+  clearFieldState("time");
+  showTrainHint(t().eventDoneFillTraining(ev.title));
   window.scrollTo(0, 0);
+  if (!document.getElementById("dist").value) markFieldAttention("dist");
+  if (!document.getElementById("time").value) markFieldAttention("time");
   const dist = document.getElementById("dist");
-  if (dist.focus) dist.focus();
-  alert(t().eventDoneFillTraining);
+  if (dist.focus) dist.focus({ preventScroll: true });
 }
 
 async function removeEventDone(id) {
@@ -3497,6 +3560,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("planExportBtn").addEventListener("click", exportCurrentPlan);
 
   document.getElementById("saveBtn").addEventListener("click", saveTraining);
+  ["dist", "time"].forEach((id) => document.getElementById(id).addEventListener("input", () => clearFieldState(id)));
+  document.getElementById("trainHintClose").addEventListener("click", hideTrainHint);
   document.getElementById("paceBtn").addEventListener("click", calcPace);
   document.getElementById("chartBtn").addEventListener("click", showChart);
   document.getElementById("exportBtn").addEventListener("click", exportCsv);
