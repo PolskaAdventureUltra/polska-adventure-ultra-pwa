@@ -336,6 +336,16 @@ body.dark .challenge { --ch-bg: #0A1322; --ch-band: #131E31; }
 .event-actions .done-btn.done { background: var(--accent); color: var(--on-accent); }
 .event-item.event-done .event-title { opacity: 0.75; }
 .event-result { margin-top: 4px; font-size: 14px; }
+.results-card { max-width: 480px; max-height: 85vh; overflow-y: auto; text-align: left; }
+.results-card h3 { text-align: center; }
+.results-list { margin: 0; padding-left: 22px; }
+.results-list li { padding: 8px 0; border-bottom: 1px solid var(--border); }
+.results-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.results-nick { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+.results-row b { white-space: nowrap; color: var(--hl); font-family: var(--display); }
+.results-row .results-elev-btn { width: auto; margin: 0; padding: 4px 10px; font-size: 13px; }
+.results-elev { margin-top: 8px; }
+.results-elev[hidden] { display: none; }
 .event-result b, .event-result-km { color: var(--hl); font-family: var(--display); }
 .events-done { margin-top: 10px; font-size: 14px; }
 .events-done summary { cursor: pointer; font-weight: bold; }
