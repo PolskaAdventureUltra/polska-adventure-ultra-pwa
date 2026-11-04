@@ -268,6 +268,7 @@ body.dark .challenge { --ch-bg: #0A1322; --ch-band: #131E31; }
   font-family: var(--ch-display); font-weight: 700; font-size: 14px; letter-spacing: 0.06em;
   text-transform: uppercase; white-space: nowrap; color: var(--ch-accent);
 }
+.ch-ticker-dup { display: contents; }
 .ch-ticker-run i { font-style: normal; color: var(--ch-muted); padding: 0 14px; }
 @keyframes ch-ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 /* Ograniczenie ruchu: bez przewijania, hasła zawijają się statycznie (jedna kopia). */
@@ -276,6 +277,7 @@ body.dark .challenge { --ch-bg: #0A1322; --ch-band: #131E31; }
   .ch-ticker-track { animation: none; width: auto; }
   .ch-ticker-run { flex-wrap: wrap; justify-content: center; row-gap: 4px; flex-shrink: 1; }
   .ch-ticker-run + .ch-ticker-run { display: none; }
+  .ch-ticker-dup { display: none; }
   .ch-ticker-run i { padding: 0 8px; }
 }
 .ch-kicker { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--ch-muted); }
