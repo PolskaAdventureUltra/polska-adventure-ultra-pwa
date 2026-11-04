@@ -181,7 +181,11 @@ const TRANSLATIONS = {
     eventDoneBtn: (n) => `🏁 Zrobione · ${n}`,
     eventDoneMark: (n) => `✅ Ukończone · ${n}`,
     eventDoneTitle: "Zaznacz, że masz to wydarzenie za sobą — liczba obok to osoby, które je ukończyły",
-    eventDoneShareConfirm: "Gratulacje! 🎉\n\nPokazać wszystkim, że masz to wydarzenie za sobą?\nWidać tylko liczbę osób — bez nicku.\n\nOK — pokaż wszystkim\nAnuluj — zapisz tylko u mnie",
+    eventDoneDialogTitle: "Gratulacje! 🎉",
+    eventDoneDialogText: "Pokazać wszystkim, że masz to wydarzenie za sobą? Widać tylko liczbę osób — bez nicku.",
+    eventDoneShareBtn: "👥 Pokaż wszystkim",
+    eventDoneLocalBtn: "🔒 Tylko u mnie",
+    eventDoneCancelBtn: "Anuluj",
     eventDoneShareFailed: "Nie udało się wysłać na serwer (sprawdź internet) — zapisano tylko na Twoim telefonie.",
     eventDoneFillTraining: "Uzupełnij dystans i czas, żeby trening trafił do Historii (albo pomiń, jeśli już go importujesz z zegarka).",
     eventDoneSharedTag: "(widoczne dla wszystkich)",
@@ -578,7 +582,11 @@ const TRANSLATIONS = {
     eventDoneBtn: (n) => `🏁 Done · ${n}`,
     eventDoneMark: (n) => `✅ Completed · ${n}`,
     eventDoneTitle: "Mark this event as completed — the number shows how many people completed it",
-    eventDoneShareConfirm: "Congratulations! 🎉\n\nShow everyone that you completed this event?\nOnly the number of people is shown — no nickname.\n\nOK — show everyone\nCancel — keep it only on my phone",
+    eventDoneDialogTitle: "Congratulations! 🎉",
+    eventDoneDialogText: "Show everyone that you completed this event? Only the number of people is shown — no nickname.",
+    eventDoneShareBtn: "👥 Show everyone",
+    eventDoneLocalBtn: "🔒 Only on my phone",
+    eventDoneCancelBtn: "Cancel",
     eventDoneShareFailed: "Could not send to the server (check your connection) — saved only on your phone.",
     eventDoneFillTraining: "Fill in distance and time so the training lands in your History (or skip it if you import it from your watch).",
     eventDoneSharedTag: "(visible to everyone)",
@@ -2629,8 +2637,10 @@ async function toggleEventDone(ev) {
     renderEvents();
     return;
   }
+  const choice = await askEventDoneShare();
+  if (!choice) return; // Anuluj - nic nie zaznaczamy
   const newEntry = { title: ev.title, disc: ev.disc, starts_at: ev.starts_at, done_at: new Date().toISOString() };
-  if (confirm(dict.eventDoneShareConfirm)) {
+  if (choice === "share") {
     const token = randomToken();
     try {
       ev.completed = await rpc("complete_event", { p_id: ev.id, p_token: token });
@@ -2643,6 +2653,37 @@ async function toggleEventDone(ev) {
   saveEventsDone(done);
   renderEvents();
   openTrainingFromEvent(ev);
+}
+
+// Okno wyboru po „Zrobione”: "share" / "local" / null (anulowano: Anuluj, tło albo Esc).
+function askEventDoneShare() {
+  const dict = t();
+  return new Promise((resolve) => {
+    const overlay = document.createElement("div");
+    overlay.className = "modal-overlay";
+    overlay.innerHTML =
+      `<div class="card modal-card" role="dialog" aria-modal="true" aria-labelledby="eventDoneDialogTitle">` +
+      `<h3 id="eventDoneDialogTitle">${dict.eventDoneDialogTitle}</h3>` +
+      `<p>${dict.eventDoneDialogText}</p>` +
+      `<button class="primary" data-choice="share">${dict.eventDoneShareBtn}</button>` +
+      `<button data-choice="local">${dict.eventDoneLocalBtn}</button>` +
+      `<button class="link-btn" data-choice="">${dict.eventDoneCancelBtn}</button>` +
+      `</div>`;
+    const close = (value) => {
+      document.removeEventListener("keydown", onKey);
+      overlay.remove();
+      resolve(value || null);
+    };
+    const onKey = (e) => { if (e.key === "Escape") close(null); };
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) return close(null);
+      const btn = e.target.closest("button[data-choice]");
+      if (btn) close(btn.dataset.choice);
+    });
+    document.addEventListener("keydown", onKey);
+    document.body.appendChild(overlay);
+    overlay.querySelector("button.primary").focus();
+  });
 }
 
 // Po „Zrobione” - formularz treningu z dyscypliną, datą i nazwą wydarzenia w notatkach.
