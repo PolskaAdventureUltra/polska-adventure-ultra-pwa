@@ -43,6 +43,10 @@ const TRANSLATIONS = {
     optBieg: "Bieg",
     optRower: "Rower",
     optKajak: "Kajak",
+    optBasen: "Pływanie – basen",
+    optWodyOtwarte: "Pływanie – wody otwarte",
+    optTrekking: "Trekking",
+    distSwimPlaceholder: "np. 1.5 = 1500 m",
     labelDate: "Data",
     labelDist: "Dystans (km)",
     labelTime: "Czas (min)",
@@ -70,6 +74,7 @@ const TRANSLATIONS = {
     alertTimeRequired: "Podaj czas większy od 0.",
     paceResult: (min, sec) => `Tempo: ${min}:${sec} min/km`,
     speedResult: (v) => `Prędkość: ${v} km/h`,
+    swimPaceResult: (pace) => `Tempo: ${pace}`,
     alertNoHistoryChart: "Brak danych historycznych.",
     alertNoHistoryExport: "Brak danych do eksportu.",
     importSuccess: (p) =>
@@ -82,16 +87,16 @@ const TRANSLATIONS = {
     promptNewPin: "Podaj nowy PIN:",
     pinChanged: "PIN zmieniony.",
     historyLabels: { date: "Data", disc: "Dyscyplina", dist: "Dystans", weight: "Waga", hr: "Tętno", vo2max: "VO2max", notes: "Notatki" },
-    discNames: { Bieg: "Bieg", Rower: "Rower", Kajak: "Kajak", Multi: "Multisport" },
+    discNames: { Bieg: "Bieg", Rower: "Rower", Kajak: "Kajak", Basen: "Pływanie – basen", WodyOtwarte: "Pływanie – wody otwarte", Trekking: "Trekking", Multi: "Multisport" },
     routeTitle: "Trasa",
     showRouteTitle: "Pokaż trasę",
     tabPlan: "Trasy",
     planTitle: "Wyznacz trasę",
     planHint: "Klikaj na mapie, żeby dodać kolejne punkty trasy. Gotową trasę zapisz i wyeksportuj do GPX, a potem wgraj do zegarka.",
     planModeLabel: "Prowadzenie trasy",
-    planModeFoot: "Po szlakach pieszych (bieg)",
+    planModeFoot: "Po szlakach pieszych i górskich (bieg, trekking)",
     planModeBike: "Po drogach rowerowych (rower)",
-    planModeStraight: "Linia prosta (kajak / teren)",
+    planModeStraight: "Linia prosta (kajak, pływanie, teren)",
     planUndoBtn: "Cofnij punkt",
     planClearBtn: "Wyczyść",
     planSaveBtn: "ZAPISZ TRASĘ",
@@ -130,7 +135,7 @@ const TRANSLATIONS = {
     chSignupSoonHint: "Do tego czasu możesz śledzić wyzwanie i dołączać do wspólnych treningów.",
     challengeJoinBtn: "DOŁĄCZ DO WYZWANIA",
     challengeStartLabel: "Początek Twojego wyzwania",
-    challengeStartHint: "Od tej daty liczą się dni wyzwania. Do postępu wliczają się tylko treningi oznaczone 🏁 jako odcinek wyzwania (pole przy zapisie treningu albo przycisk 🏁 w Historii).",
+    challengeStartHint: "Od tej daty liczą się dni wyzwania. Do postępu wliczają się tylko treningi biegowe, rowerowe i kajakowe oznaczone 🏁 jako odcinek wyzwania (pole przy zapisie treningu albo przycisk 🏁 w Historii).",
     challengeFlagLabel: "🏁 Odcinek wyzwania 4000 km (liczy się do postępu w wyzwaniu)",
     flagOnTitle: "Odcinek wyzwania — kliknij, aby odznaczyć",
     flagOffTitle: "Oznacz jako odcinek wyzwania 4000 km",
@@ -246,6 +251,7 @@ const TRANSLATIONS = {
     recLongestDist: "Najdłuższy dystans",
     recLongestTime: "Najdłuższy czas",
     recBestPace: "Najszybsze tempo (od 1 km)",
+    recBestSwimPace: "Najszybsze tempo (od 400 m)",
     recBestSpeed: "Najwyższa śr. prędkość (od 1 km)",
     recMaxAscent: "Największe przewyższenie",
     recBestWeek: "Najlepszy tydzień",
@@ -265,7 +271,7 @@ const TRANSLATIONS = {
     recommendText: "Pokaż ten kod znajomemu — zeskanuje go aparatem telefonu i od razu otworzy aplikację.",
     shareAppBtn: "WYŚLIJ LINK DO APLIKACJI",
     shareQrBtn: "UDOSTĘPNIJ KOD QR",
-    shareAppText: "Polska Adventure Ultra — dziennik treningów biegowych, rowerowych i kajakowych:",
+    shareAppText: "Polska Adventure Ultra — dziennik treningów: bieg, rower, kajak, pływanie i trekking:",
     appLinkCopied: "Link do aplikacji skopiowany do schowka.",
     helpHtml: (community, contact) => `
       ${contact ? `<p class="contact-box">✉️ Kontakt: <a href="mailto:${contact}">${contact}</a> — pytania, zgłoszenia błędów, prośby o usunięcie danych, zgłaszanie niestosownych treści.</p>` : ""}
@@ -281,14 +287,15 @@ const TRANSLATIONS = {
           <li>Zakładka <b>Wyzwanie</b> jest dostępna dla wszystkich: pokazuje trasę 4000 km (start i meta: Lublin) i zasady. Licznik na mapie jest poglądowy — prawdziwy postęp widzą tylko uczestnicy.</li>
           <li>Zapisy ruszają we wrześniu 2027. Po dołączeniu ekran pokazuje Twój postęp: kilometry w każdej dyscyplinie, miejsce na trasie i prognozę mety.</li>
           <li>Masz kod zaproszenia od organizatora? Kliknij „Masz kod zaproszenia?” pod przyciskiem zapisów — po wpisaniu kodu możesz dołączyć wcześniej. Kod działa tylko na jednym telefonie (przy zmianie telefonu przywróć kopię zapasową albo poproś organizatora o zwolnienie kodu). Jeśli organizator wycofa kod, udział w wyzwaniu zostanie zakończony (treningi zostają w Historii).</li>
-          <li>Do postępu liczą się <b>tylko odcinki wyzwania</b>: przy zapisie treningu zaznacz „🏁 Odcinek wyzwania 4000 km”, a w Historii możesz oznaczyć lub odznaczyć trening przyciskiem 🏁. Codzienne treningi gdzie indziej trafiają tylko do Historii.</li>
+          <li>Do postępu liczą się <b>tylko odcinki wyzwania</b>: przy zapisie treningu zaznacz „🏁 Odcinek wyzwania 4000 km”, a w Historii możesz oznaczyć lub odznaczyć trening przyciskiem 🏁. Codzienne treningi gdzie indziej trafiają tylko do Historii. Wyzwanie to bieg, rower i kajak — pływanie i trekking się do niego nie liczą (nie mają pola 🏁).</li>
           <li>Po rezygnacji ekran wraca do widoku dla obserwatorów; treningi zostają w Historii.</li>
         </ul>
       </details>
       <details><summary>🏃 Zapisywanie treningu</summary>
         <ul>
           <li>W zakładce <b>Trening</b> wybierz dyscyplinę, wpisz dystans (wymagany) i pozostałe dane, kliknij „ZAPISZ TRENING”.</li>
-          <li>„OBLICZ TEMPO” pokazuje tempo (bieg) albo prędkość (rower, kajak); „POKAŻ WYKRES PROGRESU” rysuje wykres dystansów.</li>
+          <li>Dyscypliny: bieg, rower, kajak, pływanie (basen albo wody otwarte: jezioro, rzeka, morze) i trekking. Dystans pływania też wpisujesz w km (1500 m = 1.5).</li>
+          <li>„OBLICZ TEMPO” pokazuje tempo w min/km (bieg), tempo na 100 m (pływanie) albo prędkość w km/h (rower, kajak, trekking); „POKAŻ WYKRES PROGRESU” rysuje wykres dystansów.</li>
         </ul>
       </details>
       <details><summary>⌚ Import z zegarka (Garmin / Suunto / Polar)</summary>
@@ -312,7 +319,7 @@ const TRANSLATIONS = {
       </details>
       <details><summary>🗺 Planowanie tras i nawigacja w zegarku</summary>
         <ul>
-          <li>W zakładce <b>Trasy</b> klikaj na mapie kolejne punkty. Wybierz prowadzenie: szlaki piesze, drogi rowerowe albo linia prosta (kajak / teren).</li>
+          <li>W zakładce <b>Trasy</b> klikaj na mapie kolejne punkty. Wybierz prowadzenie: szlaki piesze i górskie (bieg, trekking), drogi rowerowe albo linia prosta (kajak, pływanie, teren).</li>
           <li>„Cofnij punkt” usuwa ostatni punkt, „Wyczyść” — całą trasę. „ZAPISZ TRASĘ” zapisuje ją na liście poniżej mapy.</li>
           <li>„EKSPORTUJ DO GPX” (lub przycisk GPX przy zapisanej trasie) tworzy plik do zegarka. Na telefonie otworzy się menu „Udostępnij”.</li>
           <li><b>Garmin</b>: Garmin Connect (www) → Trening → Trasy → Importuj → wyślij na zegarek. <b>Suunto</b>: otwórz plik GPX w Suunto app i zsynchronizuj zegarek. <b>Polar</b>: Polar Flow (www) → Ulubione → Trasy → Importuj → synchronizuj.</li>
@@ -454,6 +461,10 @@ const TRANSLATIONS = {
     optBieg: "Running",
     optRower: "Cycling",
     optKajak: "Kayaking",
+    optBasen: "Swimming – pool",
+    optWodyOtwarte: "Swimming – open water",
+    optTrekking: "Hiking",
+    distSwimPlaceholder: "e.g. 1.5 = 1500 m",
     labelDate: "Date",
     labelDist: "Distance (km)",
     labelTime: "Time (min)",
@@ -481,6 +492,7 @@ const TRANSLATIONS = {
     alertTimeRequired: "Enter a time greater than 0.",
     paceResult: (min, sec) => `Pace: ${min}:${sec} min/km`,
     speedResult: (v) => `Speed: ${v} km/h`,
+    swimPaceResult: (pace) => `Pace: ${pace}`,
     alertNoHistoryChart: "No historical data.",
     alertNoHistoryExport: "No data to export.",
     importSuccess: (p) =>
@@ -493,16 +505,16 @@ const TRANSLATIONS = {
     promptNewPin: "Enter new PIN:",
     pinChanged: "PIN changed.",
     historyLabels: { date: "Date", disc: "Discipline", dist: "Distance", weight: "Weight", hr: "HR", vo2max: "VO2max", notes: "Notes" },
-    discNames: { Bieg: "Running", Rower: "Cycling", Kajak: "Kayaking", Multi: "Multisport" },
+    discNames: { Bieg: "Running", Rower: "Cycling", Kajak: "Kayaking", Basen: "Swimming – pool", WodyOtwarte: "Swimming – open water", Trekking: "Hiking", Multi: "Multisport" },
     routeTitle: "Route",
     showRouteTitle: "Show route",
     tabPlan: "Routes",
     planTitle: "Plan a route",
     planHint: "Tap the map to add route points. Save the finished route, export it to GPX and upload it to your watch.",
     planModeLabel: "Route guidance",
-    planModeFoot: "Follow footpaths (running)",
+    planModeFoot: "Follow footpaths and mountain trails (running, hiking)",
     planModeBike: "Follow cycle roads (cycling)",
-    planModeStraight: "Straight lines (kayak / off-road)",
+    planModeStraight: "Straight lines (kayak, swimming, off-road)",
     planUndoBtn: "Undo point",
     planClearBtn: "Clear",
     planSaveBtn: "SAVE ROUTE",
@@ -541,7 +553,7 @@ const TRANSLATIONS = {
     chSignupSoonHint: "Until then you can follow the challenge and join group trainings.",
     challengeJoinBtn: "JOIN THE CHALLENGE",
     challengeStartLabel: "Start of your challenge",
-    challengeStartHint: "Challenge days are counted from this date. Only trainings marked 🏁 as a challenge stage count towards progress (checkbox when saving a training or the 🏁 button in History).",
+    challengeStartHint: "Challenge days are counted from this date. Only running, cycling and kayaking trainings marked 🏁 as a challenge stage count towards progress (checkbox when saving a training or the 🏁 button in History).",
     challengeFlagLabel: "🏁 4000 km challenge stage (counts towards challenge progress)",
     flagOnTitle: "Challenge stage — tap to unmark",
     flagOffTitle: "Mark as a 4000 km challenge stage",
@@ -657,6 +669,7 @@ const TRANSLATIONS = {
     recLongestDist: "Longest distance",
     recLongestTime: "Longest time",
     recBestPace: "Fastest pace (1 km+)",
+    recBestSwimPace: "Fastest pace (400 m+)",
     recBestSpeed: "Highest avg. speed (1 km+)",
     recMaxAscent: "Biggest ascent",
     recBestWeek: "Best week",
@@ -676,7 +689,7 @@ const TRANSLATIONS = {
     recommendText: "Show this code to a friend — they scan it with the phone camera and the app opens right away.",
     shareAppBtn: "SEND A LINK TO THE APP",
     shareQrBtn: "SHARE THE QR CODE",
-    shareAppText: "Polska Adventure Ultra — a training log for running, cycling and kayaking:",
+    shareAppText: "Polska Adventure Ultra — a training log for running, cycling, kayaking, swimming and hiking:",
     appLinkCopied: "App link copied to the clipboard.",
     helpHtml: (community, contact) => `
       ${contact ? `<p class="contact-box">✉️ Contact: <a href="mailto:${contact}">${contact}</a> — questions, bug reports, data deletion requests, reporting inappropriate content.</p>` : ""}
@@ -692,14 +705,15 @@ const TRANSLATIONS = {
           <li>The <b>Challenge</b> tab is open to everyone: it shows the 4000 km route (start and finish: Lublin) and the rules. The counter on the map is just an illustration — real progress is visible only to participants.</li>
           <li>Sign-ups open in September 2027. After joining, the screen shows your progress: kilometres per discipline, your place on the route and a finish forecast.</li>
           <li>Got an invitation code from the organiser? Tap “Have an invitation code?” below the sign-up button — after entering it you can join early. The code works on one phone only (when changing phones, restore your backup or ask the organiser to release the code). If the organiser withdraws the code, your participation ends (your trainings stay in History).</li>
-          <li>Only <b>challenge stages</b> count towards progress: when saving a training tick “🏁 4000 km challenge stage”, and in History you can mark or unmark a training with the 🏁 button. Everyday trainings elsewhere go only to History.</li>
+          <li>Only <b>challenge stages</b> count towards progress: when saving a training tick “🏁 4000 km challenge stage”, and in History you can mark or unmark a training with the 🏁 button. Everyday trainings elsewhere go only to History. The challenge is running, cycling and kayaking — swimming and hiking don't count towards it (they have no 🏁 option).</li>
           <li>After leaving, the screen returns to the observer view; your trainings stay in History.</li>
         </ul>
       </details>
       <details><summary>🏃 Saving a training</summary>
         <ul>
           <li>In the <b>Training</b> tab choose a discipline, enter the distance (required) and other data, then tap “SAVE TRAINING”.</li>
-          <li>“CALCULATE PACE” shows pace (running) or speed (cycling, kayaking); “SHOW PROGRESS CHART” draws a distance chart.</li>
+          <li>Disciplines: running, cycling, kayaking, swimming (pool or open water: lake, river, sea) and hiking. Swimming distance is also entered in km (1500 m = 1.5).</li>
+          <li>“CALCULATE PACE” shows pace per km (running), pace per 100 m (swimming) or speed in km/h (cycling, kayaking, hiking); “SHOW PROGRESS CHART” draws a distance chart.</li>
         </ul>
       </details>
       <details><summary>⌚ Import from your watch (Garmin / Suunto / Polar)</summary>
@@ -723,7 +737,7 @@ const TRANSLATIONS = {
       </details>
       <details><summary>🗺 Route planning and watch navigation</summary>
         <ul>
-          <li>In the <b>Routes</b> tab tap the map to add points. Choose guidance: footpaths, cycle roads or straight lines (kayak / off-road).</li>
+          <li>In the <b>Routes</b> tab tap the map to add points. Choose guidance: footpaths and mountain trails, cycle roads or straight lines (kayak, swimming, off-road).</li>
           <li>“Undo point” removes the last point, “Clear” the whole route. “SAVE ROUTE” adds it to the list below the map.</li>
           <li>“EXPORT TO GPX” (or the GPX button next to a saved route) creates a file for your watch. On a phone the Share menu opens.</li>
           <li><b>Garmin</b>: Garmin Connect (web) → Training → Courses → Import → send to device. <b>Suunto</b>: open the GPX file in the Suunto app and sync the watch. <b>Polar</b>: Polar Flow (web) → Favorites → Routes → Import → sync.</li>
@@ -873,6 +887,7 @@ function applyLanguage() {
     el.textContent = dict[el.dataset.i18n];
   });
   document.getElementById("langBtn").textContent = dict.langBtnTarget;
+  updateDisciplineUi();
   document.getElementById("trainHintClose").setAttribute("aria-label", dict.hintCloseLabel);
   hideTrainHint();
   clearFieldState("dist");
@@ -995,7 +1010,31 @@ function refreshTotalLabel() {
 }
 
 // --- Podsumowanie, passa i rekordy (liczone na bieżąco z historii) ---
-const DISCIPLINES = ["Bieg", "Rower", "Kajak"];
+const DISCIPLINES = ["Bieg", "Rower", "Kajak", "Basen", "WodyOtwarte", "Trekking"];
+// Do wyzwania 4000 km liczą się tylko te dyscypliny (pływanie i trekking - tylko do Historii/statystyk).
+const CHALLENGE_DISCIPLINES = ["Bieg", "Rower", "Kajak"];
+const SWIM_DISCIPLINES = ["Basen", "WodyOtwarte"];
+
+function isChallengeDisc(disc) {
+  return CHALLENGE_DISCIPLINES.includes(disc);
+}
+
+function formatSwimPace(minPer100m) {
+  let m = Math.floor(minPer100m);
+  let sec = Math.round((minPer100m - m) * 60);
+  if (sec === 60) { m++; sec = 0; }
+  return `${m}:${String(sec).padStart(2, "0")} /100 m`;
+}
+
+// Pole „Odcinek wyzwania” i podpowiedź dystansu zależą od wybranej dyscypliny.
+function updateDisciplineUi() {
+  const disc = document.getElementById("discipline").value;
+  const flagRow = document.getElementById("challengeFlagRow");
+  const show = Boolean(getChallenge()) && isChallengeDisc(disc);
+  flagRow.style.display = show ? "flex" : "none";
+  if (!show) document.getElementById("challengeFlag").checked = false;
+  document.getElementById("dist").placeholder = SWIM_DISCIPLINES.includes(disc) ? t().distSwimPlaceholder : "";
+}
 
 function toYmd(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -1260,7 +1299,8 @@ function refreshRecords(history) {
   DISCIPLINES.forEach((disc) => {
     const items = history.filter((item) => item.disc === disc);
     if (items.length === 0) return;
-    const timed = items.filter((item) => parseFloat(item.dist) >= 1 && parseFloat(item.time) > 0);
+    const swim = SWIM_DISCIPLINES.includes(disc);
+    const timed = items.filter((item) => parseFloat(item.dist) >= (swim ? 0.4 : 1) && parseFloat(item.time) > 0);
     const rows = [];
     const dist = bestBy(items, (item) => parseFloat(item.dist));
     if (dist) rows.push(row(dict.recLongestDist, `${dist.value.toFixed(2)} km`, dist.item.date));
@@ -1269,6 +1309,9 @@ function refreshRecords(history) {
     if (disc === "Bieg") {
       const pace = bestBy(timed, (item) => parseFloat(item.dist) / parseFloat(item.time));
       if (pace) rows.push(row(dict.recBestPace, formatPace(1 / pace.value), pace.item.date));
+    } else if (swim) {
+      const pace = bestBy(timed, (item) => parseFloat(item.dist) / parseFloat(item.time));
+      if (pace) rows.push(row(dict.recBestSwimPace, formatSwimPace(1 / (pace.value * 10)), pace.item.date));
     } else {
       const speed = bestBy(timed, (item) => parseFloat(item.dist) / (parseFloat(item.time) / 60));
       if (speed) rows.push(row(dict.recBestSpeed, `${speed.value.toFixed(1)} km/h`, speed.item.date));
@@ -1442,9 +1485,10 @@ function challengeStats() {
   const challenge = getChallenge();
   const today = parseYmd(toYmd(new Date()));
   // Do postępu liczą się wyłącznie treningi oznaczone jako odcinek wyzwania (🏁).
-  const items = getHistory().filter((item) => item.challenge === true && /^\d{4}-\d{2}-\d{2}$/.test(item.date));
+  const items = getHistory().filter((item) => item.challenge === true && isChallengeDisc(item.disc) &&
+    /^\d{4}-\d{2}-\d{2}$/.test(item.date));
   const byDisc = {};
-  DISCIPLINES.forEach((disc) => {
+  CHALLENGE_DISCIPLINES.forEach((disc) => {
     byDisc[disc] = summarize(items.filter((item) => item.disc === disc)).km;
   });
   const km = summarize(items).km;
@@ -1548,7 +1592,7 @@ function challengeParticipantHtml() {
     `<div class="ch-map"><div class="ch-map-left"><span class="ch-big">${st.pct}%</span>` +
     `<span class="ch-sub">${Math.round(st.km).toLocaleString(dict.dateLocale)} km</span><span class="ch-small">${dict.chNow(st.day)}</span>` +
     `${challengePartnersHtml()}</div>${challengeMapSvg(st.fraction, true)}</div>` +
-    `<div class="ch-pills">${DISCIPLINES.map((d) => `<div class="ch-pill" title="${dict.discNames[d]}">${discIcon(d, 18)}<b>${Math.round(st.byDisc[d])}</b> km</div>`).join("")}</div>` +
+    `<div class="ch-pills">${CHALLENGE_DISCIPLINES.map((d) => `<div class="ch-pill" title="${dict.discNames[d]}">${discIcon(d, 18)}<b>${Math.round(st.byDisc[d])}</b> km</div>`).join("")}</div>` +
     `<div class="ch-stats"><div><span class="ch-stat-value">${st.day}</span><span class="ch-stat-label">${dict.chStatDays}</span></div>` +
     `<div><span class="ch-stat-value">${st.perDay.toFixed(1)}</span><span class="ch-stat-label">${dict.chStatAvg}</span></div>` +
     `<div><span class="ch-stat-value">${escapeXml(eta)}</span><span class="ch-stat-label">${dict.chStatEta}</span></div></div>` +
@@ -1592,7 +1636,7 @@ function renderChallenge() {
   stopChallengeDemo();
   const challenge = getChallenge();
   document.getElementById("challengeSettings").style.display = challenge ? "block" : "none";
-  document.getElementById("challengeFlagRow").style.display = challenge ? "flex" : "none";
+  updateDisciplineUi();
   el.innerHTML = challenge ? challengeParticipantHtml() : challengeObserverHtml();
   bindChallengeTicker(el);
   if (challenge) {
@@ -1626,7 +1670,7 @@ function refreshHistoryList() {
       const routeBtn = item.route && item.route.length >= 2
         ? `<button class="route-btn" data-index="${index}" title="${dict.showRouteTitle}">🗺</button>`
         : "";
-      const flagBtn = getChallenge()
+      const flagBtn = getChallenge() && (isChallengeDisc(item.disc) || item.challenge)
         ? `<button class="flag-btn${item.challenge ? " on" : ""}" data-index="${index}" title="${item.challenge ? dict.flagOnTitle : dict.flagOffTitle}" aria-pressed="${item.challenge ? "true" : "false"}">🏁</button>`
         : "";
       const shareBtn = isCommunityConfigured()
@@ -1660,7 +1704,8 @@ function toggleChallengeFlag(index) {
   const entry = history[index];
   if (!entry) return;
   if (entry.challenge) delete entry.challenge;
-  else entry.challenge = true;
+  else if (isChallengeDisc(entry.disc)) entry.challenge = true;
+  else return;
   saveHistory(history);
   refreshHistoryList();
 }
@@ -1742,7 +1787,7 @@ function saveTraining() {
   };
   if (pendingRoute) entry.route = pendingRoute;
   if (pendingEventDone && entry.date === pendingEventDone.ymd) entry.event = pendingEventDone.id;
-  if (getChallenge() && document.getElementById("challengeFlag").checked) entry.challenge = true;
+  if (getChallenge() && isChallengeDisc(entry.disc) && document.getElementById("challengeFlag").checked) entry.challenge = true;
 
   const history = getHistory();
   const reachedBefore = reachedGoals(history);
@@ -1788,6 +1833,8 @@ function calcPace() {
     const min = Math.floor(pace);
     const sec = Math.round((pace - min) * 60);
     alert(t().paceResult(min, String(sec).padStart(2, "0")));
+  } else if (SWIM_DISCIPLINES.includes(disc)) {
+    alert(t().swimPaceResult(formatSwimPace(time / (dist * 10))));
   } else {
     const speed = dist / (time / 60);
     alert(t().speedResult(speed.toFixed(1)));
@@ -2850,6 +2897,7 @@ async function showEventResults(ev) {
 function openTrainingFromEvent(ev) {
   showTab("train");
   if (DISCIPLINES.includes(ev.disc)) document.getElementById("discipline").value = ev.disc;
+  updateDisciplineUi();
   document.getElementById("date").value = toYmd(new Date(ev.starts_at));
   const notes = document.getElementById("notes");
   if (!notes.value.trim()) notes.value = `📅 ${ev.title}`;
@@ -3562,6 +3610,24 @@ function downsampleRoute(points, maxPoints) {
   return Array.from({ length: maxPoints }, (_, i) => points[Math.round(i * step)]);
 }
 
+// Dyscyplina z <trk><type> (Garmin/Suunto/Strava zapisują np. running, cycling, hiking, open_water_swimming).
+function gpxDiscipline(xml) {
+  const trk = xml.getElementsByTagName("trk")[0];
+  const typeEl = trk ? trk.getElementsByTagName("type")[0] : null;
+  return activityTypeToDisc(typeEl ? typeEl.textContent : "") || "Bieg";
+}
+
+function activityTypeToDisc(type) {
+  const s = String(type || "").toLowerCase();
+  if (!s) return null;
+  if (/swim/.test(s)) return /pool|lap|basen/.test(s) ? "Basen" : "WodyOtwarte";
+  if (/hik|walk|trek|mountaineer/.test(s)) return "Trekking";
+  if (/kayak|paddl|canoe|row/.test(s)) return "Kajak";
+  if (/cycl|bik|ride/.test(s)) return "Rower";
+  if (/run|jog/.test(s)) return "Bieg";
+  return null;
+}
+
 function parseGpx(xml) {
   const trkpts = Array.from(xml.getElementsByTagName("trkpt"));
   if (trkpts.length < 2) throw new Error(t().errNoGpxPoints);
@@ -3603,7 +3669,7 @@ function parseGpx(xml) {
     dist: distKm.toFixed(2),
     time: timeMin.toFixed(1),
     hr: avgHr ? String(Math.round(avgHr)) : "0",
-    disc: "Bieg",
+    disc: gpxDiscipline(xml),
     route: downsampleRoute(route, 200),
   };
 }
@@ -3654,7 +3720,7 @@ function parseTcx(xml) {
     dist: (distM / 1000).toFixed(2),
     time: (timeS / 60).toFixed(1),
     hr: avgHr ? String(Math.round(avgHr)) : "0",
-    disc: discMap[sport] || "Bieg",
+    disc: discMap[sport] || activityTypeToDisc(sport) || "Bieg",
     route: route.length >= 2 ? downsampleRoute(route, 200) : undefined,
   };
 }
@@ -3676,6 +3742,7 @@ function importTrainingFile(file) {
       document.getElementById("time").value = parsed.time;
       document.getElementById("hr").value = parsed.hr;
       document.getElementById("discipline").value = parsed.disc;
+      updateDisciplineUi();
       pendingRoute = parsed.route && parsed.route.length >= 2 ? parsed.route : null;
 
       alert(t().importSuccess(parsed));
@@ -3740,6 +3807,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("planExportBtn").addEventListener("click", exportCurrentPlan);
 
   document.getElementById("saveBtn").addEventListener("click", saveTraining);
+  document.getElementById("discipline").addEventListener("change", updateDisciplineUi);
   ["dist", "time"].forEach((id) => document.getElementById(id).addEventListener("input", () => clearFieldState(id)));
   document.getElementById("trainHintClose").addEventListener("click", hideTrainHint);
   document.getElementById("paceBtn").addEventListener("click", calcPace);

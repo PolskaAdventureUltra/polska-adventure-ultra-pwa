@@ -22,7 +22,7 @@ create table if not exists public.devices (
 create table if not exists public.activities (
   id uuid primary key default gen_random_uuid(),
   nick text not null check (char_length(nick) between 1 and 30),
-  disc text not null check (disc in ('Bieg', 'Rower', 'Kajak')),
+  disc text not null check (disc in ('Bieg', 'Rower', 'Kajak', 'Basen', 'WodyOtwarte', 'Trekking')),
   activity_date date not null,
   dist_km numeric(7, 2) not null check (dist_km > 0 and dist_km <= 2000),
   time_min numeric(7, 1) check (time_min is null or (time_min >= 0 and time_min <= 20000)),
@@ -57,7 +57,7 @@ create table if not exists public.admin_keys (
 create table if not exists public.events (
   id uuid primary key default gen_random_uuid(),
   title text not null check (char_length(title) between 1 and 80),
-  disc text not null check (disc in ('Bieg', 'Rower', 'Kajak', 'Multi')),
+  disc text not null check (disc in ('Bieg', 'Rower', 'Kajak', 'Basen', 'WodyOtwarte', 'Trekking', 'Multi')),
   starts_at timestamptz not null,
   place text not null check (char_length(place) between 1 and 120),
   lat double precision check (lat is null or lat between -90 and 90),
@@ -91,6 +91,15 @@ alter table public.event_completions add column if not exists dist_km numeric;
 alter table public.event_completions add column if not exists time_min numeric;
 alter table public.event_completions add column if not exists elev jsonb;
 alter table public.event_completions add column if not exists result_at timestamptz;
+
+-- Nowe dyscypliny (2026-11-04): pływanie (basen / wody otwarte) i trekking - poza wyzwaniem 4000 km.
+-- „create table if not exists” nie zmienia istniejących tabel, więc ograniczenia podmieniamy wprost.
+alter table public.activities drop constraint if exists activities_disc_check;
+alter table public.activities add constraint activities_disc_check
+  check (disc in ('Bieg', 'Rower', 'Kajak', 'Basen', 'WodyOtwarte', 'Trekking'));
+alter table public.events drop constraint if exists events_disc_check;
+alter table public.events add constraint events_disc_check
+  check (disc in ('Bieg', 'Rower', 'Kajak', 'Basen', 'WodyOtwarte', 'Trekking', 'Multi'));
 
 alter table public.devices enable row level security;
 alter table public.activities enable row level security;
