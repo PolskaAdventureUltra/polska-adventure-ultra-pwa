@@ -904,6 +904,7 @@ function toggleLanguage() {
   refreshPrivacyText();
   refreshHelpText();
   redrawElevations();
+  renderChallenge(); // pasek z hasłami i reszta ekranu Wyzwania w nowym języku
   if (document.getElementById("tabActivity").classList.contains("active")) refreshActivityTab();
 }
 
@@ -1367,11 +1368,15 @@ const PARTNER_LOGO_MAX_W = 62;
 const PARTNERS_PAGE_URL = "https://polskaadventureultra.pl/#partners";
 
 // Hasła wyzwania w płynącym pasku na górze karty Wyzwania (motto - po polsku w obu językach).
-const CHALLENGE_SLOGANS = [
-  "Polska Adventure Ultra",
-  "Już czas",
-  "Biegnij, jedź i płyń",
-];
+// Hasła paska w Wyzwaniu - w języku aplikacji (nazwa wyzwania bez tłumaczenia).
+const CHALLENGE_SLOGANS = {
+  pl: ["Polska Adventure Ultra", "Już czas", "Biegnij, jedź i płyń"],
+  en: ["Polska Adventure Ultra", "It's time", "Run, ride and paddle"],
+};
+
+function challengeSlogans() {
+  return CHALLENGE_SLOGANS[getLang()] || CHALLENGE_SLOGANS.pl;
+}
 let challengeDemoFrame = null; // animacja licznika 1-100% w widoku obserwatora
 
 function discIcon(disc, size) {
@@ -1530,9 +1535,10 @@ function challengeHeadHtml() {
 // Dotknięcie zatrzymuje/wznawia; przy "ograniczeniu ruchu" w systemie pasek stoi (CSS).
 function challengeTickerHtml() {
   // Hasła powtórzone 2x, żeby jedna kopia była szersza niż ekran (bez dziury w pętli).
-  const one = CHALLENGE_SLOGANS.map((s) => `<span>${escapeXml(s)}</span><i aria-hidden="true">•</i>`).join("");
+  const slogans = challengeSlogans();
+  const one = slogans.map((s) => `<span>${escapeXml(s)}</span><i aria-hidden="true">•</i>`).join("");
   const run = one + `<b class="ch-ticker-dup">${one}</b>`;
-  return `<div class="ch-ticker" role="marquee" tabindex="0" aria-label="${escapeXml(CHALLENGE_SLOGANS.join(". "))}">` +
+  return `<div class="ch-ticker" role="marquee" tabindex="0" aria-label="${escapeXml(slogans.join(". "))}">` +
     `<div class="ch-ticker-track" aria-hidden="true"><div class="ch-ticker-run">${run}</div><div class="ch-ticker-run">${run}</div></div></div>`;
 }
 
