@@ -3,7 +3,7 @@
 // Polska Adventure Ultra - PWA Service Worker
 // Cache'uje wszystkie pliki apki, żeby działała w 100% offline po pierwszym wczytaniu.
 
-const CACHE_NAME = "pau-cache-v46";
+const CACHE_NAME = "pau-cache-v47";
 const ASSETS = [
   "./",
   "./index.html",
@@ -34,7 +34,9 @@ const ASSETS = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    // cache: "reload" - pobieramy prosto z serwera, z pominięciem pamięci HTTP przeglądarki
+    // (GitHub Pages: max-age=600), inaczej nowa wersja mogłaby zapisać stare pliki.
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS.map((url) => new Request(url, { cache: "reload" }))))
   );
   self.skipWaiting();
 });
