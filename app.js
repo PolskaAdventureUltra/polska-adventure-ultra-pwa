@@ -1267,13 +1267,8 @@ const PARTNERS_PAGE_URL = "https://polskaadventureultra.pl/#partners";
 // Hasła wyzwania w płynącym pasku na górze karty Wyzwania (motto - po polsku w obu językach).
 const CHALLENGE_SLOGANS = [
   "Polska Adventure Ultra",
-  "Pokaż światu, ile masz sił",
-  "Biegnij, jedź i płyń",
-  "Ultra siostra, ultra brat",
-  "Zatrzymaj czas",
-  "Nie pytaj, czy dasz radę — pokaż, ile jesteś wart",
-  "Ultra DNA",
   "Już czas",
+  "Biegnij, jedź i płyń",
 ];
 let challengeDemoFrame = null; // animacja licznika 1-100% w widoku obserwatora
 
@@ -1431,7 +1426,9 @@ function challengeHeadHtml() {
 // Pasek z hasłami: treść powtórzona 2x, animacja przesuwa o połowę -> pętla bez skoku.
 // Dotknięcie zatrzymuje/wznawia; przy "ograniczeniu ruchu" w systemie pasek stoi (CSS).
 function challengeTickerHtml() {
-  const run = CHALLENGE_SLOGANS.map((s) => `<span>${escapeXml(s)}</span><i aria-hidden="true">•</i>`).join("");
+  // Hasła powtórzone 2x, żeby jedna kopia była szersza niż ekran (bez dziury w pętli).
+  const one = CHALLENGE_SLOGANS.map((s) => `<span>${escapeXml(s)}</span><i aria-hidden="true">•</i>`).join("");
+  const run = one + `<b class="ch-ticker-dup">${one}</b>`;
   return `<div class="ch-ticker" role="marquee" tabindex="0" aria-label="${escapeXml(CHALLENGE_SLOGANS.join(". "))}">` +
     `<div class="ch-ticker-track" aria-hidden="true"><div class="ch-ticker-run">${run}</div><div class="ch-ticker-run">${run}</div></div></div>`;
 }
