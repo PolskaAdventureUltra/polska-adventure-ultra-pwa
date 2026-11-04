@@ -323,8 +323,8 @@ const TRANSLATIONS = {
         <ul>
           <li>Pod mapą trasy pokazuje się wykres wysokości: na osi poziomej dystans, na pionowej wysokość n.p.m.</li>
           <li>Pod wykresem: <b>↗ podejścia</b> i <b>↘ zejścia</b> (suma metrów w górę i w dół) oraz najniższy i najwyższy punkt trasy.</li>
-          <li>Gdzie go zobaczysz: w <b>Historii</b> po kliknięciu 🗺 przy zaimportowanym treningu, w zakładce <b>Trasy</b> na bieżąco podczas wyznaczania trasy${community ? " oraz przy podglądzie tras społeczności w zakładce Aktywność" : ""}.</li>
-          <li>Wysokość jest odczytywana z pliku GPX/TCX z zegarka. Treningi zaimportowane przed dodaniem tej funkcji nie mają wysokości — usuń taki wpis i zaimportuj plik ponownie.</li>
+          <li>Gdzie go zobaczysz: w <b>Historii</b> po kliknięciu 🗺 przy zaimportowanym treningu, w zakładce <b>Trasy</b> na bieżąco podczas wyznaczania trasy${community ? ", przy podglądzie tras społeczności i udostępnionych aktywności w zakładce Aktywność oraz w „📊 Wyniki” wydarzeń" : ""}.</li>
+          <li>Wysokość jest odczytywana z pliku GPX/TCX z zegarka. Treningi zaimportowane przed dodaniem tej funkcji nie mają wysokości — usuń taki wpis i zaimportuj plik ponownie. Aktywności udostępnione przed 4.11.2026 nie mają profilu — cofnij udostępnienie i udostępnij ponownie.</li>
           <li>Trasy wyznaczane linią prostą (kajak / teren) oraz pliki bez danych o wysokości nie mają wykresu.</li>
         </ul>
       </details>
@@ -436,7 +436,7 @@ const TRANSLATIONS = {
       ${community ? `<p>Na serwer aplikacji trafiają wyłącznie dane, na które się zgodzisz:</p>
       <ul>
         <li><b>Statystyki użytkowników</b> (tylko za zgodą): losowy identyfikator urządzenia i czas ostatniego użycia aplikacji. Cel: policzenie, ile osób korzysta z aplikacji (łącznie i w danym okresie). Liczymy tylko liczby — identyfikator nie jest powiązany z imieniem, nickiem ani treningami. Usuwany po 13 miesiącach braku aktywności lub od razu po wyłączeniu zgody.</li>
-        <li><b>Udostępnione aktywności</b> (tylko te, które sam udostępnisz): nick, dyscyplina, data, dystans, czas i trasa bez pierwszych/ostatnich 300 m. Nie są powiązane z identyfikatorem urządzenia. Przechowywane do czasu, aż je usuniesz. Widoczne dla wszystkich użytkowników aplikacji.</li>
+        <li><b>Udostępnione aktywności</b> (tylko te, które sam udostępnisz): nick, dyscyplina, data, dystans, czas i trasa (z wysokością n.p.m., jeśli trening ją ma) bez pierwszych/ostatnich 300 m. Nie są powiązane z identyfikatorem urządzenia. Przechowywane do czasu, aż je usuniesz. Widoczne dla wszystkich użytkowników aplikacji.</li>
         <li><b>Udostępnione trasy</b> (tylko te, które sam udostępnisz): nick, nazwa trasy, rodzaj, dystans i cała trasa. Nie są powiązane z identyfikatorem urządzenia. Przechowywane do czasu, aż je usuniesz. Widoczne dla wszystkich i możliwe do pobrania przez innych użytkowników.</li>
         <li><b>Zapisy na wydarzenia</b> (tylko gdy klikniesz „Biorę udział”): wyłącznie skrót (hash) losowego znacznika zapisanego na Twoim telefonie — bez nicku i identyfikatora urządzenia. Służy do policzenia chętnych i umożliwia wypisanie się. Usuwany po wypisaniu się albo razem z wydarzeniem, najpóźniej 30 dni po jego terminie.</li>
         <li><b>Ukończenie wydarzenia</b> (tylko gdy po kliknięciu „Zrobione” wybierzesz „pokaż wszystkim”): skrót (hash) losowego znacznika z Twojego telefonu, a po zapisaniu treningu także Twój wynik: dystans, czas, profil wysokości (wysokość względem przebytych kilometrów — bez współrzędnych i mapy trasy) oraz nick, jeśli wybrałeś „Pokaż z nickiem”. Służy do pokazania liczby osób, które ukończyły wydarzenie, i listy wyników. Usunięcie treningu z Historii usuwa też wynik z serwera. Usuwany po cofnięciu albo razem z wydarzeniem, najpóźniej 30 dni po jego terminie.</li>
@@ -734,8 +734,8 @@ const TRANSLATIONS = {
         <ul>
           <li>An elevation chart is shown under the route map: distance on the horizontal axis, altitude above sea level on the vertical one.</li>
           <li>Below the chart: <b>↗ ascent</b> and <b>↘ descent</b> (total metres up and down) plus the lowest and highest point of the route.</li>
-          <li>Where to find it: in <b>History</b> after tapping 🗺 on an imported training, in the <b>Routes</b> tab live while planning${community ? ", and when previewing community routes in the Activity tab" : ""}.</li>
-          <li>Altitude is read from the GPX/TCX file from your watch. Trainings imported before this feature have no altitude — delete such an entry and import the file again.</li>
+          <li>Where to find it: in <b>History</b> after tapping 🗺 on an imported training, in the <b>Routes</b> tab live while planning${community ? ", when previewing community routes and shared activities in the Activity tab, and under “📊 Results” of events" : ""}.</li>
+          <li>Altitude is read from the GPX/TCX file from your watch. Trainings imported before this feature have no altitude — delete such an entry and import the file again. Activities shared before 4 Nov 2026 have no profile — unshare and share them again.</li>
           <li>Straight-line routes (kayak / off-road) and files without altitude data have no chart.</li>
         </ul>
       </details>
@@ -847,7 +847,7 @@ const TRANSLATIONS = {
       ${community ? `<p>Only data you agree to is sent to the app's server:</p>
       <ul>
         <li><b>User statistics</b> (only with consent): a random device ID and the time of last use. Purpose: counting how many people use the app (in total and over a given period). Only numbers are counted — the ID is not linked to any name, nickname or training. Deleted after 13 months of inactivity or immediately when you withdraw consent.</li>
-        <li><b>Shared activities</b> (only those you share yourself): nickname, discipline, date, distance, time and the route without the first/last 300 m. Not linked to the device ID. Kept until you delete them. Visible to all app users.</li>
+        <li><b>Shared activities</b> (only those you share yourself): nickname, discipline, date, distance, time and the route (with altitude, if the training has it) without the first/last 300 m. Not linked to the device ID. Kept until you delete them. Visible to all app users.</li>
         <li><b>Shared routes</b> (only those you share yourself): nickname, route name, type, distance and the whole route. Not linked to the device ID. Kept until you delete them. Visible to and downloadable by all app users.</li>
         <li><b>Event sign-ups</b> (only when you tap “I'm going”): only a hash of a random marker stored on your phone — no nickname or device ID. Used to count participants and to let you cancel. Deleted when you cancel or together with the event, at the latest 30 days after it takes place.</li>
         <li><b>Event completions</b> (only when you choose “show everyone” after tapping “Done”): a hash of a random marker from your phone and, once you save the training, your result: distance, time, elevation profile (elevation against distance covered — no coordinates or route map) and your nickname if you chose “Show with my nickname”. Used to show how many people completed the event and the list of results. Deleting the training from your History also removes the result from the server. Deleted when you undo it or together with the event, at the latest 30 days after it takes place.</li>
@@ -2573,7 +2573,10 @@ function trimRouteEnds(route) {
   const total = cum[cum.length - 1];
   const kept = route.filter((_, i) => cum[i] >= SHARE_TRIM_KM && cum[i] <= total - SHARE_TRIM_KM);
   if (kept.length < 2) return null;
-  return kept.map((p) => [Number(p.lat.toFixed(5)), Number(p.lon.toFixed(5))]);
+  // Trzeci element (opcjonalny) = wysokość n.p.m. w metrach - do profilu wysokości u innych.
+  return kept.map((p) => (Number.isFinite(p.ele)
+    ? [Number(p.lat.toFixed(5)), Number(p.lon.toFixed(5)), Math.round(p.ele)]
+    : [Number(p.lat.toFixed(5)), Number(p.lon.toFixed(5))]));
 }
 
 async function toggleShareTraining(index) {
@@ -3296,12 +3299,14 @@ function showActivityRoute(index) {
   const a = activityCache[index];
   if (!a || !Array.isArray(a.route)) return;
   // Dane z serwera - bierzemy tylko poprawne liczby.
-  const latlngs = a.route
-    .filter((p) => Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1]))
-    .map((p) => [p[0], p[1]]);
+  const points = a.route.filter((p) => Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1]));
+  const latlngs = points.map((p) => [p[0], p[1]]);
   if (latlngs.length < 2) return;
+  // Starsze udostępnienia mają tylko [lat, lon] - wtedy bez profilu wysokości.
+  const track = points.map((p) => (Number.isFinite(p[2]) && p[2] >= -500 && p[2] <= 9000
+    ? { lat: p[0], lon: p[1], ele: p[2] } : { lat: p[0], lon: p[1] }));
 
-  drawOnActivityMap(`${a.nick} — ${Number(a.dist_km).toFixed(2)} km`, latlngs);
+  drawOnActivityMap(`${a.nick} — ${Number(a.dist_km).toFixed(2)} km`, latlngs, track);
 }
 
 function drawOnActivityMap(title, latlngs, track) {
