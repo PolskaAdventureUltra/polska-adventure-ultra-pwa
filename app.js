@@ -1269,7 +1269,6 @@ const CHALLENGE_SLOGANS = [
   "Polska Adventure Ultra",
   "Już czas",
   "Biegnij, jedź i płyń",
-  "Zobacz, ile masz sił",
 ];
 let challengeDemoFrame = null; // animacja licznika 1-100% w widoku obserwatora
 
@@ -1427,7 +1426,8 @@ function challengeHeadHtml() {
 // Pasek z hasłami: treść powtórzona 2x, animacja przesuwa o połowę -> pętla bez skoku.
 // Dotknięcie zatrzymuje/wznawia; przy "ograniczeniu ruchu" w systemie pasek stoi (CSS).
 function challengeTickerHtml() {
-  const run = CHALLENGE_SLOGANS.map((s) => `<span>${escapeXml(s)}</span><i aria-hidden="true">•</i>`).join("");
+  // Hasła powtórzone 2x, żeby jedna kopia była szersza niż ekran (bez dziury w pętli).
+  const run = [...CHALLENGE_SLOGANS, ...CHALLENGE_SLOGANS].map((s) => `<span>${escapeXml(s)}</span><i aria-hidden="true">•</i>`).join("");
   return `<div class="ch-ticker" role="marquee" tabindex="0" aria-label="${escapeXml(CHALLENGE_SLOGANS.join(". "))}">` +
     `<div class="ch-ticker-track" aria-hidden="true"><div class="ch-ticker-run">${run}</div><div class="ch-ticker-run">${run}</div></div></div>`;
 }

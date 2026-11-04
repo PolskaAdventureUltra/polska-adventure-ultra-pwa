@@ -261,7 +261,7 @@ body.dark .challenge { --ch-bg: #0A1322; --ch-band: #131E31; }
           mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
 .ch-ticker:focus-visible { outline: 2px solid var(--ch-accent); outline-offset: -2px; }
-.ch-ticker-track { display: flex; width: max-content; animation: ch-ticker 18s linear infinite; }
+.ch-ticker-track { display: flex; width: max-content; animation: ch-ticker 28s linear infinite; }
 .ch-ticker:hover .ch-ticker-track, .ch-ticker.paused .ch-ticker-track { animation-play-state: paused; }
 .ch-ticker-run { display: flex; flex-shrink: 0; align-items: center; }
 .ch-ticker-run span {
