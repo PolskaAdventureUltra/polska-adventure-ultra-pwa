@@ -330,3 +330,6 @@ body.dark .challenge { --ch-bg: #0A1322; --ch-band: #131E31; }
 .events-done .done-remove-btn {
   width: auto; margin: 0 0 0 4px; padding: 0 6px; font-size: 12px; background: none; color: var(--subtle-fg);
 }
+.events-past-title { margin: 14px 0 0; font-size: 15px; }
+.event-item.event-past .event-date { color: var(--subtle-fg); }
+.event-actions .event-stat { font-size: 13px; padding: 6px 4px; color: var(--subtle-fg); }
