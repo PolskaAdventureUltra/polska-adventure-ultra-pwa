@@ -16,6 +16,7 @@ const SHARE_TOKENS_KEY = "pau_share_tokens";     // { idAktywności: tokenUsuwan
 const NICK_KEY = "pau_nick";
 const ROUTE_SHARE_TOKENS_KEY = "pau_route_share_tokens"; // { idTrasy: tokenUsuwania }
 const EVENT_TOKENS_KEY = "pau_event_tokens";     // { idWydarzenia: tokenZapisu }
+const EVENTS_DONE_KEY = "pau_events_done";       // { idWydarzenia: { title, disc, starts_at, done_at } } - tylko na telefonie
 const ADMIN_KEY_KEY = "pau_admin_key";           // klucz organizatora (tylko na telefonie administratora)
 const CHALLENGE_INVITE_KEY = "pau_challenge_invite"; // kod zaproszenia: dołączenie przed oficjalnymi zapisami
 const CHALLENGE_INVITE_TOKEN_KEY = "pau_challenge_invite_token"; // losowy token urządzenia, do którego przypisano kod
@@ -177,6 +178,12 @@ const TRANSLATIONS = {
     eventToday: "dziś",
     eventTomorrow: "jutro",
     eventInDays: (n) => `za ${n} dni`,
+    eventDoneBtn: "🏁 Zrobione",
+    eventDoneMark: "✅ Ukończone",
+    eventDoneTitle: "Zaznacz, że masz to wydarzenie za sobą (zapisuje się tylko na Twoim telefonie)",
+    eventUndoneTitle: "Kliknij, aby cofnąć",
+    eventsDoneTitle: (n) => `🏅 Twoje ukończone wydarzenia (${n})`,
+    eventDoneRemoveTitle: "Usuń z listy ukończonych",
     dateLocale: "pl-PL",
     goalsTitle: "🎯 Cele",
     goalsEmpty: "Nie masz jeszcze celów. Ustaw np. 30 km biegu tygodniowo i śledź postęp.",
@@ -304,7 +311,7 @@ const TRANSLATIONS = {
       ${community ? `<details><summary>🌍 Aktywność i społeczność</summary>
         <ul>
           <li>Zakładka <b>Aktywność</b> pokazuje statystyki społeczności i treningi udostępnione przez innych użytkowników.</li>
-          <li><b>📅 Wydarzenia</b> (na górze zakładki): wspólne treningi, spływy i rajdy ogłaszane przez organizatora. „🙋 Biorę udział” zapisuje Cię anonimowo — widać tylko liczbę chętnych; kliknij ponownie, żeby się wypisać. „📍 Dojazd” otwiera nawigację do miejsca zbiórki, „📆 Do kalendarza” dodaje wydarzenie do kalendarza w telefonie.</li>
+          <li><b>📅 Wydarzenia</b> (na górze zakładki): wspólne treningi, spływy i rajdy ogłaszane przez organizatora. „🙋 Biorę udział” zapisuje Cię anonimowo — widać tylko liczbę chętnych; kliknij ponownie, żeby się wypisać. „📍 Dojazd” otwiera nawigację do miejsca zbiórki, „📆 Do kalendarza” dodaje wydarzenie do kalendarza w telefonie. Gdy wydarzenie się zacznie, pojawi się „🏁 Zrobione” — zaznaczone wydarzenia zostają w liście „🏅 Twoje ukończone wydarzenia” (tylko na Twoim telefonie, także w kopii zapasowej).</li>
           <li>Udostępniasz tylko wtedy, gdy sam klikniesz 📤 przy treningu. Wybierasz dowolny nick (1–30 znaków).</li>
           <li><b>Trasy społeczności:</b> zaplanowaną trasę udostępnisz przyciskiem 📤 przy zapisanej trasie w zakładce Trasy. Przy trasach innych osób: 🗺 — podgląd na mapie, GPX — pobranie do zegarka, ➕ — kopia do Twoich tras (możesz ją dalej edytować).</li>
           <li>Swój wpis usuniesz przyciskiem 🗑 w Aktywności, przyciskiem 🌍 w Historii lub w Trasach albo wszystkie naraz w oknie „Prywatność”.</li>
@@ -561,6 +568,12 @@ const TRANSLATIONS = {
     eventToday: "today",
     eventTomorrow: "tomorrow",
     eventInDays: (n) => `in ${n} days`,
+    eventDoneBtn: "🏁 Done",
+    eventDoneMark: "✅ Completed",
+    eventDoneTitle: "Mark this event as completed (saved only on your phone)",
+    eventUndoneTitle: "Tap to undo",
+    eventsDoneTitle: (n) => `🏅 Your completed events (${n})`,
+    eventDoneRemoveTitle: "Remove from completed events",
     dateLocale: "en-GB",
     goalsTitle: "🎯 Goals",
     goalsEmpty: "No goals yet. Set e.g. 30 km of running per week and track your progress.",
@@ -688,7 +701,7 @@ const TRANSLATIONS = {
       ${community ? `<details><summary>🌍 Activity and community</summary>
         <ul>
           <li>The <b>Activity</b> tab shows community statistics and trainings shared by other users.</li>
-          <li><b>📅 Events</b> (at the top of the tab): group trainings, kayak trips and races announced by the organiser. “🙋 I'm going” signs you up anonymously — only the number of people is shown; tap again to cancel. “📍 Directions” opens navigation to the meeting point, “📆 Add to calendar” adds the event to your phone's calendar.</li>
+          <li><b>📅 Events</b> (at the top of the tab): group trainings, kayak trips and races announced by the organiser. “🙋 I'm going” signs you up anonymously — only the number of people is shown; tap again to cancel. “📍 Directions” opens navigation to the meeting point, “📆 Add to calendar” adds the event to your phone's calendar. Once the event has started, “🏁 Done” appears — marked events stay in “🏅 Your completed events” (stored only on your phone, included in the backup).</li>
           <li>You share only when you tap 📤 next to a training yourself. Choose any nickname (1–30 characters).</li>
           <li><b>Community routes:</b> share a planned route with the 📤 button next to a saved route in the Routes tab. For other people's routes: 🗺 — map preview, GPX — download to your watch, ➕ — copy to your routes (you can edit it further).</li>
           <li>Delete your entry with 🗑 in Activity, 🌍 in History or Routes, or all at once in the “Privacy” window.</li>
@@ -1758,8 +1771,8 @@ function exportCsv() {
 // --- Kopia zapasowa (plik JSON z danymi z localStorage) ---
 // PIN, klucz organizatora, identyfikator urządzenia i zgoda na statystyki zostają celowo poza kopią.
 const BACKUP_FORMAT = "polska-adventure-ultra-backup";
-const BACKUP_KEYS = [HISTORY_KEY, PLANNED_ROUTES_KEY, GOALS_KEY, CHALLENGE_KEY, CHALLENGE_INVITE_KEY, CHALLENGE_INVITE_TOKEN_KEY, THEME_KEY, LANG_KEY, NICK_KEY, SHARE_TOKENS_KEY, ROUTE_SHARE_TOKENS_KEY, EVENT_TOKENS_KEY];
-const BACKUP_JSON_KEYS = { [HISTORY_KEY]: "array", [PLANNED_ROUTES_KEY]: "array", [GOALS_KEY]: "array", [EVENT_TOKENS_KEY]: "object", [CHALLENGE_KEY]: "object", [SHARE_TOKENS_KEY]: "object", [ROUTE_SHARE_TOKENS_KEY]: "object" };
+const BACKUP_KEYS = [HISTORY_KEY, PLANNED_ROUTES_KEY, GOALS_KEY, CHALLENGE_KEY, CHALLENGE_INVITE_KEY, CHALLENGE_INVITE_TOKEN_KEY, THEME_KEY, LANG_KEY, NICK_KEY, SHARE_TOKENS_KEY, ROUTE_SHARE_TOKENS_KEY, EVENT_TOKENS_KEY, EVENTS_DONE_KEY];
+const BACKUP_JSON_KEYS = { [HISTORY_KEY]: "array", [PLANNED_ROUTES_KEY]: "array", [GOALS_KEY]: "array", [EVENT_TOKENS_KEY]: "object", [EVENTS_DONE_KEY]: "object", [CHALLENGE_KEY]: "object", [SHARE_TOKENS_KEY]: "object", [ROUTE_SHARE_TOKENS_KEY]: "object" };
 
 async function createBackup() {
   const data = {};
@@ -2568,6 +2581,43 @@ function saveEventTokens(tokens) {
   localStorage.setItem(EVENT_TOKENS_KEY, JSON.stringify(tokens));
 }
 
+function getEventsDone() {
+  try {
+    const done = JSON.parse(localStorage.getItem(EVENTS_DONE_KEY));
+    return done && typeof done === "object" && !Array.isArray(done) ? done : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveEventsDone(done) {
+  localStorage.setItem(EVENTS_DONE_KEY, JSON.stringify(done));
+}
+
+function toggleEventDone(ev) {
+  const done = getEventsDone();
+  if (done[ev.id]) {
+    delete done[ev.id];
+  } else {
+    done[ev.id] = { title: ev.title, disc: ev.disc, starts_at: ev.starts_at, done_at: new Date().toISOString() };
+  }
+  saveEventsDone(done);
+  renderEvents();
+}
+
+// Lista ukończonych wydarzeń - trzymana lokalnie, bo serwer chowa wydarzenia 12 h po starcie.
+function eventsDoneHtml(dict) {
+  const entries = Object.entries(getEventsDone())
+    .sort((a, b) => String(b[1].starts_at).localeCompare(String(a[1].starts_at)));
+  if (entries.length === 0) return "";
+  const items = entries.map(([id, ev]) => {
+    const when = new Date(ev.starts_at).toLocaleDateString(dict.dateLocale, { day: "numeric", month: "long", year: "numeric" });
+    return `<li>✅ <b>${escapeXml(ev.title)}</b> · ${dict.discNames[ev.disc] || escapeXml(ev.disc)} · ${escapeXml(when)}` +
+      ` <button class="done-remove-btn" data-id="${escapeXml(id)}" title="${dict.eventDoneRemoveTitle}">✕</button></li>`;
+  }).join("");
+  return `<details class="events-done"><summary>${dict.eventsDoneTitle(entries.length)}</summary><ul>${items}</ul></details>`;
+}
+
 function getAdminKey() {
   return localStorage.getItem(ADMIN_KEY_KEY);
 }
@@ -2599,12 +2649,10 @@ function renderEvents() {
   document.getElementById("eventAddBtn").style.display =
     isAdmin && document.getElementById("eventForm").style.display === "none" ? "block" : "none";
   document.getElementById("organizerBtn").textContent = isAdmin ? dict.organizerLogout : dict.organizerLogin;
-  if (eventsCache.length === 0) {
-    listEl.innerHTML = `<p>${dict.noEvents}</p>`;
-    return;
-  }
   const tokens = getEventTokens();
-  listEl.innerHTML = eventsCache
+  const doneMap = getEventsDone();
+  const now = Date.now();
+  const upcoming = eventsCache.length === 0 ? `<p>${dict.noEvents}</p>` : eventsCache
     .map((ev, index) => {
       const start = new Date(ev.starts_at);
       const when = start.toLocaleString(dict.dateLocale, {
@@ -2621,7 +2669,13 @@ function renderEvents() {
         ? `<a href="${escapeXml(ev.link)}" target="_blank" rel="noopener">${dict.eventLink}</a>`
         : "";
       const del = isAdmin ? `<button class="delete-btn" data-index="${index}" title="${dict.deleteTitle}">🗑</button>` : "";
-      return `<div class="event-item">` +
+      // „Zrobione” pojawia się dopiero, gdy wydarzenie się zaczęło.
+      const isDone = Boolean(doneMap[ev.id]);
+      const doneBtn = isDone || start.getTime() <= now
+        ? `<button class="done-btn${isDone ? " done" : ""}" data-index="${index}" title="${isDone ? dict.eventUndoneTitle : dict.eventDoneTitle}">` +
+          `${isDone ? dict.eventDoneMark : dict.eventDoneBtn}</button>`
+        : "";
+      return `<div class="event-item${isDone ? " event-done" : ""}">` +
         `<div class="event-date">📅 ${escapeXml(when)}<span class="event-countdown">${eventCountdown(start)}</span></div>` +
         `<div class="event-title"><b>${escapeXml(ev.title)}</b> · ${dict.discNames[ev.disc] || escapeXml(ev.disc)}</div>` +
         `<div class="hint-text">📍 ${escapeXml(ev.place)}</div>` +
@@ -2629,16 +2683,26 @@ function renderEvents() {
         `<div class="event-actions">` +
         `<button class="join-btn${joined ? " joined" : ""}" data-index="${index}" title="${joined ? dict.leaveTitle : dict.joinTitle}">` +
         `${joined ? dict.joinedBtn(count) : dict.joinBtn(count)}</button>` +
-        `${nav}${link}<button class="ics-btn" data-index="${index}">${dict.eventCalendar}</button>${del}</div>` +
+        `${doneBtn}${nav}${link}<button class="ics-btn" data-index="${index}">${dict.eventCalendar}</button>${del}</div>` +
         `</div>`;
     })
     .join("");
+  listEl.innerHTML = upcoming + eventsDoneHtml(dict);
   const on = (selector, handler) => listEl.querySelectorAll(selector).forEach((btn) => {
     btn.addEventListener("click", () => handler(eventsCache[parseInt(btn.dataset.index, 10)]));
   });
   on(".join-btn", toggleJoinEvent);
   on(".ics-btn", downloadEventIcs);
   on(".delete-btn", deleteEvent);
+  on(".done-btn", toggleEventDone);
+  listEl.querySelectorAll(".done-remove-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const done = getEventsDone();
+      delete done[btn.dataset.id];
+      saveEventsDone(done);
+      renderEvents();
+    });
+  });
 }
 
 async function toggleJoinEvent(ev) {
