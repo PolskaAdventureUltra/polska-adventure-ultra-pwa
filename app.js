@@ -94,9 +94,9 @@ const TRANSLATIONS = {
     planTitle: "Wyznacz trasę",
     planHint: "Klikaj na mapie, żeby dodać kolejne punkty trasy. Gotową trasę zapisz i wyeksportuj do GPX, a potem wgraj do zegarka.",
     planModeLabel: "Prowadzenie trasy",
-    planModeFoot: "Po szlakach pieszych (bieg)",
+    planModeFoot: "Po szlakach pieszych i górskich (bieg, trekking)",
     planModeBike: "Po drogach rowerowych (rower)",
-    planModeStraight: "Linia prosta (kajak / teren)",
+    planModeStraight: "Linia prosta (kajak, pływanie, teren)",
     planUndoBtn: "Cofnij punkt",
     planClearBtn: "Wyczyść",
     planSaveBtn: "ZAPISZ TRASĘ",
@@ -319,7 +319,7 @@ const TRANSLATIONS = {
       </details>
       <details><summary>🗺 Planowanie tras i nawigacja w zegarku</summary>
         <ul>
-          <li>W zakładce <b>Trasy</b> klikaj na mapie kolejne punkty. Wybierz prowadzenie: szlaki piesze, drogi rowerowe albo linia prosta (kajak / teren).</li>
+          <li>W zakładce <b>Trasy</b> klikaj na mapie kolejne punkty. Wybierz prowadzenie: szlaki piesze i górskie (bieg, trekking), drogi rowerowe albo linia prosta (kajak, pływanie, teren).</li>
           <li>„Cofnij punkt” usuwa ostatni punkt, „Wyczyść” — całą trasę. „ZAPISZ TRASĘ” zapisuje ją na liście poniżej mapy.</li>
           <li>„EKSPORTUJ DO GPX” (lub przycisk GPX przy zapisanej trasie) tworzy plik do zegarka. Na telefonie otworzy się menu „Udostępnij”.</li>
           <li><b>Garmin</b>: Garmin Connect (www) → Trening → Trasy → Importuj → wyślij na zegarek. <b>Suunto</b>: otwórz plik GPX w Suunto app i zsynchronizuj zegarek. <b>Polar</b>: Polar Flow (www) → Ulubione → Trasy → Importuj → synchronizuj.</li>
@@ -512,7 +512,7 @@ const TRANSLATIONS = {
     planTitle: "Plan a route",
     planHint: "Tap the map to add route points. Save the finished route, export it to GPX and upload it to your watch.",
     planModeLabel: "Route guidance",
-    planModeFoot: "Follow footpaths (running)",
+    planModeFoot: "Follow footpaths and mountain trails (running, hiking)",
     planModeBike: "Follow cycle roads (cycling)",
     planModeStraight: "Straight lines (kayak / off-road)",
     planUndoBtn: "Undo point",
@@ -737,7 +737,7 @@ const TRANSLATIONS = {
       </details>
       <details><summary>🗺 Route planning and watch navigation</summary>
         <ul>
-          <li>In the <b>Routes</b> tab tap the map to add points. Choose guidance: footpaths, cycle roads or straight lines (kayak / off-road).</li>
+          <li>In the <b>Routes</b> tab tap the map to add points. Choose guidance: footpaths and mountain trails, cycle roads or straight lines (kayak, swimming, off-road).</li>
           <li>“Undo point” removes the last point, “Clear” the whole route. “SAVE ROUTE” adds it to the list below the map.</li>
           <li>“EXPORT TO GPX” (or the GPX button next to a saved route) creates a file for your watch. On a phone the Share menu opens.</li>
           <li><b>Garmin</b>: Garmin Connect (web) → Training → Courses → Import → send to device. <b>Suunto</b>: open the GPX file in the Suunto app and sync the watch. <b>Polar</b>: Polar Flow (web) → Favorites → Routes → Import → sync.</li>
