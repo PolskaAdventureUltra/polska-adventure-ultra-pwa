@@ -80,7 +80,9 @@ const TRANSLATIONS = {
     recNotifText: "Nagrywam trasę treningu. Zakończ w aplikacji.",
     recNoLocationPerm: "🔴 Aplikacja nie ma zgody na lokalizację. Kliknij „Otwórz ustawienia” → Uprawnienia → Lokalizacja → „Zezwalaj tylko podczas używania aplikacji” i włącz „Używaj dokładnej lokalizacji”. Potem wróć tutaj — nagrywanie ruszy samo.",
     recApproxOnly: "🟠 Aplikacja ma tylko przybliżoną lokalizację (±kilka km) — tak nie da się nagrać trasy. Kliknij „Otwórz ustawienia” → Uprawnienia → Lokalizacja i włącz „Używaj dokładnej lokalizacji”. Potem wróć tutaj.",
-    recLocationOff: "🔴 Lokalizacja w telefonie jest wyłączona. Rozwiń górny pasek, włącz „Lokalizacja” i wróć tutaj — nagrywanie ruszy samo.",
+    recLocationOff: "🔴 Lokalizacja w telefonie jest wyłączona. Kliknij tutaj albo „📍 Włącz lokalizację” poniżej — nagrywanie ruszy samo.",
+    recLocationOffManual: "🔴 Lokalizacja w telefonie jest wyłączona. Rozwiń górny pasek i włącz „Lokalizacja” — nagrywanie ruszy samo.",
+    recEnableLocation: "📍 Włącz lokalizację",
     recOpenSettings: "⚙ Otwórz ustawienia",
     recIntro: "Bez zegarka — aplikacja zapisze trasę z GPS w telefonie. Ekran musi zostać włączony (aplikacja go nie wygasi) i nie przełączaj się na inne aplikacje: w tle przeglądarka wstrzymuje GPS.",
     recStartBtn: "▶ START",
@@ -576,7 +578,9 @@ const TRANSLATIONS = {
     recNotifText: "Recording your training route. Finish it in the app.",
     recNoLocationPerm: "🔴 The app has no location permission. Tap “Open settings” → Permissions → Location → “Allow only while using the app” and turn on “Use precise location”. Then come back — recording starts by itself.",
     recApproxOnly: "🟠 The app only has approximate location (±a few km) — a route can't be recorded that way. Tap “Open settings” → Permissions → Location and turn on “Use precise location”. Then come back.",
-    recLocationOff: "🔴 Location is turned off on your phone. Pull down the top bar, turn on “Location” and come back — recording starts by itself.",
+    recLocationOff: "🔴 Location is turned off on your phone. Tap here or “📍 Turn on location” below — recording starts by itself.",
+    recLocationOffManual: "🔴 Location is turned off on your phone. Pull down the top bar and turn on “Location” — recording starts by itself.",
+    recEnableLocation: "📍 Turn on location",
     recOpenSettings: "⚙ Open settings",
     recIntro: "No watch needed — the app records your route with the phone's GPS. Keep the screen on (the app won't let it sleep) and don't switch to other apps: in the background the browser pauses GPS.",
     recStartBtn: "▶ START",
@@ -1074,7 +1078,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "68";
+const APP_BUILD = "69";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -4348,15 +4352,54 @@ async function recEnsureNotificationPermission() {
 
 // Problem ze zgodą/lokalizacją: komunikat + (opcjonalnie) przycisk do ustawień aplikacji.
 // Po powrocie z ustawień (visibilitychange) recRetryNativeWatch() próbuje jeszcze raz.
-function recShowPermProblem(text, withSettings) {
+// action: "settings" (ustawienia aplikacji - zgoda) albo "location" (systemowe okienko „Włączyć lokalizację?”).
+// Klikalny jest przycisk pod komunikatem i sam czerwony komunikat.
+let recPermAction = null;
+function recShowPermProblem(text, action) {
   recSetStatus(text, true);
+  recPermAction = action || null;
   const btn = document.getElementById("recSettingsBtn");
-  if (btn) btn.hidden = !withSettings;
+  const status = document.getElementById("recStatus");
+  if (btn) {
+    btn.hidden = !action;
+    if (action) btn.textContent = action === "location" ? t().recEnableLocation : t().recOpenSettings;
+  }
+  if (status) status.classList.toggle("rec-clickable", Boolean(action));
 }
 
 function recHideSettingsBtn() {
+  recPermAction = null;
   const btn = document.getElementById("recSettingsBtn");
   if (btn) btn.hidden = true;
+  const status = document.getElementById("recStatus");
+  if (status) status.classList.remove("rec-clickable");
+}
+
+// Klik w komunikat/przycisk problemu z lokalizacją.
+async function recOnPermAction() {
+  if (recPermAction === "settings") {
+    try { getNativeGeo().openSettings(); } catch (e) { console.warn("openSettings", e); }
+    return;
+  }
+  if (recPermAction !== "location") return;
+  // getCurrentPosition wtyczki Geolocation przy wyłączonej lokalizacji pokazuje systemowe
+  // okienko Google „Włączyć lokalizację?” (OK = włącza bez wychodzenia z aplikacji).
+  try {
+    await window.Capacitor.registerPlugin("Geolocation").getCurrentPosition({ enableHighAccuracy: true, timeout: 15000 });
+  } catch (e) {
+    console.warn("enable location", e);
+    const code = (e && e.code) || "";
+    if (code === "OS-PLUG-GLOC-0009") return; // użytkownik kliknął „Nie” - komunikat zostaje
+    if (code === "OS-PLUG-GLOC-0010" || code === "OS-PLUG-GLOC-0002") { /* włączona, tylko brak fixa - OK */ }
+    else if (recIsLocationOffError(e) || /SETTINGS|SERVICES/i.test(e && e.message || "")) {
+      recSetStatus(t().recLocationOffManual, true); // okienko niedostępne - tylko ręcznie z paska
+      return;
+    }
+  }
+  recHideSettingsBtn();
+  recSetStatus(t().recWaitingGps);
+  clearTimeout(recRetryTimer);
+  recRetryNativeWatch();
 }
 
 // Najpierw jawnie pytamy o lokalizację (wtyczka Geolocation zwraca, czy zgoda jest dokładna
@@ -4374,7 +4417,7 @@ async function recEnsureLocationPermission(ask = true) {
     console.warn("Location permission", e);
     const code = (e && e.code) || "";
     if (recIsLocationOffError(e)) { // usługi lokalizacji w telefonie wyłączone
-      recShowPermProblem(dict.recLocationOff, false);
+      recShowPermProblem(dict.recLocationOff, "location");
       return false;
     }
     // Inny błąd wtyczki (albo jej brak) - nie zgadujemy; zgodę obsłuży wtyczka tła, a kod błędu
@@ -4386,7 +4429,7 @@ async function recEnsureLocationPermission(ask = true) {
     recHideSettingsBtn();
     return true;
   }
-  recShowPermProblem(st && st.coarseLocation === "granted" ? dict.recApproxOnly : dict.recNoLocationPerm, true);
+  recShowPermProblem(st && st.coarseLocation === "granted" ? dict.recApproxOnly : dict.recNoLocationPerm, "settings");
   return false;
 }
 
@@ -4405,11 +4448,11 @@ async function recNativeHealthCheck() {
   if (recLastFixAt && Date.now() - recLastFixAt < 10000) return;
   try {
     await window.Capacitor.registerPlugin("Geolocation").checkPermissions();
-    if (recLocOffShown) { recLocOffShown = false; recSetStatus(t().recWaitingGps); }
+    if (recLocOffShown) { recLocOffShown = false; recHideSettingsBtn(); recSetStatus(t().recWaitingGps); }
   } catch (e) {
     if (recIsLocationOffError(e)) {
       recLocOffShown = true;
-      recShowPermProblem(t().recLocationOff, false);
+      recShowPermProblem(t().recLocationOff, "location");
     }
   }
 }
@@ -4451,7 +4494,7 @@ async function recStartNativeWatch(ask = true) {
       if (recNativeWatch === watch) recNativeWatch = null; // pozwól ponowić po powrocie z ustawień
       if (error.code === "NOT_AUTHORIZED") {
         recEnsureLocationPermission(false).then((ok) => { // pokaże właściwy komunikat (brak zgody / przybliżona / wyłączona)
-          if (ok) recShowPermProblem(dict.recNoLocationPerm, true); // wtyczka tła i tak odmawia
+          if (ok) recShowPermProblem(dict.recNoLocationPerm, "settings"); // wtyczka tła i tak odmawia
           clearTimeout(recRetryTimer);
           recRetryTimer = setTimeout(recRetryNativeWatch, 3000);
         });
@@ -4643,9 +4686,8 @@ function initRecorder() {
   document.getElementById("recPauseBtn").addEventListener("click", toggleRecordingPause);
   document.getElementById("recFinishBtn").addEventListener("click", finishRecording);
   document.getElementById("recDiscardBtn").addEventListener("click", () => discardRecording(false));
-  document.getElementById("recSettingsBtn").addEventListener("click", () => {
-    try { getNativeGeo().openSettings(); } catch (e) { console.warn("openSettings", e); }
-  });
+  document.getElementById("recSettingsBtn").addEventListener("click", recOnPermAction);
+  document.getElementById("recStatus").addEventListener("click", recOnPermAction);
   document.getElementById("tabTrainBtn").addEventListener("click", () => { if (rec) recInitMap(); });
   document.addEventListener("visibilitychange", recOnVisibilityChange);
   window.addEventListener("pagehide", () => recSave(true));
