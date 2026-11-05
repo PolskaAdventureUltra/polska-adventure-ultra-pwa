@@ -88,6 +88,7 @@ const TRANSLATIONS = {
     recGpsLbl: "Dokładność GPS",
     recWaitingGps: "Szukam sygnału GPS… (najlepiej na otwartym terenie)",
     recGpsOk: "🟢 Nagrywanie — GPS działa",
+    recBackgroundOk: (min) => `✅ GPS działał przy zgaszonym ekranie${min ? ` (ok. ${min} min)` : ""} — trasa zapisana bez przerw.`,
     recWeakGps: (m) => `🟠 Słaby sygnał GPS (±${m} m) — czekam na lepszy`,
     recPausedStatus: "⏸ Wstrzymane — czas i dystans się nie liczą",
     recDenied: "Brak zgody na lokalizację. Włącz ją w ustawieniach przeglądarki/telefonu dla tej strony (Android: kłódka przy adresie → Uprawnienia → Lokalizacja; iPhone: Ustawienia → Prywatność → Usługi lokalizacji → Safari).",
@@ -567,6 +568,7 @@ const TRANSLATIONS = {
     recGpsLbl: "GPS accuracy",
     recWaitingGps: "Looking for GPS signal… (open sky works best)",
     recGpsOk: "🟢 Recording — GPS OK",
+    recBackgroundOk: (min) => `✅ GPS kept working with the screen off${min ? ` (about ${min} min)` : ""} — route recorded without gaps.`,
     recWeakGps: (m) => `🟠 Weak GPS signal (±${m} m) — waiting for a better one`,
     recPausedStatus: "⏸ Paused — time and distance are not counted",
     recDenied: "Location permission denied. Allow it for this site in your browser/phone settings (Android: padlock next to the address → Permissions → Location; iPhone: Settings → Privacy → Location Services → Safari).",
@@ -4077,6 +4079,9 @@ let recLastSave = 0;
 let recRejects = 0;
 let recLastAccuracy = null;
 let recHiddenAt = null;
+let recLastFixAt = 0;      // czas ostatniego odczytu GPS (także odrzuconego - liczy się, że GPS odpowiadał)
+let recHiddenMaxGap = 0;   // najdłuższa przerwa między odczytami, gdy ekran był zgaszony / aplikacja w tle (ms)
+let recStatusHoldUntil = 0;
 let recMap = null;
 let recLine = null;
 let recDot = null;
@@ -4138,7 +4143,10 @@ function recReleaseWakeLock() {
   recWakeLock = null;
 }
 
-function recSetStatus(text, warn) {
+// holdMs: komunikat zostaje na ekranie, zanim nadpisze go zwykłe „GPS działa”.
+function recSetStatus(text, warn, holdMs) {
+  if (!holdMs && text === t().recGpsOk && Date.now() < recStatusHoldUntil) return;
+  recStatusHoldUntil = holdMs ? Date.now() + holdMs : 0;
   const el = document.getElementById("recStatus");
   el.textContent = text || "";
   el.classList.toggle("rec-warn", Boolean(warn));
@@ -4192,6 +4200,9 @@ function recUpdateMap(fit) {
 
 function recOnPosition(pos) {
   if (!rec) return;
+  const now = Date.now();
+  if (recHiddenAt && recLastFixAt) recHiddenMaxGap = Math.max(recHiddenMaxGap, now - Math.max(recLastFixAt, recHiddenAt));
+  recLastFixAt = now;
   const c = pos.coords;
   recLastAccuracy = c.accuracy;
   if (rec.pausedAt) { recRender(); return; }
@@ -4357,14 +4368,21 @@ function recOnVisibilityChange() {
   if (!rec) return;
   if (document.visibilityState === "hidden") {
     recHiddenAt = Date.now();
+    recHiddenMaxGap = 0;
     recSave(true);
     return;
   }
   if (!rec.pausedAt) recRequestWakeLock();
-  if (recHiddenAt && Date.now() - recHiddenAt > REC_GAP_S * 1000) {
-    recSetStatus(t().recWasHidden(Math.round((Date.now() - recHiddenAt) / 60000)), true);
+  const now = Date.now();
+  if (recHiddenAt && !rec.pausedAt && now - recHiddenAt > REC_GAP_S * 1000) {
+    // Czy GPS odpowiadał, gdy ekran był zgaszony? Liczymy najdłuższą przerwę między odczytami.
+    const gap = Math.max(recHiddenMaxGap, now - Math.max(recLastFixAt, recHiddenAt));
+    const min = Math.round((now - recHiddenAt) / 60000);
+    if (gap <= REC_GAP_S * 3 * 1000) recSetStatus(t().recBackgroundOk(min), false, 20000);
+    else recSetStatus(t().recWasHidden(Math.round(gap / 60000)), true, 30000);
   }
   recHiddenAt = null;
+  recHiddenMaxGap = 0;
   recRender();
 }
 
