@@ -1078,7 +1078,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "71";
+const APP_BUILD = "72";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -4361,13 +4361,16 @@ function recWithTimeout(promise, ms, label) {
 
 // Diagnostyka natywnej apki: szara linijka pod statusem (ostatnie kroki: zgoda, watcher, odczyty).
 const recDiagLog = [];
-function recDiag(msg) {
+// Linijka jest ukryta; pokazuje się dopiero po błędzie (isError), razem z ostatnimi krokami.
+function recDiag(msg, isError) {
   if (!isNativeApp()) return;
   const time = new Date().toTimeString().slice(0, 8);
   recDiagLog.push(time + " " + msg);
   while (recDiagLog.length > 4) recDiagLog.shift();
   const el = document.getElementById("recDiag");
-  if (el) { el.hidden = false; el.textContent = recDiagLog.join(" · "); }
+  if (!el) return;
+  if (isError) el.hidden = false;
+  el.textContent = recDiagLog.join(" · ");
 }
 function recErrText(e) {
   return ((e && e.code) || "") + " " + ((e && e.message) || String(e)).slice(0, 60);
@@ -4382,7 +4385,7 @@ async function recEnsureNotificationPermission() {
     if (status && status.display === "prompt") await recWithTimeout(notif.requestPermissions(), 60000, "notif.req");
   } catch (e) {
     console.warn("Notification permission", e);
-    recDiag("notif: " + recErrText(e));
+    recDiag("notif: " + recErrText(e), true);
   }
 }
 
@@ -4425,7 +4428,7 @@ async function recOnPermAction() {
     recDiag("enable: ok");
   } catch (e) {
     console.warn("enable location", e);
-    recDiag("enable: " + recErrText(e));
+    recDiag("enable: " + recErrText(e), true);
     const code = (e && e.code) || "";
     if (code === "OS-PLUG-GLOC-0009") return; // użytkownik kliknął „Nie” - komunikat zostaje
     if (code === "OS-PLUG-GLOC-0010" || code === "OS-PLUG-GLOC-0002") { /* włączona, tylko brak fixa - OK */ }
@@ -4457,7 +4460,7 @@ async function recEnsureLocationPermission(ask = true) {
     }
   } catch (e) {
     console.warn("Location permission", e);
-    recDiag("check: " + recErrText(e));
+    recDiag("check: " + recErrText(e), true);
     const code = (e && e.code) || "";
     if (recIsLocationOffError(e)) { // usługi lokalizacji w telefonie wyłączone
       recShowPermProblem(dict.recLocationOff, "location");
@@ -4493,7 +4496,7 @@ async function recNativeHealthCheck() {
     await recWithTimeout(capPlugin("Geolocation").checkPermissions(), 5000, "geo.health");
     if (recLocOffShown) { recLocOffShown = false; recHideSettingsBtn(); recSetStatus(t().recWaitingGps); }
   } catch (e) {
-    recDiag("health: " + recErrText(e));
+    recDiag("health: " + recErrText(e), true);
     if (recIsLocationOffError(e)) {
       recLocOffShown = true;
       recShowPermProblem(t().recLocationOff, "location");
@@ -4536,7 +4539,7 @@ async function recStartNativeWatch(ask = true) {
     distanceFilter: 0,
   }, (location, error) => {
     if (error) {
-      recDiag("watch: " + recErrText(error));
+      recDiag("watch: " + recErrText(error), true);
       if (recNativeWatch === watch) recNativeWatch = null; // pozwól ponowić po powrocie z ustawień
       if (recIsLocationOffError(error)) { // wtyczka tła: „Location services disabled.”
         recShowPermProblem(dict.recLocationOff, "location");
@@ -4565,7 +4568,7 @@ async function recStartNativeWatch(ask = true) {
   recNativeWatch = watch;
   recDiag("watch: start");
   watch.then((id) => recDiag("watch: id " + id)).catch((e) => {
-    recDiag("watch: " + recErrText(e));
+    recDiag("watch: " + recErrText(e), true);
     if (recNativeWatch === watch) recNativeWatch = null;
   });
 }
@@ -4601,6 +4604,9 @@ function recStopWatching() {
   clearTimeout(recRetryTimer);
   clearInterval(recHealthTimer);
   recLocOffShown = false;
+  const diagEl = document.getElementById("recDiag");
+  if (diagEl) diagEl.hidden = true;
+  recDiagLog.length = 0;
   recHideSettingsBtn();
   clearInterval(recTimer);
   recTimer = null;
