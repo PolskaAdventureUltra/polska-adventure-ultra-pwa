@@ -1066,7 +1066,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "64";
+const APP_BUILD = "65";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -4326,9 +4326,23 @@ function getNativeGeo() {
   return nativeGeo;
 }
 
-function recStartNativeWatch() {
+// Android 13+: bez zgody na powiadomienia powiadomienie „Nagrywanie trasy” jest niewidoczne
+// (GPS działa, ale użytkownik nie widzi, że nagrywanie trwa). Pytamy raz, przy pierwszym starcie nagrywania.
+async function recEnsureNotificationPermission() {
+  try {
+    const notif = window.Capacitor.registerPlugin("LocalNotifications");
+    const status = await notif.checkPermissions();
+    if (status && status.display === "prompt") await notif.requestPermissions();
+  } catch (e) {
+    console.warn("Notification permission", e);
+  }
+}
+
+async function recStartNativeWatch() {
   const dict = t();
   recWatchId = "native";
+  await recEnsureNotificationPermission();
+  if (recWatchId !== "native" || recNativeWatch) return; // nagrywanie zatrzymane w trakcie pytania o zgodę
   recNativeWatch = getNativeGeo().addWatcher({
     backgroundTitle: dict.recNotifTitle,
     backgroundMessage: dict.recNotifText,
