@@ -365,3 +365,14 @@ body.dark .challenge { --ch-bg: #0A1322; --ch-band: #131E31; }
 .modal-card h3 { margin-top: 0; }
 .modal-card p { font-size: 14px; }
 .modal-card .link-btn { display: block; margin: 8px auto 0; width: auto; }
+
+/* --- Nagrywanie GPS telefonem --- */
+.rec-card h2 { margin-top: 0; }
+.rec-card .rec-start { font-size: 18px; padding: 16px; }
+.rec-disc { font-size: 14px; color: var(--subtle-fg); text-align: center; }
+.rec-time { font-family: var(--display); font-size: 44px; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; margin: 2px 0 8px; }
+.rec-grid .stat-value { font-variant-numeric: tabular-nums; }
+.rec-status { margin: 10px 0 0; font-size: 14px; min-height: 1.4em; }
+.rec-status.rec-warn { color: var(--hl); font-weight: 600; }
+.rec-map { height: 220px; border-radius: 8px; margin-top: 8px; border: 1px solid var(--border); }
+.rec-card.rec-paused .rec-time { color: var(--subtle-fg); }
