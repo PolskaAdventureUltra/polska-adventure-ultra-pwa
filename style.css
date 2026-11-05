@@ -430,6 +430,8 @@ body.dark .challenge { --ch-bg: #0A1322; --ch-band: #131E31; }
 .rec-grid .stat-value { font-variant-numeric: tabular-nums; }
 .rec-status { margin: 10px 0 0; font-size: 14px; min-height: 1.4em; }
 .rec-status.rec-warn { color: var(--hl); font-weight: 600; }
+.rec-diag { font-size: 11px; opacity: .7; word-break: break-word; }
+.rec-status.rec-clickable { cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .rec-map { height: 220px; border-radius: 8px; margin-top: 8px; border: 1px solid var(--border); }
 .rec-card.rec-paused .rec-time { color: var(--subtle-fg); }
 
