@@ -58,7 +58,7 @@ const TRANSLATIONS = {
     paceBtn: "OBLICZ TEMPO",
     chartBtn: "POKAŻ WYKRES PROGRESU",
     exportBtn: "EKSPORTUJ DO CSV",
-    importBtn: "IMPORTUJ Z GARMIN / SUUNTO / POLAR",
+    importBtn: "IMPORTUJ Z ZEGARKA (GPX / TCX)",
     recTitle: "📍 Nagraj trening telefonem",
     recIntro: "Bez zegarka — aplikacja zapisze trasę z GPS w telefonie. Ekran musi zostać włączony (aplikacja go nie wygasi) i nie przełączaj się na inne aplikacje: w tle przeglądarka wstrzymuje GPS.",
     recStartBtn: "▶ START",
@@ -86,7 +86,7 @@ const TRANSLATIONS = {
     recConfirmDiscard: "Odrzucić nagranie? Trasa zostanie usunięta.",
     recNote: "📍 Nagrane telefonem (GPS)",
     recFinishedHint: (km, time) => `📍 Nagrano ${km} km w ${time}. Sprawdź dane, dopisz tętno czy notatkę i kliknij „ZAPISZ TRENING”.`,
-    importHint: "Wyeksportuj trening z Garmin Connect, Suunto app lub Polar Flow jako plik GPX lub TCX, a następnie wczytaj go tutaj.",
+    importHint: "Wyeksportuj trening z Garmin Connect, Suunto app, Polar Flow, Samsung Health lub Huawei Health (albo Stravy) jako plik GPX lub TCX, a następnie wczytaj go tutaj. Instrukcje: Pomoc → Import z zegarka.",
     chartTitle: "Progres dystansu",
     historyTitle: "Historia treningów",
     themeBtn: "Zmień motyw",
@@ -336,12 +336,15 @@ const TRANSLATIONS = {
           <li>Na basenie GPS nie działa — wpisz trening ręcznie.</li>
         </ul>
       </details>
-      <details><summary>⌚ Import z zegarka (Garmin / Suunto / Polar)</summary>
+      <details><summary>⌚ Import z zegarka (Garmin / Suunto / Polar / Samsung / Huawei)</summary>
         <ul>
           <li><b>Garmin Connect</b> (www): otwórz aktywność → ikona koła zębatego → „Eksportuj do GPX” lub „Eksportuj do TCX”.</li>
           <li><b>Suunto app</b>: Dziennik → trening → ⋮ / Udostępnij → Eksportuj → GPX.</li>
           <li><b>Polar Flow</b> (www): otwórz trening → „Eksportuj sesję” → GPX lub TCX.</li>
-          <li>W aplikacji kliknij „IMPORTUJ Z GARMIN / SUUNTO / POLAR”, wybierz plik, sprawdź dane i kliknij „ZAPISZ TRENING”. Trasa zapisze się razem z treningiem.</li>
+          <li><b>Samsung Health</b> (Galaxy Watch): w telefonie otwórz trening z trasą GPS → ⋮ → „Eksportuj do pliku GPX”. Opcja jest tylko przy treningach z GPS (np. bieg, rower, spacer), a plik nie zawiera tętna.</li>
+          <li><b>Huawei Health</b> (Huawei Watch): otwórz trening → ikona udostępniania/⋮ → „Eksportuj trasę” → GPX lub TCX (zależnie od wersji aplikacji i zegarka). Jeśli tej opcji nie ma: połącz Huawei Health ze Stravą (Ja → Udostępnianie danych i autoryzacja → Strava), a potem na strava.com otwórz trening → ⋯ → „Eksportuj GPX”.</li>
+          <li><b>Strava</b> (www): otwórz trening → ⋯ → „Eksportuj GPX” — działa dla każdego zegarka zsynchronizowanego ze Stravą.</li>
+          <li>W aplikacji kliknij „IMPORTUJ Z ZEGARKA (GPX / TCX)”, wybierz plik, sprawdź dane i kliknij „ZAPISZ TRENING”. Trasa zapisze się razem z treningiem.</li>
         </ul>
       </details>
       <details><summary>📋 Historia</summary>
@@ -402,7 +405,7 @@ const TRANSLATIONS = {
           <li>Udostępniona zaplanowana trasa jest widoczna <b>w całości</b> (żeby inni mogli z niej nawigować) — jeśli zaczyna się pod Twoim domem, przesuń start przed udostępnieniem.</li>
           <li>Przy udostępnianiu treningu aplikacja obcina pierwsze i ostatnie 300 m trasy, ale jeśli trening zaczynasz i kończysz pod domem w małej miejscowości, rozważ udostępnienie go bez trasy (np. trening wpisany ręcznie).</li>
           <li>Treści obraźliwe lub naruszające prywatność zgłoś administratorowi (adres na górze Pomocy).</li>` : ""}
-          <li>Aplikacja nigdy nie prosi o hasło do Garmin, Suunto ani Polar — pliki importujesz sam.</li>
+          <li>Aplikacja nigdy nie prosi o hasło do Garmin, Suunto, Polar, Samsung, Huawei ani Strava — pliki importujesz sam.</li>
         </ul>
       </details>
       <details><summary>⚖️ RODO w skrócie</summary>
@@ -514,7 +517,7 @@ const TRANSLATIONS = {
     paceBtn: "CALCULATE PACE",
     chartBtn: "SHOW PROGRESS CHART",
     exportBtn: "EXPORT TO CSV",
-    importBtn: "IMPORT FROM GARMIN / SUUNTO / POLAR",
+    importBtn: "IMPORT FROM WATCH (GPX / TCX)",
     recTitle: "📍 Record with your phone",
     recIntro: "No watch needed — the app records your route with the phone's GPS. Keep the screen on (the app won't let it sleep) and don't switch to other apps: in the background the browser pauses GPS.",
     recStartBtn: "▶ START",
@@ -542,7 +545,7 @@ const TRANSLATIONS = {
     recConfirmDiscard: "Discard the recording? The route will be deleted.",
     recNote: "📍 Recorded with phone (GPS)",
     recFinishedHint: (km, time) => `📍 Recorded ${km} km in ${time}. Check the data, add heart rate or a note and tap "SAVE TRAINING".`,
-    importHint: "Export your training from Garmin Connect, Suunto app or Polar Flow as a GPX or TCX file, then load it here.",
+    importHint: "Export your training from Garmin Connect, Suunto app, Polar Flow, Samsung Health or Huawei Health (or Strava) as a GPX or TCX file, then load it here. How-to: Help → Import from your watch.",
     chartTitle: "Distance progress",
     historyTitle: "Training history",
     themeBtn: "Switch theme",
@@ -792,12 +795,15 @@ const TRANSLATIONS = {
           <li>GPS doesn't work in a pool — enter those trainings manually.</li>
         </ul>
       </details>
-      <details><summary>⌚ Import from your watch (Garmin / Suunto / Polar)</summary>
+      <details><summary>⌚ Import from your watch (Garmin / Suunto / Polar / Samsung / Huawei)</summary>
         <ul>
           <li><b>Garmin Connect</b> (web): open the activity → gear icon → “Export to GPX” or “Export to TCX”.</li>
           <li><b>Suunto app</b>: Diary → training → ⋮ / Share → Export → GPX.</li>
           <li><b>Polar Flow</b> (web): open the training → “Export session” → GPX or TCX.</li>
-          <li>In the app tap “IMPORT FROM GARMIN / SUUNTO / POLAR”, choose the file, check the data and tap “SAVE TRAINING”. The route is saved with the training.</li>
+          <li><b>Samsung Health</b> (Galaxy Watch): on the phone open a workout with a GPS route → ⋮ → “Export to GPX file”. Only available for GPS workouts (e.g. running, cycling, walking); the file has no heart rate.</li>
+          <li><b>Huawei Health</b> (Huawei Watch): open the workout → share icon/⋮ → “Export route” → GPX or TCX (depends on app and watch version). If it's missing: link Huawei Health with Strava (Me → Data sharing and authorization → Strava), then on strava.com open the activity → ⋯ → “Export GPX”.</li>
+          <li><b>Strava</b> (web): open the activity → ⋯ → “Export GPX” — works for any watch synced with Strava.</li>
+          <li>In the app tap “IMPORT FROM WATCH (GPX / TCX)”, choose the file, check the data and tap “SAVE TRAINING”. The route is saved with the training.</li>
         </ul>
       </details>
       <details><summary>📋 History</summary>
@@ -858,7 +864,7 @@ const TRANSLATIONS = {
           <li>A shared planned route is visible <b>in full</b> (so others can navigate it) — if it starts at your home, move the start before sharing.</li>
           <li>When sharing a training, the app cuts the first and last 300 m of the route, but if you start and finish at home in a small town, consider sharing without a route (e.g. a manually entered training).</li>
           <li>Report offensive content or privacy violations to the administrator (address at the top of Help).</li>` : ""}
-          <li>The app never asks for your Garmin, Suunto or Polar password — you import files yourself.</li>
+          <li>The app never asks for your Garmin, Suunto, Polar, Samsung, Huawei or Strava password — you import files yourself.</li>
         </ul>
       </details>
       <details><summary>⚖️ GDPR in short</summary>
