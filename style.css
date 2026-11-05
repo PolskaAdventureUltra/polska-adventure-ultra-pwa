@@ -390,9 +390,8 @@ body.dark .challenge { --ch-bg: #0A1322; --ch-band: #131E31; }
 .mode-tile .mode-ico { font-size: 34px; line-height: 1; }
 .mode-tile:hover { border-color: var(--accent); }
 .mode-tile.active { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
-.mode-tile:focus-visible, .mode-manual:focus-visible { outline: 3px solid var(--hl); outline-offset: 2px; }
-.mode-manual { display: block; margin: 2px auto 10px; width: auto; }
-.mode-manual.active { color: var(--accent); font-weight: bold; }
+.mode-tile:focus-visible { outline: 3px solid var(--hl); outline-offset: 2px; }
+.train-modes-top { margin-bottom: 15px; }
 .watch-steps { margin: 10px 0 4px; padding-left: 22px; font-size: 14px; line-height: 1.45; }
 .watch-steps li { margin-bottom: 6px; }
 @media (prefers-reduced-motion: reduce) { .mode-tile { transition: none; } }

@@ -60,11 +60,10 @@
   </div>
 
   <div id="tabTrain" class="tab-content active">
-    <div class="train-modes" role="group">
+    <div class="train-modes train-modes-top" role="group">
       <button type="button" class="mode-tile" id="modePhoneBtn" aria-pressed="false" aria-controls="recCard"><span class="mode-ico" aria-hidden="true">📱</span><span class="mode-lbl" data-i18n="modePhone">Nagraj telefonem</span></button>
       <button type="button" class="mode-tile" id="modeWatchBtn" aria-pressed="false" aria-controls="watchCard"><span class="mode-ico" aria-hidden="true">⌚</span><span class="mode-lbl" data-i18n="modeWatch">Trening z zegarka</span></button>
     </div>
-    <button type="button" class="link-btn mode-manual" id="modeManualBtn" aria-pressed="false" aria-controls="trainFormCard" data-i18n="modeManual">✏️ Wpisz trening ręcznie</button>
 
     <div class="card rec-card" id="recCard" hidden>
       <h2 data-i18n="recTitle">📍 Nagraj trening telefonem</h2>
@@ -114,7 +113,7 @@
       <input type="file" id="importFile" accept=".gpx,.tcx" style="display:none">
     </div>
 
-    <div class="card" id="trainFormCard" hidden>
+    <div class="card" id="trainFormCard">
       <div class="form-hint" id="trainHint" role="status" hidden>
         <span id="trainHintText"></span>
         <button type="button" class="form-hint-close" id="trainHintClose" aria-label="Zamknij">✕</button>
