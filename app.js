@@ -1037,6 +1037,21 @@ function toggleLanguage() {
   if (document.getElementById("tabActivity").classList.contains("active")) refreshActivityTab();
 }
 
+// --- Samonaprawa: strona i skrypt z różnych wersji ---
+// Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
+// Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
+// i przeładowujemy raz, żeby pobrać spójną wersję.
+const APP_BUILD = "61";
+(function healMixedVersions() {
+  if (window.PAU_PAGE_BUILD === APP_BUILD) return;
+  let tried = false;
+  try { tried = sessionStorage.getItem("pau_heal") === APP_BUILD; sessionStorage.setItem("pau_heal", APP_BUILD); } catch (e) { tried = true; }
+  if (tried || !("caches" in window) || navigator.onLine === false) return; // offline: bez pamięci plików strona by się nie wczytała
+  caches.keys()
+    .then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
+    .then(() => window.location.reload());
+})();
+
 // --- Rejestracja Service Workera (offline) ---
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
