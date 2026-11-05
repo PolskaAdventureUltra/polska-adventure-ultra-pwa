@@ -1042,6 +1042,19 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("service-worker.js").catch((e) => console.warn("SW error", e));
   });
+  // Nowa wersja przejęła stronę w trakcie wczytywania -> strona mogła dostać pliki z dwóch różnych wersji
+  // (np. stary index.html i nowy app.js). Przeładowujemy raz, żeby wszystko było z jednej wersji.
+  // Nie przy pierwszej wizycie (wtedy nie było poprzedniej wersji) i nie w trakcie nagrywania GPS.
+  const hadController = Boolean(navigator.serviceWorker.controller);
+  let reloadedForUpdate = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController || reloadedForUpdate) return;
+    let recording = false;
+    try { recording = Boolean(localStorage.getItem("pau_recording")); } catch (e) { /* brak dostępu */ }
+    if (recording) return;
+    reloadedForUpdate = true;
+    window.location.reload();
+  });
 }
 
 // --- Pomocnicze: localStorage ---
@@ -4424,13 +4437,17 @@ function changePin() {
 
 // --- Inicjalizacja ---
 document.addEventListener("DOMContentLoaded", () => {
-  applyTheme();
-  applyLanguage();
-
+  // Logowanie podpinamy NAJPIERW - błąd w dalszej inicjalizacji nie może zablokować wejścia do aplikacji.
   document.getElementById("pinSubmit").addEventListener("click", tryLogin);
   document.getElementById("pinInput").addEventListener("keydown", (e) => {
     if (e.key === "Enter") tryLogin();
   });
+  try {
+    applyTheme();
+    applyLanguage();
+  } catch (e) {
+    console.error("Init error", e);
+  }
 
   document.getElementById("tabTrainBtn").addEventListener("click", () => showTab("train"));
   document.getElementById("tabHistoryBtn").addEventListener("click", () => {

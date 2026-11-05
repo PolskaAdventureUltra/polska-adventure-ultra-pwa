@@ -3,7 +3,7 @@
 // Polska Adventure Ultra - PWA Service Worker
 // Cache'uje wszystkie pliki apki, żeby działała w 100% offline po pierwszym wczytaniu.
 
-const CACHE_NAME = "pau-cache-v59";
+const CACHE_NAME = "pau-cache-v60";
 const ASSETS = [
   "./",
   "./index.html",
@@ -52,6 +52,9 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    // Tylko z bieżącej wersji cache - nie mieszamy plików ze starej i nowej wersji.
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.match(event.request))
+      .then((cached) => cached || fetch(event.request))
   );
 });
