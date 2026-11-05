@@ -199,6 +199,7 @@ const TRANSLATIONS = {
     eventMissingFields: "Uzupełnij nazwę, datę i godzinę oraz miejsce zbiórki.",
     eventLinkInvalid: "Link musi zaczynać się od https://",
     eventPublished: "Wydarzenie opublikowane!",
+    deleteEventNotOwner: "Możesz usuwać tylko wydarzenia dodane przez siebie.",
     confirmDeleteEvent: "Usunąć to wydarzenie? Zniknie u wszystkich użytkowników.",
     joinBtn: (n) => `🙋 Biorę udział · ${n}`,
     joinedBtn: (n) => `✅ Bierzesz udział · ${n}`,
@@ -654,6 +655,7 @@ const TRANSLATIONS = {
     eventMissingFields: "Fill in the name, date and time, and meeting point.",
     eventLinkInvalid: "The link must start with https://",
     eventPublished: "Event published!",
+    deleteEventNotOwner: "You can only delete events you added yourself.",
     confirmDeleteEvent: "Delete this event? It will disappear for all users.",
     joinBtn: (n) => `🙋 I'm going · ${n}`,
     joinedBtn: (n) => `✅ You're going · ${n}`,
@@ -3095,12 +3097,25 @@ function getAdminKey() {
   return localStorage.getItem(ADMIN_KEY_KEY);
 }
 
+// Organizator usuwa tylko własne wydarzenia (superadmin - wszystkie). null = nie wiadomo (stara baza) - pokazujemy 🗑 wszędzie.
+let deletableEventIds = null;
+async function fetchDeletableEventIds() {
+  if (!getAdminKey()) return null;
+  try {
+    const ids = await rpc("admin_deletable_event_ids", { p_admin_key: getAdminKey() });
+    return new Set((ids || []).map((row) => (typeof row === "object" && row ? Object.values(row)[0] : row)));
+  } catch (e) {
+    return null;
+  }
+}
+
 async function refreshEvents() {
   const listEl = document.getElementById("eventsList");
   const dict = t();
   listEl.innerHTML = `<p>${dict.loading}</p>`;
   try {
     eventsCache = (await rpc("list_events_v2")) || [];
+    deletableEventIds = await fetchDeletableEventIds();
     renderEvents();
     syncAllEventResults();
   } catch (e) {
@@ -3141,7 +3156,8 @@ function eventItemHtml(ev, index, ctx) {
   const link = typeof ev.link === "string" && ev.link.startsWith("https://")
     ? `<a href="${escapeXml(ev.link)}" target="_blank" rel="noopener">${dict.eventLink}</a>`
     : "";
-  const del = isAdmin ? `<button class="delete-btn" data-index="${index}" title="${dict.deleteTitle}">🗑</button>` : "";
+  const canDelete = isAdmin && (!deletableEventIds || deletableEventIds.has(ev.id));
+  const del = canDelete ? `<button class="delete-btn" data-index="${index}" title="${dict.deleteTitle}">🗑</button>` : "";
   const join = active
     ? `<button class="join-btn${joined ? " joined" : ""}" data-index="${index}" title="${joined ? dict.leaveTitle : dict.joinTitle}">` +
       `${joined ? dict.joinedBtn(count) : dict.joinBtn(count)}</button>`
@@ -3267,7 +3283,7 @@ async function toggleOrganizer() {
   }
   localStorage.setItem(ADMIN_KEY_KEY, key.trim());
   alert(dict.adminLoggedIn);
-  renderEvents();
+  refreshEvents(); // pobiera też listę wydarzeń, które ten organizator może usuwać
   renderChallenge();
 }
 
@@ -3339,7 +3355,10 @@ async function publishEvent() {
 async function deleteEvent(ev) {
   if (!confirm(t().confirmDeleteEvent)) return;
   try {
-    await rpc("admin_delete_event", { p_admin_key: getAdminKey(), p_id: ev.id });
+    if ((await rpc("admin_delete_event", { p_admin_key: getAdminKey(), p_id: ev.id })) === false) {
+      alert(t().deleteEventNotOwner);
+      return;
+    }
   } catch (e) {
     alert(t().deleteFailed);
     return;

@@ -97,6 +97,10 @@ alter table public.event_completions add column if not exists result_at timestam
 alter table public.activities drop constraint if exists activities_disc_check;
 alter table public.activities add constraint activities_disc_check
   check (disc in ('Bieg', 'Rower', 'Kajak', 'Basen', 'WodyOtwarte', 'Trekking'));
+-- Kto dodał wydarzenie (hash klucza organizatora) i którzy organizatorzy mogą usuwać wszystkie wydarzenia.
+-- Pozostali organizatorzy usuwają tylko własne. Nadanie: update public.admin_keys set superadmin = true where label = '...';
+alter table public.events add column if not exists created_by text;
+alter table public.admin_keys add column if not exists superadmin boolean not null default false;
 alter table public.events drop constraint if exists events_disc_check;
 alter table public.events add constraint events_disc_check
   check (disc in ('Bieg', 'Rower', 'Kajak', 'Basen', 'WodyOtwarte', 'Trekking', 'Multi'));
@@ -263,9 +267,10 @@ begin
   end if;
   -- Retencja: wydarzenia (i zapisy na nie) znikają 30 dni po terminie.
   delete from events where starts_at < now() - interval '30 days';
-  insert into events (title, disc, starts_at, place, lat, lon, description, link)
+  insert into events (title, disc, starts_at, place, lat, lon, description, link, created_by)
   values (trim(p_title), p_disc, p_starts_at, trim(p_place), p_lat, p_lon,
-          coalesce(trim(p_description), ''), nullif(trim(p_link), ''))
+          coalesce(trim(p_description), ''), nullif(trim(p_link), ''),
+          encode(sha256(convert_to(p_admin_key, 'UTF8')), 'hex'))
   returning id into new_id;
   return new_id;
 end $$;
@@ -276,9 +281,19 @@ begin
   if not is_admin(p_admin_key) then
     raise exception 'not authorized';
   end if;
-  delete from events where id = p_id;
+  delete from events where id = p_id and id in (select e_id from admin_deletable_event_ids(p_admin_key) e_id);
   return found;
 end $$;
+
+-- Wydarzenia, które ten organizator może usunąć: własne, a superadmin - wszystkie.
+create or replace function public.admin_deletable_event_ids(p_admin_key text)
+returns setof uuid language sql stable security definer set search_path = public as $$
+  select e.id from events e
+  where is_admin(p_admin_key) and (
+    e.created_by = encode(sha256(convert_to(p_admin_key, 'UTF8')), 'hex')
+    or exists (select 1 from admin_keys k
+               where k.key_hash = encode(sha256(convert_to(p_admin_key, 'UTF8')), 'hex') and k.superadmin));
+$$;
 
 -- Nadchodzące wydarzenia (oraz te sprzed max. 12 godzin) z liczbą chętnych.
 create or replace function public.list_events()
@@ -461,7 +476,7 @@ revoke execute on function public.ping(uuid), public.forget_device(uuid), public
   public.list_routes(int), public.get_route(uuid),
   public.is_admin(text), public.admin_check(text),
   public.admin_create_event(text, text, text, timestamptz, text, double precision, double precision, text, text),
-  public.admin_delete_event(text, uuid), public.list_events(),
+  public.admin_delete_event(text, uuid), public.admin_deletable_event_ids(text), public.list_events(),
   public.join_event(uuid, text), public.leave_event(uuid, text),
   public.list_events_v2(), public.complete_event(uuid, text), public.uncomplete_event(uuid, text),
   public.set_event_result(uuid, text, text, numeric, numeric, jsonb), public.list_event_results(uuid),
@@ -473,7 +488,7 @@ grant execute on function public.ping(uuid), public.forget_device(uuid), public.
   public.list_routes(int), public.get_route(uuid),
   public.admin_check(text),
   public.admin_create_event(text, text, text, timestamptz, text, double precision, double precision, text, text),
-  public.admin_delete_event(text, uuid), public.list_events(),
+  public.admin_delete_event(text, uuid), public.admin_deletable_event_ids(text), public.list_events(),
   public.join_event(uuid, text), public.leave_event(uuid, text),
   public.list_events_v2(), public.complete_event(uuid, text), public.uncomplete_event(uuid, text),
   public.set_event_result(uuid, text, text, numeric, numeric, jsonb), public.list_event_results(uuid),
