@@ -8,6 +8,21 @@ przez usługę Androida z powiadomieniem, więc także przy zgaszonym ekranie i 
 - `android/` — projekt do otwarcia w Android Studio.
 - Wtyczka GPS: `@capacitor-community/background-geolocation`; integracja w `../app.js` (`isNativeApp`, `recStartNativeWatch`).
 
+## Budowanie w WSL (bez Android Studio)
+
+Narzędzia w katalogu domowym WSL: Node 22 (`~/tools/node-v22.23.4-linux-x64`), JDK 21 (`~/tools/jdk-21.0.13+9`),
+Gradle 8.14.3 (`~/tools/gradle-8.14.3`), Android SDK (`~/android-sdk`, platform 36).
+
+```sh
+export PATH=~/tools/node-v22.23.4-linux-x64/bin:$PATH JAVA_HOME=~/tools/jdk-21.0.13+9 ANDROID_HOME=~/android-sdk
+cd native && npm run sync && cd android
+~/tools/gradle-8.14.3/bin/gradle assembleDebug --no-daemon     # APK testowy
+~/tools/gradle-8.14.3/bin/gradle bundleRelease --no-daemon     # AAB do Google Play (podpisany kluczem z ~/pau-keys)
+```
+
+Klucz do sklepu (upload key): `~/pau-keys/pau-upload.jks` + `keystore.properties` — NIGDY w repo, trzymać kopię w bezpiecznym miejscu.
+Przy każdym wydaniu do sklepu podbij `versionCode` (i `versionName`) w `android/app/build.gradle`.
+
 ## Budowanie (Windows, Android Studio)
 
 1. Zainstaluj Android Studio: https://developer.android.com/studio (opcje domyślne).
