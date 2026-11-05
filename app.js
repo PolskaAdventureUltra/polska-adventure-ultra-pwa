@@ -108,6 +108,9 @@ const TRANSLATIONS = {
     langBtnTarget: "EN",
     totalLabel: (km) => `🏅 Łącznie: ${km} km`,
     heroTotal: "Łącznie",
+    samsungHintText: "Używasz przeglądarki Samsung Internet. Żeby mieć aplikację na ekranie, wybierz menu ☰ → „Dodaj stronę do” → „Ekran startowy”. Jeśli wolisz pełną aplikację (bez paska adresu), otwórz ten link w Chrome i wybierz ⋮ → „Zainstaluj aplikację”.",
+    samsungHintCopy: "KOPIUJ LINK (DO CHROME)",
+    samsungHintCopied: "Link skopiowany — wklej go w Chrome.",
     heroWeek: "ten tydzień",
     addTrainingTitle: "Dodaj trening",
     noHistory: "Brak zapisanych treningów.",
@@ -584,6 +587,9 @@ const TRANSLATIONS = {
     langBtnTarget: "PL",
     totalLabel: (km) => `🏅 Total: ${km} km`,
     heroTotal: "Total",
+    samsungHintText: "You're using Samsung Internet. To get the app on your screen, open the menu ☰ → “Add page to” → “Home screen”. For the full app (no address bar), open this link in Chrome and choose ⋮ → “Install app”.",
+    samsungHintCopy: "COPY LINK (FOR CHROME)",
+    samsungHintCopied: "Link copied — paste it in Chrome.",
     heroWeek: "this week",
     addTrainingTitle: "Add training",
     noHistory: "No saved trainings yet.",
@@ -1007,6 +1013,8 @@ function applyLanguage() {
   renderWatchSteps();
   document.getElementById("trainHintClose").setAttribute("aria-label", dict.hintCloseLabel);
   document.getElementById("headerThemeBtn").setAttribute("aria-label", dict.themeBtn);
+  document.getElementById("samsungHintText").textContent = dict.samsungHintText;
+  document.getElementById("samsungHintClose").setAttribute("aria-label", dict.hintCloseLabel);
   hideTrainHint();
   clearFieldState("dist");
   clearFieldState("time");
@@ -2731,6 +2739,36 @@ function showHelp() {
 }
 
 const APP_URL = "https://polskaadventureultra.github.io/polska-adventure-ultra-pwa/";
+
+// --- Samsung Internet: zamiast instalacji (blokowanej przez Play Protect) skrót albo Chrome ---
+const SAMSUNG_HINT_KEY = "pau_samsung_hint_closed";
+
+function isSamsungBrowser() {
+  return /SamsungBrowser/i.test(navigator.userAgent);
+}
+
+function isStandalone() {
+  return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+}
+
+function initSamsungHint() {
+  const card = document.getElementById("samsungHint");
+  let closed = false;
+  try { closed = localStorage.getItem(SAMSUNG_HINT_KEY) === "1"; } catch (e) { /* brak dostępu */ }
+  card.hidden = !isSamsungBrowser() || isStandalone() || closed;
+  document.getElementById("samsungHintClose").addEventListener("click", () => {
+    card.hidden = true;
+    try { localStorage.setItem(SAMSUNG_HINT_KEY, "1"); } catch (e) { /* brak dostępu */ }
+  });
+  document.getElementById("samsungHintCopy").addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(APP_URL);
+      alert(t().samsungHintCopied);
+    } catch (e) {
+      prompt(t().samsungHintCopy, APP_URL);
+    }
+  });
+}
 
 async function shareAppLink() {
   if (navigator.share) {
@@ -4459,6 +4497,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("langBtn").addEventListener("click", toggleLanguage);
   initRecorder();
   initTrainModes();
+  initSamsungHint();
 
   // Sesja logowania trwa do zamknięcia karty przeglądarki (sessionStorage).
   // Dzięki temu nie trzeba podawać PIN-u za każdym odświeżeniem, ale po

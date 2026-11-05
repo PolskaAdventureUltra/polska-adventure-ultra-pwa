@@ -5,7 +5,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Polska Adventure Ultra</title>
-<link rel="manifest" href="manifest.json">
+<script>
+  // Samsung Internet pakuje zainstalowane PWA w APK pod stary Android i Google Play Protect blokuje je jako
+  // „niebezpieczną aplikację”. Bez manifestu Samsung Internet nie proponuje instalacji - zostaje zwykłe
+  // „Dodaj do ekranu startowego” (skrót). Pozostałe przeglądarki dostają manifest jak dotąd.
+  if (!/SamsungBrowser/i.test(navigator.userAgent)) {
+    var m = document.createElement("link");
+    m.rel = "manifest";
+    m.href = "manifest.json";
+    document.head.appendChild(m);
+  }
+</script>
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#F3F5F8">
@@ -31,6 +41,13 @@
     <div class="app-title">Polska Adventure<br><span>Ultra</span></div>
     <button type="button" class="icon-btn" id="headerThemeBtn" aria-label="Zmień motyw"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></button>
   </header>
+
+  <!-- Samsung Internet: podpowiedź, jak dodać skrót bez ostrzeżenia Play Protect -->
+  <div class="card samsung-hint" id="samsungHint" hidden>
+    <button type="button" class="form-hint-close" id="samsungHintClose" aria-label="Zamknij">✕</button>
+    <p id="samsungHintText"></p>
+    <button id="samsungHintCopy" data-i18n="samsungHintCopy">KOPIUJ LINK (DO CHROME)</button>
+  </div>
 
   <!-- Jednorazowe pytanie o zgodę na anonimowe statystyki (opt-in, RODO) -->
   <div class="card consent-card" id="consentCard" style="display:none">
