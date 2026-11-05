@@ -1074,7 +1074,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "66";
+const APP_BUILD = "67";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -4362,18 +4362,25 @@ function recHideSettingsBtn() {
 // Najpierw jawnie pytamy o lokalizację (wtyczka Geolocation zwraca, czy zgoda jest dokładna
 // czy tylko przybliżona). Wcześniej prośba szła dopiero z wtyczki tła, zaraz po prośbie
 // o powiadomienia, i potrafiła przepaść bez śladu - apka czekała na GPS bez zgody.
-async function recEnsureLocationPermission() {
+// ask=false: tylko sprawdź (ponowienia w tle - bez natrętnego pytania o zgodę co kilka sekund).
+async function recEnsureLocationPermission(ask = true) {
   const dict = t();
   let st;
   try {
     const geo = window.Capacitor.registerPlugin("Geolocation");
     st = await geo.checkPermissions();
-    if (st.location !== "granted") st = await geo.requestPermissions({ permissions: ["location", "coarseLocation"] });
+    if (ask && st.location !== "granted") st = await geo.requestPermissions({ permissions: ["location", "coarseLocation"] });
   } catch (e) {
-    if (e && e.code === "UNIMPLEMENTED") return true; // stara wersja bez wtyczki - zgodę obsłuży wtyczka tła
     console.warn("Location permission", e);
-    recShowPermProblem(dict.recLocationOff, false); // Android rzuca, gdy lokalizacja w telefonie jest wyłączona
-    return false;
+    const code = (e && e.code) || "";
+    if (code === "OS-PLUG-GLOC-0007") { // usługi lokalizacji w telefonie wyłączone
+      recShowPermProblem(dict.recLocationOff, false);
+      return false;
+    }
+    // Inny błąd wtyczki (albo jej brak) - nie zgadujemy; zgodę obsłuży wtyczka tła, a kod błędu
+    // zostaje w statusie do diagnozy, dopóki nie przyjdzie pierwszy odczyt GPS.
+    recPermDiag = code === "UNIMPLEMENTED" ? "" : " [" + (code || (e && e.message) || "?") + "]";
+    return true;
   }
   if (st && st.location === "granted") {
     recHideSettingsBtn();
@@ -4385,21 +4392,30 @@ async function recEnsureLocationPermission() {
 
 let recPermChecking = false;
 
-async function recStartNativeWatch() {
+let recRetryTimer = null;
+let recPermDiag = ""; // kod nieoczekiwanego błędu wtyczki Geolocation - do diagnozy w statusie
+
+async function recStartNativeWatch(ask = true) {
   const dict = t();
   recWatchId = "native";
   if (recPermChecking) return;
   recPermChecking = true;
   let ok = false;
   try {
-    ok = await recEnsureLocationPermission();
+    ok = await recEnsureLocationPermission(ask);
     if (ok) await recEnsureNotificationPermission();
   } finally {
     recPermChecking = false;
   }
-  if (!ok) return; // czekamy - recRetryNativeWatch() po powrocie z ustawień
+  if (!ok) {
+    // Czekamy, aż użytkownik włączy lokalizację/zgodę. Rozwinięcie górnego paska nie zmienia
+    // widoczności strony, więc oprócz visibilitychange sprawdzamy co 3 s (bez pytania o zgodę).
+    clearTimeout(recRetryTimer);
+    recRetryTimer = setTimeout(recRetryNativeWatch, 3000);
+    return;
+  }
   if (recWatchId !== "native" || recNativeWatch) return; // nagrywanie zatrzymane w trakcie pytania o zgodę
-  if (rec && !rec.pausedAt) recSetStatus(dict.recWaitingGps);
+  if (rec && !rec.pausedAt) recSetStatus(dict.recWaitingGps + recPermDiag);
   const watch = getNativeGeo().addWatcher({
     backgroundTitle: dict.recNotifTitle,
     backgroundMessage: dict.recNotifText,
@@ -4410,7 +4426,11 @@ async function recStartNativeWatch() {
     if (error) {
       if (recNativeWatch === watch) recNativeWatch = null; // pozwól ponowić po powrocie z ustawień
       if (error.code === "NOT_AUTHORIZED") {
-        recEnsureLocationPermission(); // pokaże właściwy komunikat (brak zgody / przybliżona / wyłączona)
+        recEnsureLocationPermission(false).then((ok) => { // pokaże właściwy komunikat (brak zgody / przybliżona / wyłączona)
+          if (ok) recShowPermProblem(dict.recNoLocationPerm, true); // wtyczka tła i tak odmawia
+          clearTimeout(recRetryTimer);
+          recRetryTimer = setTimeout(recRetryNativeWatch, 3000);
+        });
       } else {
         recSetStatus(dict.recUnavailable, true);
       }
@@ -4428,7 +4448,7 @@ async function recStartNativeWatch() {
 // Wywoływane po powrocie do aplikacji (np. z ustawień): jeśli nagrywamy, a watcher nie działa - ponów.
 function recRetryNativeWatch() {
   if (!rec || rec.pausedAt || recWatchId !== "native" || recNativeWatch || recPermChecking) return;
-  recStartNativeWatch();
+  recStartNativeWatch(false);
 }
 
 function recStartWatching() {
@@ -4453,6 +4473,7 @@ function recStopWatching() {
     if (watch) watch.then((id) => getNativeGeo().removeWatcher({ id })).catch(() => {});
   } else if (recWatchId != null) navigator.geolocation.clearWatch(recWatchId);
   recWatchId = null;
+  clearTimeout(recRetryTimer);
   recHideSettingsBtn();
   clearInterval(recTimer);
   recTimer = null;
