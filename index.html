@@ -7,7 +7,13 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "61";
+  window.PAU_PAGE_BUILD = "62";
+  // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
+  window.PAU_ERRORS = [];
+  window.addEventListener("error", function (e) {
+    window.PAU_ERRORS.push((e.message || "błąd") + (e.lineno ? " @" + e.lineno : ""));
+    if (window.PAU_SHOW_BOOT) window.PAU_SHOW_BOOT();
+  });
   // Samsung Internet pakuje zainstalowane PWA w APK pod stary Android i Google Play Protect blokuje je jako
   // „niebezpieczną aplikację”. Bez manifestu Samsung Internet nie proponuje instalacji - zostaje zwykłe
   // „Dodaj do ekranu startowego” (skrót). Pozostałe przeglądarki dostają manifest jak dotąd.
@@ -33,7 +39,22 @@
   <p id="loginError" class="error-text"></p>
   <input id="pinInput" type="password" inputmode="numeric" placeholder="PIN" autofocus>
   <button class="primary" id="pinSubmit" data-i18n="loginBtn">Zaloguj</button>
+  <p id="bootInfo" class="boot-info"></p>
 </div>
+<script>
+  // Linijka diagnostyczna pod logowaniem - niezależna od app.js (działa nawet, gdy app.js się nie wczyta).
+  window.PAU_SHOW_BOOT = function () {
+    var n = "?";
+    try { var h = JSON.parse(localStorage.getItem("pau_history") || "[]"); n = h.length; } catch (e) { n = "błąd odczytu"; }
+    var standalone = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+    var txt = "wersja " + window.PAU_PAGE_BUILD + " / skrypt " + (window.PAU_APP_BUILD || "–") +
+      " · treningi tutaj: " + n + " · " + (standalone ? "ikona" : "przeglądarka");
+    if (window.PAU_ERRORS.length) txt += " · BŁĄD: " + window.PAU_ERRORS.slice(-2).join(" | ");
+    document.getElementById("bootInfo").textContent = txt;
+  };
+  window.PAU_SHOW_BOOT();
+  window.addEventListener("load", window.PAU_SHOW_BOOT);
+</script>
 
 <!-- Główna apka (pokazywana po zalogowaniu) -->
 <div id="mainApp" style="display:none">
