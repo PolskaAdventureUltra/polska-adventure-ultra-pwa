@@ -59,6 +59,33 @@ const TRANSLATIONS = {
     chartBtn: "POKAŻ WYKRES PROGRESU",
     exportBtn: "EKSPORTUJ DO CSV",
     importBtn: "IMPORTUJ Z GARMIN / SUUNTO / POLAR",
+    recTitle: "📍 Nagraj trening telefonem",
+    recIntro: "Bez zegarka — aplikacja zapisze trasę z GPS w telefonie. Ekran musi zostać włączony (aplikacja go nie wygasi) i nie przełączaj się na inne aplikacje: w tle przeglądarka wstrzymuje GPS.",
+    recStartBtn: "▶ START",
+    recPauseBtn: "⏸ PAUZA",
+    recResumeBtn: "▶ WZNÓW",
+    recFinishBtn: "■ ZAKOŃCZ",
+    recDiscardBtn: "Odrzuć nagranie",
+    recTimeLbl: "Czas ruchu",
+    recDistLbl: "Dystans (km)",
+    recPaceLbl: "Śr. tempo",
+    recSpeedLbl: "Śr. prędkość",
+    recGpsLbl: "Dokładność GPS",
+    recWaitingGps: "Szukam sygnału GPS… (najlepiej na otwartym terenie)",
+    recGpsOk: "🟢 Nagrywanie — GPS działa",
+    recWeakGps: (m) => `🟠 Słaby sygnał GPS (±${m} m) — czekam na lepszy`,
+    recPausedStatus: "⏸ Wstrzymane — czas i dystans się nie liczą",
+    recDenied: "Brak zgody na lokalizację. Włącz ją w ustawieniach przeglądarki/telefonu dla tej strony (Android: kłódka przy adresie → Uprawnienia → Lokalizacja; iPhone: Ustawienia → Prywatność → Usługi lokalizacji → Safari).",
+    recUnavailable: "🔴 GPS niedostępny — sprawdź, czy lokalizacja w telefonie jest włączona",
+    recNoGeo: "Ta przeglądarka nie obsługuje GPS.",
+    recNoWakeLock: "Ta przeglądarka nie potrafi trzymać włączonego ekranu — wydłuż czas wygaszania ekranu w ustawieniach telefonu.",
+    recWasHidden: (min) => `⚠️ Aplikacja była w tle${min ? ` ok. ${min} min` : ""} — w tym czasie GPS mógł nie działać; ten odcinek został połączony linią prostą.`,
+    recRestored: "⚠️ Nagrywanie zostało przerwane (aplikacja była zamknięta). Kliknij WZNÓW, żeby nagrywać dalej, albo ZAKOŃCZ.",
+    recConfirmFinish: "Zakończyć nagrywanie?",
+    recTooShort: "Nagrana trasa jest za krótka (poniżej 50 m). Odrzucić nagranie?",
+    recConfirmDiscard: "Odrzucić nagranie? Trasa zostanie usunięta.",
+    recNote: "📍 Nagrane telefonem (GPS)",
+    recFinishedHint: (km, time) => `📍 Nagrano ${km} km w ${time}. Sprawdź dane, dopisz tętno czy notatkę i kliknij „ZAPISZ TRENING”.`,
     importHint: "Wyeksportuj trening z Garmin Connect, Suunto app lub Polar Flow jako plik GPX lub TCX, a następnie wczytaj go tutaj.",
     chartTitle: "Progres dystansu",
     historyTitle: "Historia treningów",
@@ -298,6 +325,16 @@ const TRANSLATIONS = {
           <li>„OBLICZ TEMPO” pokazuje tempo w min/km (bieg), tempo na 100 m (pływanie) albo prędkość w km/h (rower, kajak, trekking); „POKAŻ WYKRES PROGRESU” rysuje wykres dystansów.</li>
         </ul>
       </details>
+      <details><summary>📍 Nagrywanie telefonem (bez zegarka)</summary>
+        <ul>
+          <li>W zakładce <b>Trening</b> wybierz dyscyplinę w karcie „📍 Nagraj trening telefonem” i kliknij <b>START</b>. Aplikacja zapisuje trasę z GPS telefonu i na bieżąco pokazuje czas, dystans, tempo i mapę.</li>
+          <li><b>Ekran musi zostać włączony</b> i aplikacja musi być na wierzchu — gdy zgasisz ekran albo przełączysz się na inną aplikację, przeglądarka wstrzymuje GPS (na iPhonie od razu). Aplikacja sama nie pozwala ekranowi zgasnąć; telefon najlepiej trzymać w opasce na ramię albo w uchwycie na kierownicy. Jasność ekranu możesz zmniejszyć.</li>
+          <li><b>PAUZA</b> zatrzymuje liczenie czasu i dystansu, <b>ZAKOŃCZ</b> przenosi wynik do formularza — sprawdź dane i kliknij „ZAPISZ TRENING”. Trasa trafia do Historii (🗺 mapa i profil wysokości).</li>
+          <li>Nagranie zapisuje się na bieżąco w telefonie — jeśli aplikacja się zamknie, po ponownym otwarciu możesz je wznowić albo zakończyć.</li>
+          <li>Lokalizacja zostaje <b>tylko w Twoim telefonie</b> — nigdzie jej nie wysyłamy (chyba że sam udostępnisz trening w Aktywności).</li>
+          <li>Na basenie GPS nie działa — wpisz trening ręcznie.</li>
+        </ul>
+      </details>
       <details><summary>⌚ Import z zegarka (Garmin / Suunto / Polar)</summary>
         <ul>
           <li><b>Garmin Connect</b> (www): otwórz aktywność → ikona koła zębatego → „Eksportuj do GPX” lub „Eksportuj do TCX”.</li>
@@ -477,6 +514,33 @@ const TRANSLATIONS = {
     chartBtn: "SHOW PROGRESS CHART",
     exportBtn: "EXPORT TO CSV",
     importBtn: "IMPORT FROM GARMIN / SUUNTO / POLAR",
+    recTitle: "📍 Record with your phone",
+    recIntro: "No watch needed — the app records your route with the phone's GPS. Keep the screen on (the app won't let it sleep) and don't switch to other apps: in the background the browser pauses GPS.",
+    recStartBtn: "▶ START",
+    recPauseBtn: "⏸ PAUSE",
+    recResumeBtn: "▶ RESUME",
+    recFinishBtn: "■ FINISH",
+    recDiscardBtn: "Discard recording",
+    recTimeLbl: "Moving time",
+    recDistLbl: "Distance (km)",
+    recPaceLbl: "Avg pace",
+    recSpeedLbl: "Avg speed",
+    recGpsLbl: "GPS accuracy",
+    recWaitingGps: "Looking for GPS signal… (open sky works best)",
+    recGpsOk: "🟢 Recording — GPS OK",
+    recWeakGps: (m) => `🟠 Weak GPS signal (±${m} m) — waiting for a better one`,
+    recPausedStatus: "⏸ Paused — time and distance are not counted",
+    recDenied: "Location permission denied. Allow it for this site in your browser/phone settings (Android: padlock next to the address → Permissions → Location; iPhone: Settings → Privacy → Location Services → Safari).",
+    recUnavailable: "🔴 GPS unavailable — check that location is turned on",
+    recNoGeo: "This browser does not support GPS.",
+    recNoWakeLock: "This browser can't keep the screen on — set a longer screen timeout in your phone settings.",
+    recWasHidden: (min) => `⚠️ The app was in the background${min ? ` for about ${min} min` : ""} — GPS may have stopped; that part was joined with a straight line.`,
+    recRestored: "⚠️ Recording was interrupted (the app was closed). Tap RESUME to continue or FINISH.",
+    recConfirmFinish: "Finish recording?",
+    recTooShort: "The recorded route is too short (under 50 m). Discard it?",
+    recConfirmDiscard: "Discard the recording? The route will be deleted.",
+    recNote: "📍 Recorded with phone (GPS)",
+    recFinishedHint: (km, time) => `📍 Recorded ${km} km in ${time}. Check the data, add heart rate or a note and tap "SAVE TRAINING".`,
     importHint: "Export your training from Garmin Connect, Suunto app or Polar Flow as a GPX or TCX file, then load it here.",
     chartTitle: "Distance progress",
     historyTitle: "Training history",
@@ -716,6 +780,16 @@ const TRANSLATIONS = {
           <li>“CALCULATE PACE” shows pace per km (running), pace per 100 m (swimming) or speed in km/h (cycling, kayaking, hiking); “SHOW PROGRESS CHART” draws a distance chart.</li>
         </ul>
       </details>
+      <details><summary>📍 Recording with your phone (no watch)</summary>
+        <ul>
+          <li>In the <b>Training</b> tab choose a discipline in the "📍 Record with your phone" card and tap <b>START</b>. The app records your route with the phone's GPS and shows time, distance, pace and a live map.</li>
+          <li><b>Keep the screen on</b> with the app in front — if you lock the screen or switch apps, the browser pauses GPS (on iPhone immediately). The app keeps the screen from sleeping; an armband or a handlebar mount works best. You can lower the brightness.</li>
+          <li><b>PAUSE</b> stops counting time and distance, <b>FINISH</b> moves the result into the form — check it and tap "SAVE TRAINING". The route goes to History (🗺 map and elevation profile).</li>
+          <li>The recording is saved on the phone as you go — if the app closes, reopen it to resume or finish.</li>
+          <li>Your location stays <b>only on your phone</b> — we don't send it anywhere (unless you share a training in Activity yourself).</li>
+          <li>GPS doesn't work in a pool — enter those trainings manually.</li>
+        </ul>
+      </details>
       <details><summary>⌚ Import from your watch (Garmin / Suunto / Polar)</summary>
         <ul>
           <li><b>Garmin Connect</b> (web): open the activity → gear icon → “Export to GPX” or “Export to TCX”.</li>
@@ -904,6 +978,7 @@ function toggleLanguage() {
   refreshPrivacyText();
   refreshHelpText();
   redrawElevations();
+  recRender();
   renderChallenge(); // pasek z hasłami i reszta ekranu Wyzwania w nowym języku
   if (document.getElementById("tabActivity").classList.contains("active")) refreshActivityTab();
 }
@@ -971,6 +1046,7 @@ function showMainApp() {
   refreshSavedRoutesList();
   document.getElementById("date").valueAsDate = new Date();
   initCommunity();
+  if (rec) recInitMap();
 }
 
 function tryLogin() {
@@ -3759,6 +3835,342 @@ function importTrainingFile(file) {
   reader.readAsText(file);
 }
 
+// --- Nagrywanie treningu GPS-em telefonu (bez zegarka) ---
+// Punkty trasy zbierane przez navigator.geolocation.watchPosition. Ekran trzymany włączony
+// (Screen Wake Lock), bo przeglądarka wstrzymuje GPS, gdy aplikacja jest w tle.
+// Bieżące nagranie zapisywane w localStorage - zamknięcie aplikacji nie gubi trasy.
+const RECORDING_KEY = "pau_recording";
+const REC_DISCIPLINES = ["Bieg", "Rower", "Kajak", "WodyOtwarte", "Trekking"];
+const REC_MAX_ACCURACY_M = 35;   // gorsze odczyty pomijamy
+const REC_MIN_STEP_M = 5;        // drobniejsze ruchy to szum GPS
+const REC_GAP_S = 20;            // dłuższa przerwa = aplikacja była w tle / brak sygnału
+const REC_MAX_KMH = { Bieg: 30, Trekking: 15, Kajak: 20, WodyOtwarte: 10, Rower: 90 };
+const REC_SAVE_MS = 10000;
+
+let rec = null;            // { disc, startedAt, pausedMs, pausedAt, points: [[lat, lon, ele|null, t]], distKm, gaps }
+let recWatchId = null;
+let recTimer = null;
+let recWakeLock = null;
+let recLastSave = 0;
+let recRejects = 0;
+let recLastAccuracy = null;
+let recHiddenAt = null;
+let recMap = null;
+let recLine = null;
+let recDot = null;
+
+function recSave(force) {
+  if (!rec) return;
+  const now = Date.now();
+  if (!force && now - recLastSave < REC_SAVE_MS) return;
+  recLastSave = now;
+  try {
+    localStorage.setItem(RECORDING_KEY, JSON.stringify({ ...rec, savedAt: now }));
+  } catch (e) {
+    console.warn("Nie udało się zapisać nagrania", e);
+  }
+}
+
+function recLoad() {
+  try {
+    const data = JSON.parse(localStorage.getItem(RECORDING_KEY));
+    return data && Array.isArray(data.points) ? data : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function recMovingMs(now = Date.now()) {
+  if (!rec) return 0;
+  const paused = rec.pausedMs + (rec.pausedAt ? now - rec.pausedAt : 0);
+  return Math.max(0, now - rec.startedAt - paused);
+}
+
+function formatClock(ms) {
+  const s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  return `${h}:${String(m).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+}
+
+function recPaceText() {
+  const min = recMovingMs() / 60000;
+  if (!rec || rec.distKm < 0.05 || min <= 0) return "–";
+  if (SWIM_DISCIPLINES.includes(rec.disc)) return formatSwimPace(min / (rec.distKm * 10));
+  if (rec.disc === "Bieg") return formatPace(min / rec.distKm);
+  return `${(rec.distKm / (min / 60)).toFixed(1)} km/h`;
+}
+
+async function recRequestWakeLock() {
+  if (!("wakeLock" in navigator) || !rec || rec.pausedAt) return;
+  try {
+    recWakeLock = await navigator.wakeLock.request("screen");
+    recWakeLock.addEventListener("release", () => { recWakeLock = null; });
+  } catch (e) {
+    recWakeLock = null;
+  }
+}
+
+function recReleaseWakeLock() {
+  if (recWakeLock) recWakeLock.release().catch(() => {});
+  recWakeLock = null;
+}
+
+function recSetStatus(text, warn) {
+  const el = document.getElementById("recStatus");
+  el.textContent = text || "";
+  el.classList.toggle("rec-warn", Boolean(warn));
+}
+
+function recRender() {
+  const active = Boolean(rec);
+  document.getElementById("recIdle").hidden = active;
+  document.getElementById("recActive").hidden = !active;
+  if (!active) return;
+  const dict = t();
+  document.getElementById("recTime").textContent = formatClock(recMovingMs());
+  document.getElementById("recDist").textContent = rec.distKm.toFixed(2);
+  document.getElementById("recPace").textContent = recPaceText();
+  document.getElementById("recPaceLbl").textContent =
+    rec.disc === "Bieg" || SWIM_DISCIPLINES.includes(rec.disc) ? dict.recPaceLbl : dict.recSpeedLbl;
+  document.getElementById("recGps").textContent = recLastAccuracy == null ? "–" : `±${Math.round(recLastAccuracy)} m`;
+  document.getElementById("recDiscLbl").textContent = `📍 ${dict.discNames[rec.disc] || rec.disc}`;
+  document.getElementById("recPauseBtn").textContent = rec.pausedAt ? dict.recResumeBtn : dict.recPauseBtn;
+  document.getElementById("recCard").classList.toggle("rec-paused", Boolean(rec.pausedAt));
+}
+
+function recInitMap() {
+  if (typeof L === "undefined") return;
+  if (!recMap) {
+    recMap = L.map("recMap", { zoomControl: false, attributionControl: true });
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(recMap);
+    recLine = L.polyline([], { color: "#3D7A22", weight: 5 }).addTo(recMap);
+    recDot = L.circleMarker([52.07, 19.48], { radius: 8, color: "#fff", weight: 3, fillColor: "#D86C28", fillOpacity: 1 });
+    recMap.setView([52.07, 19.48], 6);
+  }
+  requestAnimationFrame(() => recMap.invalidateSize());
+  recUpdateMap(true);
+}
+
+function recUpdateMap(fit) {
+  if (!recMap || !rec) return;
+  const latlngs = rec.points.map((p) => [p[0], p[1]]);
+  recLine.setLatLngs(latlngs);
+  if (!latlngs.length) return;
+  const last = latlngs[latlngs.length - 1];
+  recDot.setLatLng(last);
+  if (!recMap.hasLayer(recDot)) recDot.addTo(recMap);
+  if (fit && latlngs.length > 1) recMap.fitBounds(recLine.getBounds(), { padding: [20, 20], maxZoom: 17 });
+  else recMap.setView(last, Math.max(recMap.getZoom(), 16));
+}
+
+function recOnPosition(pos) {
+  if (!rec) return;
+  const c = pos.coords;
+  recLastAccuracy = c.accuracy;
+  if (rec.pausedAt) { recRender(); return; }
+  if (c.accuracy > REC_MAX_ACCURACY_M) {
+    recSetStatus(t().recWeakGps(Math.round(c.accuracy)), true);
+    recRender();
+    return;
+  }
+  const ts = pos.timestamp || Date.now();
+  const ele = Number.isFinite(c.altitude) ? Math.round(c.altitude) : null;
+  const point = [+c.latitude.toFixed(6), +c.longitude.toFixed(6), ele, ts];
+  const last = rec.points[rec.points.length - 1];
+
+  if (!last || rec.resumed) {
+    // Pierwszy punkt albo pierwszy po pauzie: ruch w czasie pauzy się nie liczy.
+    rec.points.push(point);
+    rec.resumed = false;
+    recSetStatus(t().recGpsOk);
+  } else {
+    const d = haversineKm(last[0], last[1], point[0], point[1]);
+    const dt = Math.max(1, (ts - last[3]) / 1000);
+    const kmh = d / (dt / 3600);
+    const maxKmh = REC_MAX_KMH[rec.disc] || 60;
+    if (d * 1000 < REC_MIN_STEP_M) { recRender(); return; }
+    if (dt <= REC_GAP_S && kmh > maxKmh) {
+      // Skok GPS - pomijamy; po kilku z rzędu uznajemy nowe miejsce, ale bez doliczania dystansu.
+      recRejects++;
+      if (recRejects < 3) { recRender(); return; }
+      rec.points.push(point);
+    } else {
+      if (dt > REC_GAP_S) rec.gaps = (rec.gaps || 0) + 1;
+      if (kmh <= maxKmh) rec.distKm += d;
+      rec.points.push(point);
+    }
+    recRejects = 0;
+    recSetStatus(t().recGpsOk);
+  }
+  recSave(false);
+  recUpdateMap(false);
+  recRender();
+}
+
+function recOnError(err) {
+  const dict = t();
+  if (err.code === 1) {
+    recSetStatus(dict.recDenied, true);
+    alert(dict.recDenied);
+  } else if (err.code === 2) {
+    recSetStatus(dict.recUnavailable, true);
+  }
+  // kod 3 (timeout) - czekamy dalej
+}
+
+function recStartWatching() {
+  if (recWatchId != null) return;
+  recWatchId = navigator.geolocation.watchPosition(recOnPosition, recOnError, {
+    enableHighAccuracy: true,
+    maximumAge: 0,
+    timeout: 30000,
+  });
+  if (!recTimer) recTimer = setInterval(recRender, 1000);
+}
+
+function recStopWatching() {
+  if (recWatchId != null) navigator.geolocation.clearWatch(recWatchId);
+  recWatchId = null;
+  clearInterval(recTimer);
+  recTimer = null;
+}
+
+function startRecording() {
+  if (!("geolocation" in navigator)) {
+    alert(t().recNoGeo);
+    return;
+  }
+  if (rec) return;
+  rec = {
+    disc: document.getElementById("recDisc").value,
+    startedAt: Date.now(),
+    pausedMs: 0,
+    pausedAt: null,
+    points: [],
+    distKm: 0,
+    gaps: 0,
+  };
+  recRejects = 0;
+  recLastAccuracy = null;
+  recSave(true);
+  recRender();
+  recSetStatus(t().recWaitingGps);
+  recInitMap();
+  recStartWatching();
+  recRequestWakeLock();
+  if (!("wakeLock" in navigator)) recSetStatus(t().recNoWakeLock, true);
+}
+
+function toggleRecordingPause() {
+  if (!rec) return;
+  if (rec.pausedAt) {
+    rec.pausedMs += Date.now() - rec.pausedAt;
+    rec.pausedAt = null;
+    rec.resumed = true;
+    recStartWatching();
+    recRequestWakeLock();
+    recSetStatus(t().recWaitingGps);
+  } else {
+    rec.pausedAt = Date.now();
+    recReleaseWakeLock();
+    recSetStatus(t().recPausedStatus);
+  }
+  recSave(true);
+  recRender();
+}
+
+function recTrackForHistory() {
+  const track = rec.points.map((p) => (p[2] == null ? { lat: p[0], lon: p[1] } : { lat: p[0], lon: p[1], ele: p[2] }));
+  return downsampleRoute(simplifyTrack(track, 0.00002), 300);
+}
+
+function finishRecording() {
+  if (!rec) return;
+  const dict = t();
+  if (!confirm(dict.recConfirmFinish)) return;
+  if (rec.distKm < 0.05 || rec.points.length < 2) {
+    if (!confirm(dict.recTooShort)) return;
+    discardRecording(true);
+    return;
+  }
+  if (rec.pausedAt) { rec.pausedMs += Date.now() - rec.pausedAt; rec.pausedAt = null; }
+  const moving = recMovingMs();
+  const finished = rec;
+
+  document.getElementById("discipline").value = finished.disc;
+  updateDisciplineUi();
+  document.getElementById("date").value = toYmd(new Date(finished.startedAt));
+  document.getElementById("dist").value = finished.distKm.toFixed(2);
+  document.getElementById("time").value = (moving / 60000).toFixed(1);
+  const notes = document.getElementById("notes");
+  if (!notes.value.trim()) notes.value = dict.recNote;
+  pendingRoute = recTrackForHistory();
+  clearFieldState("dist");
+  clearFieldState("time");
+
+  discardRecording(true);
+  showTrainHint(dict.recFinishedHint(finished.distKm.toFixed(2), formatClock(moving)));
+  focusField("dist");
+}
+
+function discardRecording(skipConfirm) {
+  if (!rec) return;
+  if (!skipConfirm && !confirm(t().recConfirmDiscard)) return;
+  recStopWatching();
+  recReleaseWakeLock();
+  rec = null;
+  recLastAccuracy = null;
+  localStorage.removeItem(RECORDING_KEY);
+  recRender();
+}
+
+// Aplikacja w tle -> przeglądarka zwykle wstrzymuje GPS. Po powrocie mówimy o tym wprost.
+function recOnVisibilityChange() {
+  if (!rec) return;
+  if (document.visibilityState === "hidden") {
+    recHiddenAt = Date.now();
+    recSave(true);
+    return;
+  }
+  if (!rec.pausedAt) recRequestWakeLock();
+  if (recHiddenAt && Date.now() - recHiddenAt > REC_GAP_S * 1000) {
+    recSetStatus(t().recWasHidden(Math.round((Date.now() - recHiddenAt) / 60000)), true);
+  }
+  recHiddenAt = null;
+  recRender();
+}
+
+// Po zamknięciu/odświeżeniu aplikacji wracamy do nagrania jako wstrzymanego,
+// żeby czas, gdy aplikacja była zamknięta, nie liczył się jako ruch.
+function restoreRecording() {
+  const saved = recLoad();
+  if (!saved) return;
+  rec = saved;
+  if (!rec.pausedAt) rec.pausedAt = saved.savedAt || Date.now();
+  delete rec.savedAt;
+  recSave(true);
+  recRender();
+  recSetStatus(t().recRestored, true);
+}
+
+function initRecorder() {
+  const select = document.getElementById("recDisc");
+  const current = document.getElementById("discipline").value;
+  if (REC_DISCIPLINES.includes(current)) select.value = current;
+  document.getElementById("recStartBtn").addEventListener("click", startRecording);
+  document.getElementById("recPauseBtn").addEventListener("click", toggleRecordingPause);
+  document.getElementById("recFinishBtn").addEventListener("click", finishRecording);
+  document.getElementById("recDiscardBtn").addEventListener("click", () => discardRecording(false));
+  document.getElementById("tabTrainBtn").addEventListener("click", () => { if (rec) recInitMap(); });
+  document.addEventListener("visibilitychange", recOnVisibilityChange);
+  window.addEventListener("pagehide", () => recSave(true));
+  restoreRecording();
+}
+
 // --- Zmiana PIN-u ---
 function changePin() {
   const newPin = prompt(t().promptNewPin);
@@ -3858,6 +4270,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("themeBtn").addEventListener("click", toggleTheme);
   document.getElementById("pinChangeBtn").addEventListener("click", changePin);
   document.getElementById("langBtn").addEventListener("click", toggleLanguage);
+  initRecorder();
 
   // Sesja logowania trwa do zamknięcia karty przeglądarki (sessionStorage).
   // Dzięki temu nie trzeba podawać PIN-u za każdym odświeżeniem, ale po

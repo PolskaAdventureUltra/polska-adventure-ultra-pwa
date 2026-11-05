@@ -60,6 +60,38 @@
   </div>
 
   <div id="tabTrain" class="tab-content active">
+    <div class="card rec-card" id="recCard">
+      <h2 data-i18n="recTitle">📍 Nagraj trening telefonem</h2>
+      <div id="recIdle">
+        <p class="hint-text" data-i18n="recIntro"></p>
+        <label for="recDisc" data-i18n="labelDiscipline">Dyscyplina</label>
+        <select id="recDisc">
+          <option value="Bieg" data-i18n="optBieg">Bieg</option>
+          <option value="Rower" data-i18n="optRower">Rower</option>
+          <option value="Kajak" data-i18n="optKajak">Kajak</option>
+          <option value="WodyOtwarte" data-i18n="optWodyOtwarte">Pływanie – wody otwarte</option>
+          <option value="Trekking" data-i18n="optTrekking">Trekking</option>
+        </select>
+        <button class="primary rec-start" id="recStartBtn" data-i18n="recStartBtn">▶ START</button>
+      </div>
+      <div id="recActive" hidden>
+        <div class="rec-disc" id="recDiscLbl"></div>
+        <div class="rec-time" id="recTime" aria-live="off">0:00:00</div>
+        <div class="stats-grid rec-grid">
+          <div class="stat-tile"><div class="stat-value" id="recDist">0.00</div><div class="stat-label" data-i18n="recDistLbl">Dystans (km)</div></div>
+          <div class="stat-tile"><div class="stat-value" id="recPace">–</div><div class="stat-label" id="recPaceLbl">Śr. tempo</div></div>
+        </div>
+        <p class="rec-status" id="recStatus" role="status"></p>
+        <p class="hint-text"><span data-i18n="recGpsLbl">Dokładność GPS</span>: <b id="recGps">–</b></p>
+        <div id="recMap" class="rec-map"></div>
+        <div class="plan-actions">
+          <button id="recPauseBtn">⏸ PAUZA</button>
+          <button class="primary" id="recFinishBtn" data-i18n="recFinishBtn">■ ZAKOŃCZ</button>
+        </div>
+        <button class="link-btn" id="recDiscardBtn" data-i18n="recDiscardBtn">Odrzuć nagranie</button>
+      </div>
+    </div>
+
     <div class="card">
       <div class="form-hint" id="trainHint" role="status" hidden>
         <span id="trainHintText"></span>
