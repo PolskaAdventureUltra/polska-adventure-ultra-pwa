@@ -63,6 +63,7 @@
     <div class="train-modes train-modes-top" role="group">
       <button type="button" class="mode-tile" id="modePhoneBtn" aria-pressed="false" aria-controls="recCard"><span class="mode-ico" aria-hidden="true">📱</span><span class="mode-lbl" data-i18n="modePhone">Nagraj telefonem</span></button>
       <button type="button" class="mode-tile" id="modeWatchBtn" aria-pressed="false" aria-controls="watchCard"><span class="mode-ico" aria-hidden="true">⌚</span><span class="mode-lbl" data-i18n="modeWatch">Trening z zegarka</span></button>
+      <button type="button" class="mode-tile" id="modeManualBtn" aria-pressed="false" aria-controls="trainFormCard"><span class="mode-ico" aria-hidden="true">✏️</span><span class="mode-lbl" data-i18n="modeManual">Stwórz własny trening</span></button>
     </div>
 
     <div class="card rec-card" id="recCard" hidden>
@@ -113,7 +114,7 @@
       <input type="file" id="importFile" accept=".gpx,.tcx" style="display:none">
     </div>
 
-    <div class="card" id="trainFormCard">
+    <div class="card" id="trainFormCard" hidden>
       <div class="form-hint" id="trainHint" role="status" hidden>
         <span id="trainHintText"></span>
         <button type="button" class="form-hint-close" id="trainHintClose" aria-label="Zamknij">✕</button>
