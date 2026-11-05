@@ -60,7 +60,12 @@
   </div>
 
   <div id="tabTrain" class="tab-content active">
-    <div class="card rec-card" id="recCard">
+    <div class="train-modes train-modes-top" role="group">
+      <button type="button" class="mode-tile" id="modePhoneBtn" aria-pressed="false" aria-controls="recCard"><span class="mode-ico" aria-hidden="true">📱</span><span class="mode-lbl" data-i18n="modePhone">Nagraj telefonem</span></button>
+      <button type="button" class="mode-tile" id="modeWatchBtn" aria-pressed="false" aria-controls="watchCard"><span class="mode-ico" aria-hidden="true">⌚</span><span class="mode-lbl" data-i18n="modeWatch">Trening z zegarka</span></button>
+    </div>
+
+    <div class="card rec-card" id="recCard" hidden>
       <h2 data-i18n="recTitle">📍 Nagraj trening telefonem</h2>
       <div id="recIdle">
         <p class="hint-text" data-i18n="recIntro"></p>
@@ -92,7 +97,23 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" id="watchCard" hidden>
+      <h2 data-i18n="watchTitle">⌚ Trening z zegarka</h2>
+      <label for="watchBrand" data-i18n="watchBrandLbl">Twój zegarek / aplikacja</label>
+      <select id="watchBrand">
+        <option value="garmin">Garmin</option>
+        <option value="suunto">Suunto</option>
+        <option value="polar">Polar</option>
+        <option value="samsung">Samsung (Galaxy Watch)</option>
+        <option value="huawei">Huawei</option>
+        <option value="other" data-i18n="watchBrandOther">Strava / inny</option>
+      </select>
+      <ol class="watch-steps" id="watchSteps"></ol>
+      <button class="primary" id="importBtn" data-i18n="importBtn">📂 WCZYTAJ PLIK GPX / TCX</button>
+      <input type="file" id="importFile" accept=".gpx,.tcx" style="display:none">
+    </div>
+
+    <div class="card" id="trainFormCard">
       <div class="form-hint" id="trainHint" role="status" hidden>
         <span id="trainHintText"></span>
         <button type="button" class="form-hint-close" id="trainHintClose" aria-label="Zamknij">✕</button>
@@ -135,9 +156,6 @@
       <button id="paceBtn" data-i18n="paceBtn">OBLICZ TEMPO</button>
       <button id="chartBtn" data-i18n="chartBtn">POKAŻ WYKRES PROGRESU</button>
       <button id="exportBtn" data-i18n="exportBtn">EKSPORTUJ DO CSV</button>
-      <button id="importBtn" data-i18n="importBtn">IMPORTUJ Z ZEGARKA (GPX / TCX)</button>
-      <p class="hint-text" data-i18n="importHint">Wyeksportuj trening z Garmin Connect, Suunto app, Polar Flow, Samsung Health lub Huawei Health (albo Stravy) jako plik GPX lub TCX, a następnie wczytaj go tutaj. Instrukcje: Pomoc → Import z zegarka.</p>
-      <input type="file" id="importFile" accept=".gpx,.tcx" style="display:none">
     </div>
 
     <div class="card" id="chartCard" style="display:none">
