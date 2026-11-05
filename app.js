@@ -1074,7 +1074,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "67";
+const APP_BUILD = "68";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -4373,7 +4373,7 @@ async function recEnsureLocationPermission(ask = true) {
   } catch (e) {
     console.warn("Location permission", e);
     const code = (e && e.code) || "";
-    if (code === "OS-PLUG-GLOC-0007") { // usługi lokalizacji w telefonie wyłączone
+    if (recIsLocationOffError(e)) { // usługi lokalizacji w telefonie wyłączone
       recShowPermProblem(dict.recLocationOff, false);
       return false;
     }
@@ -4391,6 +4391,28 @@ async function recEnsureLocationPermission(ask = true) {
 }
 
 let recPermChecking = false;
+
+function recIsLocationOffError(e) {
+  return Boolean(e) && (e.code === "OS-PLUG-GLOC-0007" || /not enabled|disabled/i.test(e.message || ""));
+}
+
+// Gdy watcher działa, ale od 10 s nie ma odczytu: sprawdź, czy ktoś nie wyłączył lokalizacji
+// w trakcie (wtedy wtyczka tła nie zgłasza błędu, tylko milknie - apka „szukała sygnału” bez końca).
+let recHealthTimer = null;
+let recLocOffShown = false;
+async function recNativeHealthCheck() {
+  if (!rec || rec.pausedAt || recWatchId !== "native" || !recNativeWatch || recPermChecking) return;
+  if (recLastFixAt && Date.now() - recLastFixAt < 10000) return;
+  try {
+    await window.Capacitor.registerPlugin("Geolocation").checkPermissions();
+    if (recLocOffShown) { recLocOffShown = false; recSetStatus(t().recWaitingGps); }
+  } catch (e) {
+    if (recIsLocationOffError(e)) {
+      recLocOffShown = true;
+      recShowPermProblem(t().recLocationOff, false);
+    }
+  }
+}
 
 let recRetryTimer = null;
 let recPermDiag = ""; // kod nieoczekiwanego błędu wtyczki Geolocation - do diagnozy w statusie
@@ -4416,6 +4438,8 @@ async function recStartNativeWatch(ask = true) {
   }
   if (recWatchId !== "native" || recNativeWatch) return; // nagrywanie zatrzymane w trakcie pytania o zgodę
   if (rec && !rec.pausedAt) recSetStatus(dict.recWaitingGps + recPermDiag);
+  clearInterval(recHealthTimer);
+  recHealthTimer = setInterval(recNativeHealthCheck, 5000);
   const watch = getNativeGeo().addWatcher({
     backgroundTitle: dict.recNotifTitle,
     backgroundMessage: dict.recNotifText,
@@ -4437,12 +4461,15 @@ async function recStartNativeWatch(ask = true) {
       return;
     }
     recHideSettingsBtn();
+    recLocOffShown = false;
     if (!location) return;
     recOnPosition({
       coords: { latitude: location.latitude, longitude: location.longitude, accuracy: location.accuracy, altitude: location.altitude },
       timestamp: location.time || Date.now(),
     });
   });
+  recNativeWatch = watch;
+  watch.catch(() => { if (recNativeWatch === watch) recNativeWatch = null; });
 }
 
 // Wywoływane po powrocie do aplikacji (np. z ustawień): jeśli nagrywamy, a watcher nie działa - ponów.
@@ -4474,6 +4501,8 @@ function recStopWatching() {
   } else if (recWatchId != null) navigator.geolocation.clearWatch(recWatchId);
   recWatchId = null;
   clearTimeout(recRetryTimer);
+  clearInterval(recHealthTimer);
+  recLocOffShown = false;
   recHideSettingsBtn();
   clearInterval(recTimer);
   recTimer = null;
