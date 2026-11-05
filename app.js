@@ -58,7 +58,22 @@ const TRANSLATIONS = {
     paceBtn: "OBLICZ TEMPO",
     chartBtn: "POKAŻ WYKRES PROGRESU",
     exportBtn: "EKSPORTUJ DO CSV",
-    importBtn: "IMPORTUJ Z ZEGARKA (GPX / TCX)",
+    importBtn: "📂 WCZYTAJ PLIK GPX / TCX",
+    modePhone: "Nagraj telefonem",
+    modeWatch: "Trening z zegarka",
+    modeManual: "✏️ Wpisz trening ręcznie",
+    watchTitle: "⌚ Trening z zegarka",
+    watchBrandLbl: "Twój zegarek / aplikacja",
+    watchBrandOther: "Strava / inny",
+    watchSteps: {
+      garmin: ["Na stronie connect.garmin.com otwórz aktywność (aplikacja Garmin Connect w telefonie nie eksportuje plików — użyj przeglądarki).", "Ikona koła zębatego → „Eksportuj do GPX” lub „Eksportuj do TCX”."],
+      suunto: ["Suunto app: Dziennik → wybierz trening.", "⋮ / Udostępnij → Eksportuj → GPX."],
+      polar: ["Na stronie flow.polar.com otwórz trening.", "„Eksportuj sesję” → GPX lub TCX."],
+      samsung: ["Samsung Health w telefonie: otwórz trening z trasą GPS.", "⋮ → „Eksportuj do pliku GPX”. Opcja jest tylko przy treningach z GPS, a plik nie zawiera tętna."],
+      huawei: ["Huawei Health: otwórz trening → ⋮ / udostępnij → „Eksportuj trasę” → GPX lub TCX.", "Nie ma tej opcji? Połącz Huawei Health ze Stravą (Ja → Udostępnianie danych i autoryzacja → Strava) i pobierz plik ze Stravy (wybierz „Strava / inny”)."],
+      other: ["Zsynchronizuj zegarek ze Stravą, a potem na strava.com otwórz trening → ⋯ → „Eksportuj GPX”.", "Zadziała też każdy plik GPX lub TCX z innej aplikacji."],
+    },
+    watchStepLast: "Kliknij „Wczytaj plik”, wybierz pobrany plik, sprawdź dane i zapisz trening.",
     recTitle: "📍 Nagraj trening telefonem",
     recIntro: "Bez zegarka — aplikacja zapisze trasę z GPS w telefonie. Ekran musi zostać włączony (aplikacja go nie wygasi) i nie przełączaj się na inne aplikacje: w tle przeglądarka wstrzymuje GPS.",
     recStartBtn: "▶ START",
@@ -86,7 +101,6 @@ const TRANSLATIONS = {
     recConfirmDiscard: "Odrzucić nagranie? Trasa zostanie usunięta.",
     recNote: "📍 Nagrane telefonem (GPS)",
     recFinishedHint: (km, time) => `📍 Nagrano ${km} km w ${time}. Sprawdź dane, dopisz tętno czy notatkę i kliknij „ZAPISZ TRENING”.`,
-    importHint: "Wyeksportuj trening z Garmin Connect, Suunto app, Polar Flow, Samsung Health lub Huawei Health (albo Stravy) jako plik GPX lub TCX, a następnie wczytaj go tutaj. Instrukcje: Pomoc → Import z zegarka.",
     chartTitle: "Progres dystansu",
     historyTitle: "Historia treningów",
     themeBtn: "Zmień motyw",
@@ -344,7 +358,7 @@ const TRANSLATIONS = {
           <li><b>Samsung Health</b> (Galaxy Watch): w telefonie otwórz trening z trasą GPS → ⋮ → „Eksportuj do pliku GPX”. Opcja jest tylko przy treningach z GPS (np. bieg, rower, spacer), a plik nie zawiera tętna.</li>
           <li><b>Huawei Health</b> (Huawei Watch): otwórz trening → ikona udostępniania/⋮ → „Eksportuj trasę” → GPX lub TCX (zależnie od wersji aplikacji i zegarka). Jeśli tej opcji nie ma: połącz Huawei Health ze Stravą (Ja → Udostępnianie danych i autoryzacja → Strava), a potem na strava.com otwórz trening → ⋯ → „Eksportuj GPX”.</li>
           <li><b>Strava</b> (www): otwórz trening → ⋯ → „Eksportuj GPX” — działa dla każdego zegarka zsynchronizowanego ze Stravą.</li>
-          <li>W aplikacji kliknij „IMPORTUJ Z ZEGARKA (GPX / TCX)”, wybierz plik, sprawdź dane i kliknij „ZAPISZ TRENING”. Trasa zapisze się razem z treningiem.</li>
+          <li>W zakładce Trening kliknij kafelek „⌚ Trening z zegarka”, potem „WCZYTAJ PLIK GPX / TCX”, wybierz plik, sprawdź dane i kliknij „ZAPISZ TRENING”. Trasa zapisze się razem z treningiem.</li>
         </ul>
       </details>
       <details><summary>📋 Historia</summary>
@@ -517,7 +531,22 @@ const TRANSLATIONS = {
     paceBtn: "CALCULATE PACE",
     chartBtn: "SHOW PROGRESS CHART",
     exportBtn: "EXPORT TO CSV",
-    importBtn: "IMPORT FROM WATCH (GPX / TCX)",
+    importBtn: "📂 LOAD GPX / TCX FILE",
+    modePhone: "Record with phone",
+    modeWatch: "Training from watch",
+    modeManual: "✏️ Enter training manually",
+    watchTitle: "⌚ Training from your watch",
+    watchBrandLbl: "Your watch / app",
+    watchBrandOther: "Strava / other",
+    watchSteps: {
+      garmin: ["On connect.garmin.com open the activity (the Garmin Connect phone app can't export files — use a browser).", "Gear icon → “Export to GPX” or “Export to TCX”."],
+      suunto: ["Suunto app: Diary → choose the training.", "⋮ / Share → Export → GPX."],
+      polar: ["On flow.polar.com open the training.", "“Export session” → GPX or TCX."],
+      samsung: ["Samsung Health on your phone: open a workout with a GPS route.", "⋮ → “Export to GPX file”. Only available for GPS workouts; the file has no heart rate."],
+      huawei: ["Huawei Health: open the workout → ⋮ / share → “Export route” → GPX or TCX.", "No such option? Link Huawei Health with Strava (Me → Data sharing and authorization → Strava) and download the file from Strava (choose “Strava / other”)."],
+      other: ["Sync your watch with Strava, then on strava.com open the activity → ⋯ → “Export GPX”.", "Any GPX or TCX file from another app works too."],
+    },
+    watchStepLast: "Tap “Load file”, pick the downloaded file, check the data and save the training.",
     recTitle: "📍 Record with your phone",
     recIntro: "No watch needed — the app records your route with the phone's GPS. Keep the screen on (the app won't let it sleep) and don't switch to other apps: in the background the browser pauses GPS.",
     recStartBtn: "▶ START",
@@ -545,7 +574,6 @@ const TRANSLATIONS = {
     recConfirmDiscard: "Discard the recording? The route will be deleted.",
     recNote: "📍 Recorded with phone (GPS)",
     recFinishedHint: (km, time) => `📍 Recorded ${km} km in ${time}. Check the data, add heart rate or a note and tap "SAVE TRAINING".`,
-    importHint: "Export your training from Garmin Connect, Suunto app, Polar Flow, Samsung Health or Huawei Health (or Strava) as a GPX or TCX file, then load it here. How-to: Help → Import from your watch.",
     chartTitle: "Distance progress",
     historyTitle: "Training history",
     themeBtn: "Switch theme",
@@ -803,7 +831,7 @@ const TRANSLATIONS = {
           <li><b>Samsung Health</b> (Galaxy Watch): on the phone open a workout with a GPS route → ⋮ → “Export to GPX file”. Only available for GPS workouts (e.g. running, cycling, walking); the file has no heart rate.</li>
           <li><b>Huawei Health</b> (Huawei Watch): open the workout → share icon/⋮ → “Export route” → GPX or TCX (depends on app and watch version). If it's missing: link Huawei Health with Strava (Me → Data sharing and authorization → Strava), then on strava.com open the activity → ⋯ → “Export GPX”.</li>
           <li><b>Strava</b> (web): open the activity → ⋯ → “Export GPX” — works for any watch synced with Strava.</li>
-          <li>In the app tap “IMPORT FROM WATCH (GPX / TCX)”, choose the file, check the data and tap “SAVE TRAINING”. The route is saved with the training.</li>
+          <li>On the Training tab tap the “⌚ Training from watch” tile, then “LOAD GPX / TCX FILE”, choose the file, check the data and tap “SAVE TRAINING”. The route is saved with the training.</li>
         </ul>
       </details>
       <details><summary>📋 History</summary>
@@ -970,6 +998,7 @@ function applyLanguage() {
   });
   document.getElementById("langBtn").textContent = dict.langBtnTarget;
   updateDisciplineUi();
+  renderWatchSteps();
   document.getElementById("trainHintClose").setAttribute("aria-label", dict.hintCloseLabel);
   hideTrainHint();
   clearFieldState("dist");
@@ -1890,6 +1919,9 @@ function saveTraining() {
   document.getElementById("challengeFlag").checked = false;
   pendingRoute = null;
   pendingEventDone = null;
+  trainFormOpen = false;
+  trainMode = null; // po zapisie wracamy do kafelków
+  renderTrainMode();
 
   refreshTotalLabel();
   refreshHistoryList();
@@ -2986,6 +3018,8 @@ async function showEventResults(ev) {
 // Po „Zrobione” - formularz treningu z dyscypliną, datą i nazwą wydarzenia w notatkach.
 function openTrainingFromEvent(ev) {
   showTab("train");
+  trainFormOpen = true;
+  setTrainMode("manual", true);
   if (DISCIPLINES.includes(ev.disc)) document.getElementById("discipline").value = ev.disc;
   updateDisciplineUi();
   document.getElementById("date").value = toYmd(new Date(ev.starts_at));
@@ -3832,6 +3866,79 @@ function parseTcx(xml) {
   };
 }
 
+// --- Zakładka Trening: kafelki 📱 telefon / ⌚ zegarek / ✏️ ręcznie ---
+// Wybór nie jest zapamiętywany - za każdym razem można wybrać inaczej. Zapamiętujemy tylko markę zegarka.
+const WATCH_BRAND_KEY = "pau_watch_brand";
+const WATCH_BRANDS = ["garmin", "suunto", "polar", "samsung", "huawei", "other"];
+let trainMode = null;       // null | "phone" | "watch" | "manual"
+let trainFormOpen = false;  // formularz z danymi z importu / nagrania / „Zrobione” czeka na zapis
+
+function getWatchBrand() {
+  const b = localStorage.getItem(WATCH_BRAND_KEY);
+  return WATCH_BRANDS.includes(b) ? b : "garmin";
+}
+
+function renderWatchSteps() {
+  const dict = t();
+  const brand = getWatchBrand();
+  const select = document.getElementById("watchBrand");
+  if (!select) return;
+  select.value = brand;
+  const ol = document.getElementById("watchSteps");
+  ol.innerHTML = "";
+  [...dict.watchSteps[brand], dict.watchStepLast].forEach((text) => {
+    const li = document.createElement("li");
+    li.textContent = text;
+    ol.appendChild(li);
+  });
+}
+
+function renderTrainMode() {
+  const phone = trainMode === "phone" || Boolean(rec);
+  const watch = trainMode === "watch";
+  const form = trainMode === "manual" || trainFormOpen;
+  document.getElementById("recCard").hidden = !phone;
+  document.getElementById("watchCard").hidden = !watch;
+  document.getElementById("trainFormCard").hidden = !form;
+  [["modePhoneBtn", phone], ["modeWatchBtn", watch], ["modeManualBtn", form]].forEach(([id, on]) => {
+    const btn = document.getElementById(id);
+    btn.setAttribute("aria-pressed", String(on));
+    btn.classList.toggle("active", on);
+  });
+  if (phone && rec) recInitMap();
+}
+
+// Kliknięcie aktywnego kafelka go zwija. force = zawsze otwórz (np. po imporcie).
+function setTrainMode(mode, force) {
+  if (!force && trainMode === mode) {
+    trainMode = null;
+    if (mode === "manual") trainFormOpen = false;
+  } else {
+    trainMode = mode;
+  }
+  renderTrainMode();
+}
+
+// Formularz z wypełnionymi danymi - pokazujemy go zamiast kafelka, z którego dane przyszły.
+function openTrainForm() {
+  trainFormOpen = true;
+  setTrainMode("manual", true);
+  const card = document.getElementById("trainFormCard");
+  if (card.scrollIntoView) card.scrollIntoView({ block: "start", behavior: "smooth" });
+}
+
+function initTrainModes() {
+  document.getElementById("modePhoneBtn").addEventListener("click", () => setTrainMode("phone"));
+  document.getElementById("modeWatchBtn").addEventListener("click", () => setTrainMode("watch"));
+  document.getElementById("modeManualBtn").addEventListener("click", () => setTrainMode("manual"));
+  document.getElementById("watchBrand").addEventListener("change", (e) => {
+    localStorage.setItem(WATCH_BRAND_KEY, e.target.value);
+    renderWatchSteps();
+  });
+  renderWatchSteps();
+  renderTrainMode();
+}
+
 function importTrainingFile(file) {
   const reader = new FileReader();
   reader.onload = () => {
@@ -3851,6 +3958,7 @@ function importTrainingFile(file) {
       document.getElementById("discipline").value = parsed.disc;
       updateDisciplineUi();
       pendingRoute = parsed.route && parsed.route.length >= 2 ? parsed.route : null;
+      openTrainForm();
 
       alert(t().importSuccess(parsed));
     } catch (e) {
@@ -3949,6 +4057,7 @@ function recSetStatus(text, warn) {
 
 function recRender() {
   const active = Boolean(rec);
+  if (document.getElementById("trainFormCard")) renderTrainMode();
   document.getElementById("recIdle").hidden = active;
   document.getElementById("recActive").hidden = !active;
   if (!active) return;
@@ -4138,6 +4247,7 @@ function finishRecording() {
   clearFieldState("time");
 
   discardRecording(true);
+  openTrainForm();
   showTrainHint(dict.recFinishedHint(finished.distKm.toFixed(2), formatClock(moving)));
   focusField("dist");
 }
@@ -4296,6 +4406,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("pinChangeBtn").addEventListener("click", changePin);
   document.getElementById("langBtn").addEventListener("click", toggleLanguage);
   initRecorder();
+  initTrainModes();
 
   // Sesja logowania trwa do zamknięcia karty przeglądarki (sessionStorage).
   // Dzięki temu nie trzeba podawać PIN-u za każdym odświeżeniem, ale po
