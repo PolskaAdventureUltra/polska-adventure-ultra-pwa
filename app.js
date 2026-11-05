@@ -75,6 +75,10 @@ const TRANSLATIONS = {
     },
     watchStepLast: "Kliknij „Wczytaj plik”, wybierz pobrany plik, sprawdź dane i zapisz trening.",
     recTitle: "📍 Nagraj trening telefonem",
+    recIntroNative: "Bez zegarka — aplikacja zapisze trasę z GPS w telefonie, także przy zgaszonym ekranie i w tle (zobaczysz wtedy powiadomienie). Przy pierwszym starcie zezwól na lokalizację.",
+    recNotifTitle: "Polska Adventure Ultra — nagrywanie",
+    recNotifText: "Nagrywam trasę treningu. Zakończ w aplikacji.",
+    recNativeDenied: "Aplikacja nie ma zgody na lokalizację. Otworzyć ustawienia, żeby ją włączyć?",
     recIntro: "Bez zegarka — aplikacja zapisze trasę z GPS w telefonie. Ekran musi zostać włączony (aplikacja go nie wygasi) i nie przełączaj się na inne aplikacje: w tle przeglądarka wstrzymuje GPS.",
     recStartBtn: "▶ START",
     recPauseBtn: "⏸ PAUZA",
@@ -563,6 +567,10 @@ const TRANSLATIONS = {
     },
     watchStepLast: "Tap “Load file”, pick the downloaded file, check the data and save the training.",
     recTitle: "📍 Record with your phone",
+    recIntroNative: "No watch needed — the app records your route with the phone's GPS, also with the screen off and in the background (you'll see a notification). Allow location on first start.",
+    recNotifTitle: "Polska Adventure Ultra — recording",
+    recNotifText: "Recording your training route. Finish it in the app.",
+    recNativeDenied: "The app has no location permission. Open settings to allow it?",
     recIntro: "No watch needed — the app records your route with the phone's GPS. Keep the screen on (the app won't let it sleep) and don't switch to other apps: in the background the browser pauses GPS.",
     recStartBtn: "▶ START",
     recPauseBtn: "⏸ PAUSE",
@@ -1031,6 +1039,7 @@ function applyLanguage() {
   renderWatchSteps();
   document.getElementById("trainHintClose").setAttribute("aria-label", dict.hintCloseLabel);
   document.getElementById("headerThemeBtn").setAttribute("aria-label", dict.themeBtn);
+  if (isNativeApp()) document.querySelector('[data-i18n="recIntro"]').textContent = dict.recIntroNative;
   document.getElementById("samsungHintText").textContent = dict.samsungHintText;
   document.getElementById("samsungHintClose").setAttribute("aria-label", dict.hintCloseLabel);
   hideTrainHint();
@@ -1057,7 +1066,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "63";
+const APP_BUILD = "64";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -1072,6 +1081,7 @@ window.PAU_APP_BUILD = APP_BUILD;
 // --- Rejestracja Service Workera (offline) ---
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
+    if (isNativeApp()) return; // natywna aplikacja ma pliki w sobie - bez service workera
     navigator.serviceWorker.register("service-worker.js").catch((e) => console.warn("SW error", e));
   });
   // Nowa wersja przejęła stronę w trakcie wczytywania -> strona mogła dostać pliki z dwóch różnych wersji
@@ -4301,8 +4311,55 @@ function recOnError(err) {
   // kod 3 (timeout) - czekamy dalej
 }
 
+// --- Natywna aplikacja Android (Capacitor) ---
+// W natywnej aplikacji GPS idzie przez wtyczkę BackgroundGeolocation (usługa z powiadomieniem),
+// więc nagrywanie działa też przy zgaszonym ekranie i w tle. W przeglądarce - zwykłe watchPosition.
+function isNativeApp() {
+  return Boolean(window.Capacitor && typeof window.Capacitor.isNativePlatform === "function" && window.Capacitor.isNativePlatform());
+}
+
+let nativeGeo = null;
+let recNativeWatch = null; // Promise z id watchera wtyczki
+
+function getNativeGeo() {
+  if (!nativeGeo && isNativeApp()) nativeGeo = window.Capacitor.registerPlugin("BackgroundGeolocation");
+  return nativeGeo;
+}
+
+function recStartNativeWatch() {
+  const dict = t();
+  recWatchId = "native";
+  recNativeWatch = getNativeGeo().addWatcher({
+    backgroundTitle: dict.recNotifTitle,
+    backgroundMessage: dict.recNotifText,
+    requestPermissions: true,
+    stale: false,
+    distanceFilter: 0,
+  }, (location, error) => {
+    if (error) {
+      if (error.code === "NOT_AUTHORIZED") {
+        recSetStatus(dict.recDenied, true);
+        if (confirm(dict.recNativeDenied)) getNativeGeo().openSettings();
+      } else {
+        recSetStatus(dict.recUnavailable, true);
+      }
+      return;
+    }
+    if (!location) return;
+    recOnPosition({
+      coords: { latitude: location.latitude, longitude: location.longitude, accuracy: location.accuracy, altitude: location.altitude },
+      timestamp: location.time || Date.now(),
+    });
+  });
+}
+
 function recStartWatching() {
   if (recWatchId != null) return;
+  if (isNativeApp()) {
+    recStartNativeWatch();
+    if (!recTimer) recTimer = setInterval(recRender, 1000);
+    return;
+  }
   recWatchId = navigator.geolocation.watchPosition(recOnPosition, recOnError, {
     enableHighAccuracy: true,
     maximumAge: 0,
@@ -4312,7 +4369,11 @@ function recStartWatching() {
 }
 
 function recStopWatching() {
-  if (recWatchId != null) navigator.geolocation.clearWatch(recWatchId);
+  if (recWatchId === "native") {
+    const watch = recNativeWatch;
+    recNativeWatch = null;
+    if (watch) watch.then((id) => getNativeGeo().removeWatcher({ id })).catch(() => {});
+  } else if (recWatchId != null) navigator.geolocation.clearWatch(recWatchId);
   recWatchId = null;
   clearInterval(recTimer);
   recTimer = null;
@@ -4341,7 +4402,7 @@ function startRecording() {
   recInitMap();
   recStartWatching();
   recRequestWakeLock();
-  if (!("wakeLock" in navigator)) recSetStatus(t().recNoWakeLock, true);
+  if (!("wakeLock" in navigator) && !isNativeApp()) recSetStatus(t().recNoWakeLock, true);
 }
 
 function toggleRecordingPause() {

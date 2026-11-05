@@ -1,0 +1,9 @@
+{
+  "appId": "pl.polskaadventureultra.app",
+  "appName": "Polska Adventure Ultra",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false,
+    "useLegacyBridge": true
+  }
+}
