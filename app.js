@@ -61,6 +61,7 @@ const TRANSLATIONS = {
     importBtn: "📂 WCZYTAJ PLIK GPX / TCX",
     modePhone: "Nagraj telefonem",
     modeWatch: "Trening z zegarka",
+    modeManual: "Stwórz własny trening",
     watchTitle: "⌚ Trening z zegarka",
     watchBrandLbl: "Twój zegarek / aplikacja",
     watchBrandOther: "Strava / inny",
@@ -533,6 +534,7 @@ const TRANSLATIONS = {
     importBtn: "📂 LOAD GPX / TCX FILE",
     modePhone: "Record with phone",
     modeWatch: "Training from watch",
+    modeManual: "Create your own training",
     watchTitle: "⌚ Training from your watch",
     watchBrandLbl: "Your watch / app",
     watchBrandOther: "Strava / other",
@@ -1917,6 +1919,9 @@ function saveTraining() {
   document.getElementById("challengeFlag").checked = false;
   pendingRoute = null;
   pendingEventDone = null;
+  trainFormOpen = false;
+  trainMode = null; // po zapisie wracamy do kafelków
+  renderTrainMode();
 
   refreshTotalLabel();
   refreshHistoryList();
@@ -3013,6 +3018,9 @@ async function showEventResults(ev) {
 // Po „Zrobione” - formularz treningu z dyscypliną, datą i nazwą wydarzenia w notatkach.
 function openTrainingFromEvent(ev) {
   showTab("train");
+  trainFormOpen = true;
+  trainMode = "manual";
+  renderTrainMode();
   if (DISCIPLINES.includes(ev.disc)) document.getElementById("discipline").value = ev.disc;
   updateDisciplineUi();
   document.getElementById("date").value = toYmd(new Date(ev.starts_at));
@@ -3859,11 +3867,12 @@ function parseTcx(xml) {
   };
 }
 
-// --- Zakładka Trening: kafelki 📱 telefon / ⌚ zegarek nad formularzem (formularz zawsze widoczny) ---
+// --- Zakładka Trening: kafelki 📱 telefon / ⌚ zegarek / ✏️ własny trening (formularz) ---
 // Wybór nie jest zapamiętywany - za każdym razem można wybrać inaczej. Zapamiętujemy tylko markę zegarka.
 const WATCH_BRAND_KEY = "pau_watch_brand";
 const WATCH_BRANDS = ["garmin", "suunto", "polar", "samsung", "huawei", "other"];
-let trainMode = null;       // null | "phone" | "watch"
+let trainMode = null;       // null | "phone" | "watch" | "manual"
+let trainFormOpen = false;  // formularz z danymi z importu / nagrania / „Zrobione” czeka na zapis
 
 function getWatchBrand() {
   const b = localStorage.getItem(WATCH_BRAND_KEY);
@@ -3888,9 +3897,11 @@ function renderWatchSteps() {
 function renderTrainMode() {
   const phone = trainMode === "phone" || Boolean(rec);
   const watch = trainMode === "watch";
+  const form = trainMode === "manual" || trainFormOpen;
   document.getElementById("recCard").hidden = !phone;
   document.getElementById("watchCard").hidden = !watch;
-  [["modePhoneBtn", phone], ["modeWatchBtn", watch]].forEach(([id, on]) => {
+  document.getElementById("trainFormCard").hidden = !form;
+  [["modePhoneBtn", phone], ["modeWatchBtn", watch], ["modeManualBtn", form]].forEach(([id, on]) => {
     const btn = document.getElementById(id);
     btn.setAttribute("aria-pressed", String(on));
     btn.classList.toggle("active", on);
@@ -3900,13 +3911,16 @@ function renderTrainMode() {
 
 // Kliknięcie aktywnego kafelka go zwija.
 function setTrainMode(mode) {
-  trainMode = trainMode === mode ? null : mode;
+  const closing = trainMode === mode || (mode === "manual" && trainFormOpen && trainMode !== "manual");
+  if (mode === "manual" && closing) trainFormOpen = false;
+  trainMode = closing ? null : mode;
   renderTrainMode();
 }
 
-// Dane z importu / nagrania są już w formularzu - zwijamy kafelek i przewijamy do formularza.
+// Dane z importu / nagrania / „Zrobione” są już w formularzu - pokazujemy go i przewijamy do niego.
 function openTrainForm() {
-  trainMode = null;
+  trainFormOpen = true;
+  trainMode = "manual";
   renderTrainMode();
   const card = document.getElementById("trainFormCard");
   if (card.scrollIntoView) card.scrollIntoView({ block: "start", behavior: "smooth" });
@@ -3915,6 +3929,7 @@ function openTrainForm() {
 function initTrainModes() {
   document.getElementById("modePhoneBtn").addEventListener("click", () => setTrainMode("phone"));
   document.getElementById("modeWatchBtn").addEventListener("click", () => setTrainMode("watch"));
+  document.getElementById("modeManualBtn").addEventListener("click", () => setTrainMode("manual"));
   document.getElementById("watchBrand").addEventListener("change", (e) => {
     localStorage.setItem(WATCH_BRAND_KEY, e.target.value);
     renderWatchSteps();
