@@ -78,7 +78,10 @@ const TRANSLATIONS = {
     recIntroNative: "Bez zegarka — aplikacja zapisze trasę z GPS w telefonie, także przy zgaszonym ekranie i w tle (zobaczysz wtedy powiadomienie). Przy pierwszym starcie zezwól na lokalizację.",
     recNotifTitle: "Polska Adventure Ultra — nagrywanie",
     recNotifText: "Nagrywam trasę treningu. Zakończ w aplikacji.",
-    recNativeDenied: "Aplikacja nie ma zgody na lokalizację. Otworzyć ustawienia, żeby ją włączyć?",
+    recNoLocationPerm: "🔴 Aplikacja nie ma zgody na lokalizację. Kliknij „Otwórz ustawienia” → Uprawnienia → Lokalizacja → „Zezwalaj tylko podczas używania aplikacji” i włącz „Używaj dokładnej lokalizacji”. Potem wróć tutaj — nagrywanie ruszy samo.",
+    recApproxOnly: "🟠 Aplikacja ma tylko przybliżoną lokalizację (±kilka km) — tak nie da się nagrać trasy. Kliknij „Otwórz ustawienia” → Uprawnienia → Lokalizacja i włącz „Używaj dokładnej lokalizacji”. Potem wróć tutaj.",
+    recLocationOff: "🔴 Lokalizacja w telefonie jest wyłączona. Rozwiń górny pasek, włącz „Lokalizacja” i wróć tutaj — nagrywanie ruszy samo.",
+    recOpenSettings: "⚙ Otwórz ustawienia",
     recIntro: "Bez zegarka — aplikacja zapisze trasę z GPS w telefonie. Ekran musi zostać włączony (aplikacja go nie wygasi) i nie przełączaj się na inne aplikacje: w tle przeglądarka wstrzymuje GPS.",
     recStartBtn: "▶ START",
     recPauseBtn: "⏸ PAUZA",
@@ -359,6 +362,7 @@ const TRANSLATIONS = {
           <li>Nagranie zapisuje się na bieżąco w telefonie — jeśli aplikacja się zamknie, po ponownym otwarciu możesz je wznowić albo zakończyć.</li>
           <li>Lokalizacja zostaje <b>tylko w Twoim telefonie</b> — nigdzie jej nie wysyłamy (chyba że sam udostępnisz trening w Aktywności).</li>
           <li>Na basenie GPS nie działa — wpisz trening ręcznie.</li>
+          <li><b>Aplikacja na Androida</b> (z instalatora / Google Play): przy pierwszym nagrywaniu zezwól na lokalizację i wybierz <b>„Dokładna”</b>. Jeśli GPS nie łapie: Ustawienia telefonu → Aplikacje → Polska Adventure Ultra → Uprawnienia → Lokalizacja → „Zezwalaj tylko podczas używania aplikacji” + włącz „Używaj dokładnej lokalizacji”. Zgoda przeglądarki (Chrome) i aplikacji to dwie osobne zgody.</li>
         </ul>
       </details>
       <details><summary>🛠 Nie mogę się zalogować</summary>
@@ -570,7 +574,10 @@ const TRANSLATIONS = {
     recIntroNative: "No watch needed — the app records your route with the phone's GPS, also with the screen off and in the background (you'll see a notification). Allow location on first start.",
     recNotifTitle: "Polska Adventure Ultra — recording",
     recNotifText: "Recording your training route. Finish it in the app.",
-    recNativeDenied: "The app has no location permission. Open settings to allow it?",
+    recNoLocationPerm: "🔴 The app has no location permission. Tap “Open settings” → Permissions → Location → “Allow only while using the app” and turn on “Use precise location”. Then come back — recording starts by itself.",
+    recApproxOnly: "🟠 The app only has approximate location (±a few km) — a route can't be recorded that way. Tap “Open settings” → Permissions → Location and turn on “Use precise location”. Then come back.",
+    recLocationOff: "🔴 Location is turned off on your phone. Pull down the top bar, turn on “Location” and come back — recording starts by itself.",
+    recOpenSettings: "⚙ Open settings",
     recIntro: "No watch needed — the app records your route with the phone's GPS. Keep the screen on (the app won't let it sleep) and don't switch to other apps: in the background the browser pauses GPS.",
     recStartBtn: "▶ START",
     recPauseBtn: "⏸ PAUSE",
@@ -851,6 +858,7 @@ const TRANSLATIONS = {
           <li>The recording is saved on the phone as you go — if the app closes, reopen it to resume or finish.</li>
           <li>Your location stays <b>only on your phone</b> — we don't send it anywhere (unless you share a training in Activity yourself).</li>
           <li>GPS doesn't work in a pool — enter those trainings manually.</li>
+          <li><b>Android app</b> (installer / Google Play): on the first recording allow location and choose <b>“Precise”</b>. If GPS doesn't work: phone Settings → Apps → Polska Adventure Ultra → Permissions → Location → “Allow only while using the app” + turn on “Use precise location”. The browser (Chrome) permission and the app permission are two separate permissions.</li>
         </ul>
       </details>
       <details><summary>🛠 I can't log in</summary>
@@ -1066,7 +1074,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "65";
+const APP_BUILD = "66";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -4338,12 +4346,61 @@ async function recEnsureNotificationPermission() {
   }
 }
 
+// Problem ze zgodą/lokalizacją: komunikat + (opcjonalnie) przycisk do ustawień aplikacji.
+// Po powrocie z ustawień (visibilitychange) recRetryNativeWatch() próbuje jeszcze raz.
+function recShowPermProblem(text, withSettings) {
+  recSetStatus(text, true);
+  const btn = document.getElementById("recSettingsBtn");
+  if (btn) btn.hidden = !withSettings;
+}
+
+function recHideSettingsBtn() {
+  const btn = document.getElementById("recSettingsBtn");
+  if (btn) btn.hidden = true;
+}
+
+// Najpierw jawnie pytamy o lokalizację (wtyczka Geolocation zwraca, czy zgoda jest dokładna
+// czy tylko przybliżona). Wcześniej prośba szła dopiero z wtyczki tła, zaraz po prośbie
+// o powiadomienia, i potrafiła przepaść bez śladu - apka czekała na GPS bez zgody.
+async function recEnsureLocationPermission() {
+  const dict = t();
+  let st;
+  try {
+    const geo = window.Capacitor.registerPlugin("Geolocation");
+    st = await geo.checkPermissions();
+    if (st.location !== "granted") st = await geo.requestPermissions({ permissions: ["location", "coarseLocation"] });
+  } catch (e) {
+    if (e && e.code === "UNIMPLEMENTED") return true; // stara wersja bez wtyczki - zgodę obsłuży wtyczka tła
+    console.warn("Location permission", e);
+    recShowPermProblem(dict.recLocationOff, false); // Android rzuca, gdy lokalizacja w telefonie jest wyłączona
+    return false;
+  }
+  if (st && st.location === "granted") {
+    recHideSettingsBtn();
+    return true;
+  }
+  recShowPermProblem(st && st.coarseLocation === "granted" ? dict.recApproxOnly : dict.recNoLocationPerm, true);
+  return false;
+}
+
+let recPermChecking = false;
+
 async function recStartNativeWatch() {
   const dict = t();
   recWatchId = "native";
-  await recEnsureNotificationPermission();
+  if (recPermChecking) return;
+  recPermChecking = true;
+  let ok = false;
+  try {
+    ok = await recEnsureLocationPermission();
+    if (ok) await recEnsureNotificationPermission();
+  } finally {
+    recPermChecking = false;
+  }
+  if (!ok) return; // czekamy - recRetryNativeWatch() po powrocie z ustawień
   if (recWatchId !== "native" || recNativeWatch) return; // nagrywanie zatrzymane w trakcie pytania o zgodę
-  recNativeWatch = getNativeGeo().addWatcher({
+  if (rec && !rec.pausedAt) recSetStatus(dict.recWaitingGps);
+  const watch = getNativeGeo().addWatcher({
     backgroundTitle: dict.recNotifTitle,
     backgroundMessage: dict.recNotifText,
     requestPermissions: true,
@@ -4351,20 +4408,27 @@ async function recStartNativeWatch() {
     distanceFilter: 0,
   }, (location, error) => {
     if (error) {
+      if (recNativeWatch === watch) recNativeWatch = null; // pozwól ponowić po powrocie z ustawień
       if (error.code === "NOT_AUTHORIZED") {
-        recSetStatus(dict.recDenied, true);
-        if (confirm(dict.recNativeDenied)) getNativeGeo().openSettings();
+        recEnsureLocationPermission(); // pokaże właściwy komunikat (brak zgody / przybliżona / wyłączona)
       } else {
         recSetStatus(dict.recUnavailable, true);
       }
       return;
     }
+    recHideSettingsBtn();
     if (!location) return;
     recOnPosition({
       coords: { latitude: location.latitude, longitude: location.longitude, accuracy: location.accuracy, altitude: location.altitude },
       timestamp: location.time || Date.now(),
     });
   });
+}
+
+// Wywoływane po powrocie do aplikacji (np. z ustawień): jeśli nagrywamy, a watcher nie działa - ponów.
+function recRetryNativeWatch() {
+  if (!rec || rec.pausedAt || recWatchId !== "native" || recNativeWatch || recPermChecking) return;
+  recStartNativeWatch();
 }
 
 function recStartWatching() {
@@ -4389,6 +4453,7 @@ function recStopWatching() {
     if (watch) watch.then((id) => getNativeGeo().removeWatcher({ id })).catch(() => {});
   } else if (recWatchId != null) navigator.geolocation.clearWatch(recWatchId);
   recWatchId = null;
+  recHideSettingsBtn();
   clearInterval(recTimer);
   recTimer = null;
 }
@@ -4493,6 +4558,7 @@ function recOnVisibilityChange() {
     return;
   }
   if (!rec.pausedAt) recRequestWakeLock();
+  if (isNativeApp()) recRetryNativeWatch();
   const now = Date.now();
   if (recHiddenAt && !rec.pausedAt && now - recHiddenAt > REC_GAP_S * 1000) {
     // Czy GPS odpowiadał, gdy ekran był zgaszony? Liczymy najdłuższą przerwę między odczytami.
@@ -4527,6 +4593,9 @@ function initRecorder() {
   document.getElementById("recPauseBtn").addEventListener("click", toggleRecordingPause);
   document.getElementById("recFinishBtn").addEventListener("click", finishRecording);
   document.getElementById("recDiscardBtn").addEventListener("click", () => discardRecording(false));
+  document.getElementById("recSettingsBtn").addEventListener("click", () => {
+    try { getNativeGeo().openSettings(); } catch (e) { console.warn("openSettings", e); }
+  });
   document.getElementById("tabTrainBtn").addEventListener("click", () => { if (rec) recInitMap(); });
   document.addEventListener("visibilitychange", recOnVisibilityChange);
   window.addEventListener("pagehide", () => recSave(true));
