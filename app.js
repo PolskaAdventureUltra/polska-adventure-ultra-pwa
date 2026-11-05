@@ -1078,7 +1078,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "69";
+const APP_BUILD = "70";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -4338,15 +4338,38 @@ function getNativeGeo() {
   return nativeGeo;
 }
 
+// Wywołanie wtyczki z limitem czasu - zawieszone wywołanie nie może zablokować nagrywania.
+function recWithTimeout(promise, ms, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(Object.assign(new Error(label + " timeout"), { code: "TIMEOUT" })), ms)),
+  ]);
+}
+
+// Diagnostyka natywnej apki: szara linijka pod statusem (ostatnie kroki: zgoda, watcher, odczyty).
+const recDiagLog = [];
+function recDiag(msg) {
+  if (!isNativeApp()) return;
+  const time = new Date().toTimeString().slice(0, 8);
+  recDiagLog.push(time + " " + msg);
+  while (recDiagLog.length > 4) recDiagLog.shift();
+  const el = document.getElementById("recDiag");
+  if (el) { el.hidden = false; el.textContent = recDiagLog.join(" · "); }
+}
+function recErrText(e) {
+  return ((e && e.code) || "") + " " + ((e && e.message) || String(e)).slice(0, 60);
+}
+
 // Android 13+: bez zgody na powiadomienia powiadomienie „Nagrywanie trasy” jest niewidoczne
 // (GPS działa, ale użytkownik nie widzi, że nagrywanie trwa). Pytamy raz, przy pierwszym starcie nagrywania.
 async function recEnsureNotificationPermission() {
   try {
     const notif = window.Capacitor.registerPlugin("LocalNotifications");
-    const status = await notif.checkPermissions();
-    if (status && status.display === "prompt") await notif.requestPermissions();
+    const status = await recWithTimeout(notif.checkPermissions(), 5000, "notif.check");
+    if (status && status.display === "prompt") await recWithTimeout(notif.requestPermissions(), 60000, "notif.req");
   } catch (e) {
     console.warn("Notification permission", e);
+    recDiag("notif: " + recErrText(e));
   }
 }
 
@@ -4385,9 +4408,11 @@ async function recOnPermAction() {
   // getCurrentPosition wtyczki Geolocation przy wyłączonej lokalizacji pokazuje systemowe
   // okienko Google „Włączyć lokalizację?” (OK = włącza bez wychodzenia z aplikacji).
   try {
-    await window.Capacitor.registerPlugin("Geolocation").getCurrentPosition({ enableHighAccuracy: true, timeout: 15000 });
+    await recWithTimeout(window.Capacitor.registerPlugin("Geolocation").getCurrentPosition({ enableHighAccuracy: true, timeout: 15000 }), 60000, "geo.enable");
+    recDiag("enable: ok");
   } catch (e) {
     console.warn("enable location", e);
+    recDiag("enable: " + recErrText(e));
     const code = (e && e.code) || "";
     if (code === "OS-PLUG-GLOC-0009") return; // użytkownik kliknął „Nie” - komunikat zostaje
     if (code === "OS-PLUG-GLOC-0010" || code === "OS-PLUG-GLOC-0002") { /* włączona, tylko brak fixa - OK */ }
@@ -4411,10 +4436,15 @@ async function recEnsureLocationPermission(ask = true) {
   let st;
   try {
     const geo = window.Capacitor.registerPlugin("Geolocation");
-    st = await geo.checkPermissions();
-    if (ask && st.location !== "granted") st = await geo.requestPermissions({ permissions: ["location", "coarseLocation"] });
+    st = await recWithTimeout(geo.checkPermissions(), 5000, "geo.check");
+    recDiag("check: " + (st && st.location) + "/" + (st && st.coarseLocation));
+    if (ask && st.location !== "granted") {
+      st = await recWithTimeout(geo.requestPermissions({ permissions: ["location", "coarseLocation"] }), 60000, "geo.req");
+      recDiag("req: " + (st && st.location) + "/" + (st && st.coarseLocation));
+    }
   } catch (e) {
     console.warn("Location permission", e);
+    recDiag("check: " + recErrText(e));
     const code = (e && e.code) || "";
     if (recIsLocationOffError(e)) { // usługi lokalizacji w telefonie wyłączone
       recShowPermProblem(dict.recLocationOff, "location");
@@ -4447,9 +4477,10 @@ async function recNativeHealthCheck() {
   if (!rec || rec.pausedAt || recWatchId !== "native" || !recNativeWatch || recPermChecking) return;
   if (recLastFixAt && Date.now() - recLastFixAt < 10000) return;
   try {
-    await window.Capacitor.registerPlugin("Geolocation").checkPermissions();
+    await recWithTimeout(window.Capacitor.registerPlugin("Geolocation").checkPermissions(), 5000, "geo.health");
     if (recLocOffShown) { recLocOffShown = false; recHideSettingsBtn(); recSetStatus(t().recWaitingGps); }
   } catch (e) {
+    recDiag("health: " + recErrText(e));
     if (recIsLocationOffError(e)) {
       recLocOffShown = true;
       recShowPermProblem(t().recLocationOff, "location");
@@ -4472,6 +4503,7 @@ async function recStartNativeWatch(ask = true) {
   } finally {
     recPermChecking = false;
   }
+  recDiag("perm ok=" + ok);
   if (!ok) {
     // Czekamy, aż użytkownik włączy lokalizację/zgodę. Rozwinięcie górnego paska nie zmienia
     // widoczności strony, więc oprócz visibilitychange sprawdzamy co 3 s (bez pytania o zgodę).
@@ -4491,8 +4523,13 @@ async function recStartNativeWatch(ask = true) {
     distanceFilter: 0,
   }, (location, error) => {
     if (error) {
+      recDiag("watch: " + recErrText(error));
       if (recNativeWatch === watch) recNativeWatch = null; // pozwól ponowić po powrocie z ustawień
-      if (error.code === "NOT_AUTHORIZED") {
+      if (recIsLocationOffError(error)) { // wtyczka tła: „Location services disabled.”
+        recShowPermProblem(dict.recLocationOff, "location");
+        clearTimeout(recRetryTimer);
+        recRetryTimer = setTimeout(recRetryNativeWatch, 3000);
+      } else if (error.code === "NOT_AUTHORIZED") {
         recEnsureLocationPermission(false).then((ok) => { // pokaże właściwy komunikat (brak zgody / przybliżona / wyłączona)
           if (ok) recShowPermProblem(dict.recNoLocationPerm, "settings"); // wtyczka tła i tak odmawia
           clearTimeout(recRetryTimer);
@@ -4506,13 +4543,18 @@ async function recStartNativeWatch(ask = true) {
     recHideSettingsBtn();
     recLocOffShown = false;
     if (!location) return;
+    if (!recLastFixAt || Date.now() - recLastFixAt > 10000) recDiag("fix ±" + Math.round(location.accuracy) + " m");
     recOnPosition({
       coords: { latitude: location.latitude, longitude: location.longitude, accuracy: location.accuracy, altitude: location.altitude },
       timestamp: location.time || Date.now(),
     });
   });
   recNativeWatch = watch;
-  watch.catch(() => { if (recNativeWatch === watch) recNativeWatch = null; });
+  recDiag("watch: start");
+  watch.then((id) => recDiag("watch: id " + id)).catch((e) => {
+    recDiag("watch: " + recErrText(e));
+    if (recNativeWatch === watch) recNativeWatch = null;
+  });
 }
 
 // Wywoływane po powrocie do aplikacji (np. z ustawień): jeśli nagrywamy, a watcher nie działa - ponów.
