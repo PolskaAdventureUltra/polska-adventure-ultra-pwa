@@ -357,6 +357,14 @@ const TRANSLATIONS = {
           <li>Na basenie GPS nie działa — wpisz trening ręcznie.</li>
         </ul>
       </details>
+      <details><summary>🛠 Nie mogę się zalogować</summary>
+        <ul>
+          <li>Pod przyciskiem „Zaloguj” jest szara linijka (wersja, „treningi tutaj”). Jeśli jej nie ma, przeglądarka blokuje skrypty strony.</li>
+          <li><b>Brave</b>: dotknij ikony lwa w pasku adresu i wyłącz „Blokuj skrypty” albo Shields dla tej strony.</li>
+          <li>Treningi są zapisane w tej przeglądarce, w której zainstalowano ikonę. Inna przeglądarka ich nie widzi (pokaże „treningi tutaj: 0”).</li>
+          <li>Nie usuwaj ikony ani danych przeglądarki — można stracić treningi. Najpierw zrób kopię zapasową w Historii.</li>
+        </ul>
+      </details>
       <details><summary>⌚ Import z zegarka (Garmin / Suunto / Polar / Samsung / Huawei)</summary>
         <ul>
           <li><b>Garmin Connect</b> (www): otwórz aktywność → ikona koła zębatego → „Eksportuj do GPX” lub „Eksportuj do TCX”.</li>
@@ -837,6 +845,14 @@ const TRANSLATIONS = {
           <li>GPS doesn't work in a pool — enter those trainings manually.</li>
         </ul>
       </details>
+      <details><summary>🛠 I can't log in</summary>
+        <ul>
+          <li>Under the “Log in” button there is a grey line (version, “trainings here”). If it's missing, the browser is blocking the site's scripts.</li>
+          <li><b>Brave</b>: tap the lion icon in the address bar and turn off “Block scripts” or Shields for this site.</li>
+          <li>Trainings are stored in the browser the icon was added from. Another browser can't see them (it shows “trainings here: 0”).</li>
+          <li>Don't remove the icon or clear browser data — you could lose your trainings. Make a backup in History first.</li>
+        </ul>
+      </details>
       <details><summary>⌚ Import from your watch (Garmin / Suunto / Polar / Samsung / Huawei)</summary>
         <ul>
           <li><b>Garmin Connect</b> (web): open the activity → gear icon → “Export to GPX” or “Export to TCX”.</li>
@@ -1041,7 +1057,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "62";
+const APP_BUILD = "63";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;

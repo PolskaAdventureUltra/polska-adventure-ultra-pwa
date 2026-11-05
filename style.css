@@ -467,3 +467,5 @@ body.dark .mode-tile.active { box-shadow: 0 6px 16px rgba(255, 106, 43, 0.25); }
 
 /* Linijka diagnostyczna pod logowaniem */
 .boot-info { margin-top: 18px; max-width: 320px; font-size: 11px; line-height: 1.4; color: var(--subtle-fg); word-break: break-word; }
+.noscript-box { margin-top: 16px; max-width: 340px; padding: 12px 14px; border-radius: 12px; border-left: 4px solid var(--hl); background: var(--card); font-size: 13px; line-height: 1.45; text-align: left; }
+.noscript-box hr { border: none; border-top: 1px solid var(--border); margin: 10px 0; }

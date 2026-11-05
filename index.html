@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "62";
+  window.PAU_PAGE_BUILD = "63";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -40,6 +40,16 @@
   <input id="pinInput" type="password" inputmode="numeric" placeholder="PIN" autofocus>
   <button class="primary" id="pinSubmit" data-i18n="loginBtn">Zaloguj</button>
   <p id="bootInfo" class="boot-info"></p>
+  <noscript>
+    <div class="noscript-box">
+      <b>Przeglądarka blokuje skrypty tej strony</b> — dlatego logowanie nie działa. Twoje dane są bezpieczne.<br>
+      <b>Brave:</b> dotknij ikony lwa w pasku adresu i wyłącz „Blokuj skrypty” (albo wyłącz Shields dla tej strony).<br>
+      <b>Inne przeglądarki:</b> Ustawienia → Ustawienia witryn → JavaScript → Dozwolone.
+      <hr>
+      <b>Your browser is blocking this site's scripts</b>, so login can't work. Your data is safe.
+      Brave: tap the lion icon and turn off “Block scripts” (or Shields for this site). Other browsers: Settings → Site settings → JavaScript → Allowed.
+    </div>
+  </noscript>
 </div>
 <script>
   // Linijka diagnostyczna pod logowaniem - niezależna od app.js (działa nawet, gdy app.js się nie wczyta).
