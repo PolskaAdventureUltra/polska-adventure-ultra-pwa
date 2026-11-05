@@ -459,3 +459,8 @@ body.dark .mode-tile.active { box-shadow: 0 6px 16px rgba(255, 106, 43, 0.25); }
 .watch-steps { margin: 10px 0 4px; padding-left: 22px; font-size: 14px; line-height: 1.45; }
 .watch-steps li { margin-bottom: 6px; }
 @media (prefers-reduced-motion: reduce) { .mode-tile { transition: none; } }
+
+/* Podpowiedź dla Samsung Internet */
+.samsung-hint { position: relative; border-left: 4px solid var(--hl); }
+.samsung-hint p { margin: 0 28px 4px 0; font-size: 14px; line-height: 1.45; }
+.samsung-hint .form-hint-close { position: absolute; top: 8px; right: 8px; width: 40px; height: 40px; margin: 0; padding: 0; background: transparent; color: var(--subtle-fg); font-size: 16px; }
