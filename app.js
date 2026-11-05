@@ -1078,7 +1078,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "70";
+const APP_BUILD = "71";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -4326,6 +4326,19 @@ function recOnError(err) {
 // --- Natywna aplikacja Android (Capacitor) ---
 // W natywnej aplikacji GPS idzie przez wtyczkę BackgroundGeolocation (usługa z powiadomieniem),
 // więc nagrywanie działa też przy zgaszonym ekranie i w tle. W przeglądarce - zwykłe watchPosition.
+// Proxy wtyczki natywnej. Capacitor 8: registerPlugin pochodzi z dołączonego capacitor.js
+// (natywny most już go nie daje); zapamiętujemy, bo drugie registerPlugin tej samej nazwy ostrzega.
+const capPlugins = {};
+function capPlugin(name) {
+  if (!capPlugins[name]) {
+    const cap = window.Capacitor || {};
+    if (typeof cap.registerPlugin === "function") capPlugins[name] = cap.registerPlugin(name);
+    else if (cap.Plugins && cap.Plugins[name]) capPlugins[name] = cap.Plugins[name];
+    else throw Object.assign(new Error("Capacitor plugin " + name + " unavailable"), { code: "NO_BRIDGE" });
+  }
+  return capPlugins[name];
+}
+
 function isNativeApp() {
   return Boolean(window.Capacitor && typeof window.Capacitor.isNativePlatform === "function" && window.Capacitor.isNativePlatform());
 }
@@ -4334,7 +4347,7 @@ let nativeGeo = null;
 let recNativeWatch = null; // Promise z id watchera wtyczki
 
 function getNativeGeo() {
-  if (!nativeGeo && isNativeApp()) nativeGeo = window.Capacitor.registerPlugin("BackgroundGeolocation");
+  if (!nativeGeo && isNativeApp()) nativeGeo = capPlugin("BackgroundGeolocation");
   return nativeGeo;
 }
 
@@ -4364,7 +4377,7 @@ function recErrText(e) {
 // (GPS działa, ale użytkownik nie widzi, że nagrywanie trwa). Pytamy raz, przy pierwszym starcie nagrywania.
 async function recEnsureNotificationPermission() {
   try {
-    const notif = window.Capacitor.registerPlugin("LocalNotifications");
+    const notif = capPlugin("LocalNotifications");
     const status = await recWithTimeout(notif.checkPermissions(), 5000, "notif.check");
     if (status && status.display === "prompt") await recWithTimeout(notif.requestPermissions(), 60000, "notif.req");
   } catch (e) {
@@ -4408,7 +4421,7 @@ async function recOnPermAction() {
   // getCurrentPosition wtyczki Geolocation przy wyłączonej lokalizacji pokazuje systemowe
   // okienko Google „Włączyć lokalizację?” (OK = włącza bez wychodzenia z aplikacji).
   try {
-    await recWithTimeout(window.Capacitor.registerPlugin("Geolocation").getCurrentPosition({ enableHighAccuracy: true, timeout: 15000 }), 60000, "geo.enable");
+    await recWithTimeout(capPlugin("Geolocation").getCurrentPosition({ enableHighAccuracy: true, timeout: 15000 }), 60000, "geo.enable");
     recDiag("enable: ok");
   } catch (e) {
     console.warn("enable location", e);
@@ -4435,7 +4448,7 @@ async function recEnsureLocationPermission(ask = true) {
   const dict = t();
   let st;
   try {
-    const geo = window.Capacitor.registerPlugin("Geolocation");
+    const geo = capPlugin("Geolocation");
     st = await recWithTimeout(geo.checkPermissions(), 5000, "geo.check");
     recDiag("check: " + (st && st.location) + "/" + (st && st.coarseLocation));
     if (ask && st.location !== "granted") {
@@ -4477,7 +4490,7 @@ async function recNativeHealthCheck() {
   if (!rec || rec.pausedAt || recWatchId !== "native" || !recNativeWatch || recPermChecking) return;
   if (recLastFixAt && Date.now() - recLastFixAt < 10000) return;
   try {
-    await recWithTimeout(window.Capacitor.registerPlugin("Geolocation").checkPermissions(), 5000, "geo.health");
+    await recWithTimeout(capPlugin("Geolocation").checkPermissions(), 5000, "geo.health");
     if (recLocOffShown) { recLocOffShown = false; recHideSettingsBtn(); recSetStatus(t().recWaitingGps); }
   } catch (e) {
     recDiag("health: " + recErrText(e));
