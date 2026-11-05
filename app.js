@@ -59,7 +59,7 @@ const TRANSLATIONS = {
     chartBtn: "POKAŻ WYKRES PROGRESU",
     exportBtn: "EKSPORTUJ DO CSV",
     importBtn: "📂 WCZYTAJ PLIK GPX / TCX",
-    modePhone: "Nagraj telefonem",
+    modePhone: "Trening z telefonu",
     modeWatch: "Trening z zegarka",
     modeManual: "Stwórz własny trening",
     watchTitle: "⌚ Trening z zegarka",
@@ -107,6 +107,9 @@ const TRANSLATIONS = {
     pinChangeBtn: "Zmień PIN",
     langBtnTarget: "EN",
     totalLabel: (km) => `🏅 Łącznie: ${km} km`,
+    heroTotal: "Łącznie",
+    heroWeek: "ten tydzień",
+    addTrainingTitle: "Dodaj trening",
     noHistory: "Brak zapisanych treningów.",
     deleteTitle: "Usuń wpis",
     confirmDelete: "Usunąć ten wpis z historii?",
@@ -532,7 +535,7 @@ const TRANSLATIONS = {
     chartBtn: "SHOW PROGRESS CHART",
     exportBtn: "EXPORT TO CSV",
     importBtn: "📂 LOAD GPX / TCX FILE",
-    modePhone: "Record with phone",
+    modePhone: "Training from phone",
     modeWatch: "Training from watch",
     modeManual: "Create your own training",
     watchTitle: "⌚ Training from your watch",
@@ -580,6 +583,9 @@ const TRANSLATIONS = {
     pinChangeBtn: "Change PIN",
     langBtnTarget: "PL",
     totalLabel: (km) => `🏅 Total: ${km} km`,
+    heroTotal: "Total",
+    heroWeek: "this week",
+    addTrainingTitle: "Add training",
     noHistory: "No saved trainings yet.",
     deleteTitle: "Delete entry",
     confirmDelete: "Delete this entry from history?",
@@ -1000,6 +1006,7 @@ function applyLanguage() {
   updateDisciplineUi();
   renderWatchSteps();
   document.getElementById("trainHintClose").setAttribute("aria-label", dict.hintCloseLabel);
+  document.getElementById("headerThemeBtn").setAttribute("aria-label", dict.themeBtn);
   hideTrainHint();
   clearFieldState("dist");
   clearFieldState("time");
@@ -1059,7 +1066,7 @@ function applyTheme() {
   document.body.classList.toggle("dark", theme === "dark");
   // Pasek systemowy telefonu w kolorze tła aplikacji (--bg w style.css), żeby górny i dolny pasek się zgadzały.
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", theme === "dark" ? "#0F1A2B" : "#F3F5F8");
+  if (meta) meta.setAttribute("content", theme === "dark" ? "#0B1422" : "#F3F5F8");
 }
 
 function toggleTheme() {
@@ -1118,9 +1125,17 @@ function showTab(tabName) {
 }
 
 // --- Licznik motywacyjny ---
+function formatKm(km) {
+  return km.toLocaleString(getLang() === "pl" ? "pl-PL" : "en-GB", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+}
+
 function refreshTotalLabel() {
-  const total = getTotalDistance();
-  document.getElementById("totalLbl").textContent = t().totalLabel(total.toFixed(1));
+  document.getElementById("totalKm").textContent = formatKm(getTotalDistance());
+  const today = new Date();
+  const monday = toYmd(addDays(today, -((today.getDay() + 6) % 7)));
+  const week = getHistory().filter((item) => item.date >= monday);
+  const weekKm = week.reduce((sum, item) => sum + (parseFloat(item.dist) || 0), 0);
+  document.getElementById("weekKm").textContent = `${formatKm(weekKm)} km · ${week.length}×`;
 }
 
 // --- Podsumowanie, passa i rekordy (liczone na bieżąco z historii) ---
@@ -1795,9 +1810,21 @@ function refreshHistoryList() {
       const shareBtn = isCommunityConfigured()
         ? `<button class="share-btn" data-index="${index}" title="${item.sharedId ? dict.unshareTitle : dict.shareTitle}">${item.sharedId ? "🌍" : "📤"}</button>`
         : "";
+      const meta = [item.date];
+      const min = parseFloat(item.time) || 0;
+      if (min > 0) meta.push(formatDuration(min));
+      const pace = entryPaceText(item);
+      if (pace) meta.push(pace);
+      if (parseFloat(item.hr) > 0) meta.push(`♥ ${item.hr}`);
+      const extra = [];
+      if (parseFloat(item.weight) > 0) extra.push(`${l.weight}: ${item.weight} kg`);
+      if (parseFloat(item.vo2max) > 0) extra.push(`${l.vo2max}: ${item.vo2max}`);
+      if (item.notes) extra.push(escapeXml(item.notes));
       return `<div class="history-item">` +
-             `<span>${l.date}: ${item.date}, ${l.disc}: ${discName}, ${l.dist}: ${item.dist} km, ` +
-             `${l.weight}: ${item.weight} kg, ${l.hr}: ${item.hr} bpm, ${l.vo2max}: ${item.vo2max}${notes}</span>` +
+             `<span class="disc-ico disc-${escapeXml(item.disc)}">${discIcon(item.disc)}</span>` +
+             `<div class="history-main"><div class="history-title">${escapeXml(discName)} · ${escapeXml(item.dist)} km</div>` +
+             `<div class="history-meta">${meta.join(" · ")}</div>` +
+             (extra.length ? `<div class="history-meta">${extra.join(" · ")}</div>` : "") + `</div>` +
              `<div class="history-actions">${flagBtn}${shareBtn}${routeBtn}` +
              `<button class="delete-btn" data-index="${index}" title="${dict.deleteTitle}">🗑</button></div>` +
              `</div>`;
@@ -1816,6 +1843,31 @@ function refreshHistoryList() {
   list.querySelectorAll(".flag-btn").forEach((btn) => {
     btn.addEventListener("click", () => toggleChallengeFlag(parseInt(btn.dataset.index, 10)));
   });
+}
+
+// Ikony dyscyplin w Historii (SVG, kolor z CSS).
+const DISC_ICON_PATHS = {
+  Bieg: '<circle cx="14" cy="4.5" r="2"></circle><path d="M7 21l3-6 3 2v5M10 15l1.5-6L8 10l-2 3M11.5 9l3 2.5 3.5.5"></path>',
+  Rower: '<circle cx="5.5" cy="17" r="3.5"></circle><circle cx="18.5" cy="17" r="3.5"></circle><path d="M5.5 17l4-8h6l3 8M9.5 9L8 6H6M15.5 9l-3 8"></path>',
+  Kajak: '<path d="M3 15c3 2 6 2 9 0s6-2 9 0M5 19c2.5 1.5 4.5 1.5 7 0s4.5-1.5 7 0M7 13L17 3M15 3h3v3"></path>',
+  Basen: '<path d="M2 12c2.5 2 5 2 7.5 0s5-2 7.5 0 3.5 1.5 5 1M2 17c2.5 2 5 2 7.5 0s5-2 7.5 0 3.5 1.5 5 1"></path><circle cx="16" cy="6" r="2"></circle><path d="M6 9l4-3 3 3"></path>',
+  Trekking: '<path d="M3 20l6-10 4 6 3-4 5 8z"></path><path d="M12 5l2 2"></path>',
+};
+DISC_ICON_PATHS.WodyOtwarte = DISC_ICON_PATHS.Basen;
+DISC_ICON_PATHS.Multi = '<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path>';
+
+function discIcon(disc) {
+  return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${DISC_ICON_PATHS[disc] || DISC_ICON_PATHS.Multi}</svg>`;
+}
+
+// Tempo (bieg/trekking pieszo /km, pływanie /100 m) albo prędkość (rower, kajak).
+function entryPaceText(item) {
+  const km = parseFloat(item.dist) || 0;
+  const min = parseFloat(item.time) || 0;
+  if (km <= 0 || min <= 0) return "";
+  if (SWIM_DISCIPLINES.includes(item.disc)) return formatSwimPace(min / (km * 10));
+  if (item.disc === "Bieg") return formatPace(min / km);
+  return `${(km / (min / 60)).toFixed(1)} km/h`;
 }
 
 function toggleChallengeFlag(index) {
@@ -4402,6 +4454,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.target.value = "";
   });
   document.getElementById("themeBtn").addEventListener("click", toggleTheme);
+  document.getElementById("headerThemeBtn").addEventListener("click", toggleTheme);
   document.getElementById("pinChangeBtn").addEventListener("click", changePin);
   document.getElementById("langBtn").addEventListener("click", toggleLanguage);
   initRecorder();
