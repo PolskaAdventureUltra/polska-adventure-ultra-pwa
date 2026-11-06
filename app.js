@@ -58,7 +58,7 @@ const TRANSLATIONS = {
     paceBtn: "OBLICZ TEMPO",
     chartBtn: "POKAŻ WYKRES PROGRESU",
     exportBtn: "EKSPORTUJ DO CSV",
-    importBtn: "📂 WCZYTAJ PLIK GPX / TCX",
+    importBtn: "📂 WCZYTAJ PLIK GPX / TCX / FIT",
     modePhone: "Trening z telefonu",
     modeWatch: "Trening z zegarka",
     modeManual: "Stwórz własny trening",
@@ -67,11 +67,11 @@ const TRANSLATIONS = {
     watchBrandOther: "Strava / inny",
     watchSteps: {
       garmin: ["Na stronie connect.garmin.com otwórz aktywność (aplikacja Garmin Connect w telefonie nie eksportuje plików — użyj przeglądarki).", "Ikona koła zębatego → „Eksportuj do GPX” lub „Eksportuj do TCX”."],
-      suunto: ["Suunto app: Dziennik → wybierz trening.", "⋮ / Udostępnij → Eksportuj → GPX."],
+      suunto: ["Suunto app: Dziennik → wybierz trening.", "⋮ / Udostępnij → Eksportuj → GPX albo FIT (basen: wybierz FIT)."],
       polar: ["Na stronie flow.polar.com otwórz trening.", "„Eksportuj sesję” → GPX lub TCX."],
       samsung: ["Samsung Health w telefonie: otwórz trening z trasą GPS.", "⋮ → „Eksportuj do pliku GPX”. Opcja jest tylko przy treningach z GPS, a plik nie zawiera tętna."],
       huawei: ["Huawei Health: otwórz trening → ⋮ / udostępnij → „Eksportuj trasę” → GPX lub TCX.", "Nie ma tej opcji? Połącz Huawei Health ze Stravą (Ja → Udostępnianie danych i autoryzacja → Strava) i pobierz plik ze Stravy (wybierz „Strava / inny”)."],
-      other: ["Zsynchronizuj zegarek ze Stravą, a potem na strava.com otwórz trening → ⋯ → „Eksportuj GPX”.", "Zadziała też każdy plik GPX lub TCX z innej aplikacji."],
+      other: ["Zsynchronizuj zegarek ze Stravą, a potem na strava.com otwórz trening → ⋯ → „Eksportuj GPX”.", "Zadziała też każdy plik GPX, TCX lub FIT z innej aplikacji."],
     },
     watchStepLast: "Kliknij „Wczytaj plik”, wybierz pobrany plik, sprawdź dane i zapisz trening.",
     recTitle: "📍 Nagraj trening telefonem",
@@ -141,6 +141,7 @@ const TRANSLATIONS = {
     errNoGpxPoints: "Brak punktów trasy w pliku GPX.",
     errNoTcxData: "Brak danych treningu w pliku TCX.",
     errBadXml: "Nie udało się odczytać pliku (nieprawidłowy XML).",
+    errBadFit: "Nie udało się odczytać pliku FIT.",
     promptNewPin: "Podaj nowy PIN:",
     pinChanged: "PIN zmieniony.",
     historyLabels: { date: "Data", disc: "Dyscyplina", dist: "Dystans", weight: "Waga", hr: "Tętno", vo2max: "VO2max", notes: "Notatki" },
@@ -379,12 +380,12 @@ const TRANSLATIONS = {
       <details><summary>⌚ Import z zegarka (Garmin / Suunto / Polar / Samsung / Huawei)</summary>
         <ul>
           <li><b>Garmin Connect</b> (www): otwórz aktywność → ikona koła zębatego → „Eksportuj do GPX” lub „Eksportuj do TCX”.</li>
-          <li><b>Suunto app</b>: Dziennik → trening → ⋮ / Udostępnij → Eksportuj → GPX.</li>
+          <li><b>Suunto app</b>: Dziennik → trening → ⋮ / Udostępnij → Eksportuj → GPX albo FIT. Pływanie w basenie nie ma trasy GPS — wybierz <b>FIT</b> (dystans, czas i tętno wczytają się z zegarka).</li>
           <li><b>Polar Flow</b> (www): otwórz trening → „Eksportuj sesję” → GPX lub TCX.</li>
           <li><b>Samsung Health</b> (Galaxy Watch): w telefonie otwórz trening z trasą GPS → ⋮ → „Eksportuj do pliku GPX”. Opcja jest tylko przy treningach z GPS (np. bieg, rower, spacer), a plik nie zawiera tętna.</li>
           <li><b>Huawei Health</b> (Huawei Watch): otwórz trening → ikona udostępniania/⋮ → „Eksportuj trasę” → GPX lub TCX (zależnie od wersji aplikacji i zegarka). Jeśli tej opcji nie ma: połącz Huawei Health ze Stravą (Ja → Udostępnianie danych i autoryzacja → Strava), a potem na strava.com otwórz trening → ⋯ → „Eksportuj GPX”.</li>
           <li><b>Strava</b> (www): otwórz trening → ⋯ → „Eksportuj GPX” — działa dla każdego zegarka zsynchronizowanego ze Stravą.</li>
-          <li>W zakładce Trening kliknij kafelek „⌚ Trening z zegarka”, potem „WCZYTAJ PLIK GPX / TCX”, wybierz plik, sprawdź dane i kliknij „ZAPISZ TRENING”. Trasa zapisze się razem z treningiem.</li>
+          <li>W zakładce Trening kliknij kafelek „⌚ Trening z zegarka”, potem „WCZYTAJ PLIK GPX / TCX / FIT”, wybierz plik, sprawdź dane i kliknij „ZAPISZ TRENING”. Trasa zapisze się razem z treningiem.</li>
         </ul>
       </details>
       <details><summary>📋 Historia</summary>
@@ -557,7 +558,7 @@ const TRANSLATIONS = {
     paceBtn: "CALCULATE PACE",
     chartBtn: "SHOW PROGRESS CHART",
     exportBtn: "EXPORT TO CSV",
-    importBtn: "📂 LOAD GPX / TCX FILE",
+    importBtn: "📂 LOAD GPX / TCX / FIT FILE",
     modePhone: "Training from phone",
     modeWatch: "Training from watch",
     modeManual: "Create your own training",
@@ -566,11 +567,11 @@ const TRANSLATIONS = {
     watchBrandOther: "Strava / other",
     watchSteps: {
       garmin: ["On connect.garmin.com open the activity (the Garmin Connect phone app can't export files — use a browser).", "Gear icon → “Export to GPX” or “Export to TCX”."],
-      suunto: ["Suunto app: Diary → choose the training.", "⋮ / Share → Export → GPX."],
+      suunto: ["Suunto app: Diary → choose the training.", "⋮ / Share → Export → GPX or FIT (pool swim: choose FIT)."],
       polar: ["On flow.polar.com open the training.", "“Export session” → GPX or TCX."],
       samsung: ["Samsung Health on your phone: open a workout with a GPS route.", "⋮ → “Export to GPX file”. Only available for GPS workouts; the file has no heart rate."],
       huawei: ["Huawei Health: open the workout → ⋮ / share → “Export route” → GPX or TCX.", "No such option? Link Huawei Health with Strava (Me → Data sharing and authorization → Strava) and download the file from Strava (choose “Strava / other”)."],
-      other: ["Sync your watch with Strava, then on strava.com open the activity → ⋯ → “Export GPX”.", "Any GPX or TCX file from another app works too."],
+      other: ["Sync your watch with Strava, then on strava.com open the activity → ⋯ → “Export GPX”.", "Any GPX, TCX or FIT file from another app works too."],
     },
     watchStepLast: "Tap “Load file”, pick the downloaded file, check the data and save the training.",
     recTitle: "📍 Record with your phone",
@@ -640,6 +641,7 @@ const TRANSLATIONS = {
     errNoGpxPoints: "No track points found in the GPX file.",
     errNoTcxData: "No training data found in the TCX file.",
     errBadXml: "Could not read the file (invalid XML).",
+    errBadFit: "Could not read the FIT file.",
     promptNewPin: "Enter new PIN:",
     pinChanged: "PIN changed.",
     historyLabels: { date: "Date", disc: "Discipline", dist: "Distance", weight: "Weight", hr: "HR", vo2max: "VO2max", notes: "Notes" },
@@ -878,12 +880,12 @@ const TRANSLATIONS = {
       <details><summary>⌚ Import from your watch (Garmin / Suunto / Polar / Samsung / Huawei)</summary>
         <ul>
           <li><b>Garmin Connect</b> (web): open the activity → gear icon → “Export to GPX” or “Export to TCX”.</li>
-          <li><b>Suunto app</b>: Diary → training → ⋮ / Share → Export → GPX.</li>
+          <li><b>Suunto app</b>: Diary → training → ⋮ / Share → Export → GPX or FIT. Pool swims have no GPS route — choose <b>FIT</b> (distance, time and heart rate are read from the watch).</li>
           <li><b>Polar Flow</b> (web): open the training → “Export session” → GPX or TCX.</li>
           <li><b>Samsung Health</b> (Galaxy Watch): on the phone open a workout with a GPS route → ⋮ → “Export to GPX file”. Only available for GPS workouts (e.g. running, cycling, walking); the file has no heart rate.</li>
           <li><b>Huawei Health</b> (Huawei Watch): open the workout → share icon/⋮ → “Export route” → GPX or TCX (depends on app and watch version). If it's missing: link Huawei Health with Strava (Me → Data sharing and authorization → Strava), then on strava.com open the activity → ⋯ → “Export GPX”.</li>
           <li><b>Strava</b> (web): open the activity → ⋯ → “Export GPX” — works for any watch synced with Strava.</li>
-          <li>On the Training tab tap the “⌚ Training from watch” tile, then “LOAD GPX / TCX FILE”, choose the file, check the data and tap “SAVE TRAINING”. The route is saved with the training.</li>
+          <li>On the Training tab tap the “⌚ Training from watch” tile, then “LOAD GPX / TCX / FIT FILE”, choose the file, check the data and tap “SAVE TRAINING”. The route is saved with the training.</li>
         </ul>
       </details>
       <details><summary>📋 History</summary>
@@ -1080,7 +1082,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "73";
+const APP_BUILD = "74";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -4055,6 +4057,162 @@ function parseTcx(xml) {
   };
 }
 
+// --- Pliki FIT (binarny format zegarków: Suunto, Garmin, Polar, Coros, Wahoo) ---
+// Czytamy tylko to, czego potrzebuje formularz: sesję (sport, start, czas, dystans, tętno)
+// i punkty GPS. Basen nie ma trasy - dystans i czas bierzemy z podsumowania sesji.
+const FIT_EPOCH_MS = Date.UTC(1989, 11, 31);
+const FIT_INVALID = { 0: 0xff, 1: 0x7f, 2: 0xff, 3: 0x7fff, 4: 0xffff, 5: 0x7fffffff, 6: 0xffffffff, 10: 0, 11: 0, 12: 0, 13: 0xff };
+const FIT_SIZES = { 0: 1, 1: 1, 2: 1, 3: 2, 4: 2, 5: 4, 6: 4, 8: 4, 9: 8, 10: 1, 11: 2, 12: 4, 13: 1 };
+
+function isFitFile(buf) {
+  if (buf.byteLength < 12) return false;
+  const b = new Uint8Array(buf, 8, 4);
+  return String.fromCharCode(b[0], b[1], b[2], b[3]) === ".FIT";
+}
+
+// Zwraca { 0: [file_id...], 18: [session...], 20: [record...] } - pola jako { numer: wartość }.
+function readFitMessages(buf, wanted) {
+  const view = new DataView(buf);
+  const headerSize = view.getUint8(0);
+  const end = Math.min(buf.byteLength, headerSize + view.getUint32(4, true));
+  const defs = {};
+  const out = {};
+  wanted.forEach((g) => { out[g] = []; });
+  let p = headerSize;
+  let lastTs = 0;
+  while (p < end) {
+    const h = view.getUint8(p++);
+    let local;
+    let tsFromHeader = null;
+    if (h & 0x80) {
+      // skompresowany nagłówek z przesunięciem czasu (5 bitów)
+      local = (h >> 5) & 3;
+      const offset = h & 0x1f;
+      tsFromHeader = (lastTs & ~0x1f) + offset + (offset < (lastTs & 0x1f) ? 0x20 : 0);
+      lastTs = tsFromHeader;
+    } else if (h & 0x40) {
+      local = h & 0x0f;
+      const little = view.getUint8(p + 1) === 0;
+      const global = view.getUint16(p + 2, little);
+      const n = view.getUint8(p + 4);
+      p += 5;
+      const fields = [];
+      for (let i = 0; i < n; i++, p += 3) {
+        fields.push({ num: view.getUint8(p), size: view.getUint8(p + 1), type: view.getUint8(p + 2) & 0x1f });
+      }
+      let devSize = 0;
+      if (h & 0x20) {
+        const nd = view.getUint8(p++);
+        for (let i = 0; i < nd; i++, p += 3) devSize += view.getUint8(p + 1);
+      }
+      defs[local] = { global, little, fields, devSize };
+      continue;
+    } else {
+      local = h & 0x0f;
+    }
+    const def = defs[local];
+    if (!def) throw new Error(t().errBadFit);
+    const keep = out[def.global];
+    const msg = keep ? {} : null;
+    def.fields.forEach((f) => {
+      if (msg && FIT_SIZES[f.type] === f.size) {
+        const v = fitValue(view, p, f.type, def.little);
+        if (v !== null && v !== FIT_INVALID[f.type]) msg[f.num] = v;
+      }
+      if (f.num === 253 && f.size === 4) {
+        const ts = view.getUint32(p, def.little);
+        if (ts !== 0xffffffff) lastTs = ts;
+      }
+      p += f.size;
+    });
+    p += def.devSize;
+    if (msg) {
+      if (tsFromHeader !== null && msg[253] === undefined) msg[253] = tsFromHeader;
+      keep.push(msg);
+    }
+  }
+  return out;
+}
+
+function fitValue(view, p, type, little) {
+  switch (type) {
+    case 0: case 2: case 10: case 13: return view.getUint8(p);
+    case 1: return view.getInt8(p);
+    case 3: return view.getInt16(p, little);
+    case 4: case 11: return view.getUint16(p, little);
+    case 5: return view.getInt32(p, little);
+    case 6: case 12: return view.getUint32(p, little);
+    case 8: return view.getFloat32(p, little);
+    case 9: return view.getFloat64(p, little);
+    default: return null;
+  }
+}
+
+// Sport z FIT (sport, sub_sport) -> dyscyplina aplikacji.
+function fitSportToDisc(sport, subSport) {
+  if (sport === 5) return subSport === 18 ? "WodyOtwarte" : "Basen";   // 17 = basen, 18 = wody otwarte
+  if (sport === 2) return "Rower";
+  if (sport === 11 || sport === 17) return "Trekking";                 // marsz, wędrówka
+  if (sport === 19 || sport === 41 || sport === 37 || sport === 15) return "Kajak"; // paddling, kajak, SUP, wiosłowanie
+  if (sport === 1) return "Bieg";
+  return null;
+}
+
+function parseFit(buf) {
+  const msgs = readFitMessages(buf, [18, 20]);
+  const sessions = msgs[18];
+  const records = msgs[20];
+  const fitDate = (ts) => new Date(FIT_EPOCH_MS + ts * 1000);
+
+  const route = [];
+  const hrValues = [];
+  records.forEach((r) => {
+    if (r[3] > 0) hrValues.push(r[3]);
+    if (r[0] === undefined || r[1] === undefined) return;
+    const point = { lat: r[0] * (180 / 2 ** 31), lon: r[1] * (180 / 2 ** 31) };
+    const alt = r[78] !== undefined ? r[78] / 5 - 500 : r[2] !== undefined ? r[2] / 5 - 500 : NaN;
+    if (Number.isFinite(alt)) point.ele = alt;
+    route.push(point);
+  });
+
+  let distM = 0;
+  let timeS = 0;
+  let hrSum = 0;
+  let hrTime = 0;
+  let startTs = null;
+  let disc = null;
+  sessions.forEach((s) => {
+    const sTime = (s[8] !== undefined ? s[8] : s[7] || 0) / 1000;   // czas ruchu, a gdy brak - całkowity
+    distM += (s[9] || 0) / 100;
+    timeS += sTime;
+    if (s[16]) { hrSum += s[16] * sTime; hrTime += sTime; }
+    const st = s[2] !== undefined ? s[2] : s[253];
+    if (st !== undefined && (startTs === null || st < startTs)) startTs = st;
+    if (!disc) disc = fitSportToDisc(s[5], s[6]);
+  });
+
+  // Brak podsumowania sesji (rzadkie) - liczymy z punktów pomiarowych.
+  if (!sessions.length) {
+    const timed = records.filter((r) => r[253] !== undefined);
+    if (timed.length < 2) throw new Error(t().errBadFit);
+    startTs = timed[0][253];
+    timeS = timed[timed.length - 1][253] - startTs;
+    const withDist = records.filter((r) => r[5] !== undefined);
+    if (withDist.length) distM = withDist[withDist.length - 1][5] / 100;
+    else for (let i = 1; i < route.length; i++) distM += haversineKm(route[i - 1].lat, route[i - 1].lon, route[i].lat, route[i].lon) * 1000;
+  }
+
+  const avgHr = hrTime ? hrSum / hrTime : hrValues.length ? hrValues.reduce((a, b) => a + b, 0) / hrValues.length : 0;
+  return {
+    date: startTs !== null ? toYmd(fitDate(startTs)) : toYmd(new Date()),
+    dist: (distM / 1000).toFixed(2),
+    time: (timeS / 60).toFixed(1),
+    hr: avgHr ? String(Math.round(avgHr)) : "0",
+    disc: disc || "Bieg",
+    route: route.length >= 2 ? downsampleRoute(route, 200) : undefined,
+  };
+}
+
 // --- Zakładka Trening: kafelki 📱 telefon / ⌚ zegarek / ✏️ własny trening (formularz) ---
 // Wybór nie jest zapamiętywany - za każdym razem można wybrać inaczej. Zapamiętujemy tylko markę zegarka.
 const WATCH_BRAND_KEY = "pau_watch_brand";
@@ -4130,13 +4288,18 @@ function importTrainingFile(file) {
   const reader = new FileReader();
   reader.onload = () => {
     try {
-      const xml = new DOMParser().parseFromString(reader.result, "application/xml");
-      if (xml.getElementsByTagName("parsererror").length > 0) {
-        throw new Error(t().errBadXml);
+      let parsed;
+      if (isFitFile(reader.result)) {
+        parsed = parseFit(reader.result);
+      } else {
+        const text = new TextDecoder("utf-8").decode(reader.result);
+        const xml = new DOMParser().parseFromString(text, "application/xml");
+        if (xml.getElementsByTagName("parsererror").length > 0) {
+          throw new Error(t().errBadXml);
+        }
+        const isTcx = xml.getElementsByTagName("TrainingCenterDatabase").length > 0;
+        parsed = isTcx ? parseTcx(xml) : parseGpx(xml);
       }
-
-      const isTcx = xml.getElementsByTagName("TrainingCenterDatabase").length > 0;
-      const parsed = isTcx ? parseTcx(xml) : parseGpx(xml);
 
       document.getElementById("date").value = parsed.date;
       document.getElementById("dist").value = parsed.dist;
@@ -4152,7 +4315,7 @@ function importTrainingFile(file) {
       alert(t().importError(e.message));
     }
   };
-  reader.readAsText(file);
+  reader.readAsArrayBuffer(file);
 }
 
 // --- Nagrywanie treningu GPS-em telefonu (bez zegarka) ---
