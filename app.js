@@ -320,6 +320,7 @@ const TRANSLATIONS = {
     backupTitle: "Kopia zapasowa",
     backupHint: "Treningi i trasy są zapisane tylko na tym telefonie. Zrób kopię i zachowaj plik (np. na Dysku Google lub wyślij sobie mailem) — na nowym telefonie wczytasz go przyciskiem „Przywróć”.",
     backupBtn: "ZRÓB KOPIĘ ZAPASOWĄ",
+    fileSaveError: "Nie udało się zapisać pliku.",
     restoreBtn: "PRZYWRÓĆ Z KOPII",
     backupInvalid: "To nie jest poprawny plik kopii zapasowej Polska Adventure Ultra.",
     confirmRestore: (date, trainings, routes) =>
@@ -818,6 +819,7 @@ const TRANSLATIONS = {
     backupTitle: "Backup",
     backupHint: "Trainings and routes are stored only on this phone. Make a backup and keep the file (e.g. on Google Drive or email it to yourself) — on a new phone, load it with the \"Restore\" button.",
     backupBtn: "MAKE A BACKUP",
+    fileSaveError: "Could not save the file.",
     restoreBtn: "RESTORE FROM BACKUP",
     backupInvalid: "This is not a valid Polska Adventure Ultra backup file.",
     confirmRestore: (date, trainings, routes) =>
@@ -1078,7 +1080,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "72";
+const APP_BUILD = "73";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -2163,13 +2165,7 @@ function exportCsv() {
     csv += `${item.date};${item.disc};${item.dist};${item.weight};${item.hr};${item.vo2max};${item.notes}\n`;
   });
 
-  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "pau_data.csv";
-  a.click();
-  URL.revokeObjectURL(url);
+  saveFile(new File(["﻿" + csv], "pau_data.csv", { type: "text/csv;charset=utf-8" }), "pau_data.csv");
 }
 
 // --- Kopia zapasowa (plik JSON z danymi z localStorage) ---
@@ -2621,7 +2617,31 @@ async function downloadGpx(name, track) {
   await saveFile(new File([buildGpx(name, track)], fileName, { type: "application/gpx+xml" }), name);
 }
 
+// Natywna aplikacja: plik trafia do pamięci podręcznej apki, a systemowe "Udostępnij" pozwala zapisać go
+// na Dysku Google, wysłać mailem albo otworzyć w innej aplikacji (np. GPX w aplikacji zegarka).
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(",")[1] || "");
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function nativeSaveFile(file, title) {
+  try {
+    const data = await blobToBase64(file);
+    const res = await capPlugin("Filesystem").writeFile({ path: file.name, data, directory: "CACHE" });
+    await capPlugin("Share").share({ title: title || file.name, dialogTitle: title || file.name, files: [res.uri] });
+  } catch (e) {
+    if (/cancel/i.test(String((e && e.message) || e))) return;
+    alert(t().fileSaveError + "\n" + ((e && e.message) || e));
+  }
+}
+
 async function saveFile(file, title) {
+  // W natywnej aplikacji WebView nie umie ani pobierać plików (<a download>), ani udostępniać ich przez navigator.share.
+  if (isNativeApp()) return nativeSaveFile(file, title);
   const isTouch = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
   if (isTouch && navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
@@ -2840,6 +2860,14 @@ function initSamsungHint() {
 }
 
 async function shareAppLink() {
+  if (isNativeApp()) {
+    try {
+      await capPlugin("Share").share({ title: "Polska Adventure Ultra", text: t().shareAppText, url: APP_URL, dialogTitle: "Polska Adventure Ultra" });
+      return;
+    } catch (e) {
+      if (/cancel/i.test(String((e && e.message) || e))) return;
+    }
+  }
   if (navigator.share) {
     try {
       await navigator.share({ title: "Polska Adventure Ultra", text: t().shareAppText, url: APP_URL });
@@ -2867,6 +2895,7 @@ async function shareAppQr() {
     alert(t().communityError);
     return;
   }
+  if (isNativeApp()) return saveFile(file, "Polska Adventure Ultra");
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
       await navigator.share({ files: [file], title: "Polska Adventure Ultra", text: `${t().shareAppText} ${APP_URL}` });
