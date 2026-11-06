@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "73";
+  window.PAU_PAGE_BUILD = "74";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -171,8 +171,8 @@
         <option value="other" data-i18n="watchBrandOther">Strava / inny</option>
       </select>
       <ol class="watch-steps" id="watchSteps"></ol>
-      <button class="primary" id="importBtn" data-i18n="importBtn">📂 WCZYTAJ PLIK GPX / TCX</button>
-      <input type="file" id="importFile" accept=".gpx,.tcx" style="display:none">
+      <button class="primary" id="importBtn" data-i18n="importBtn">📂 WCZYTAJ PLIK GPX / TCX / FIT</button>
+      <input type="file" id="importFile" style="display:none">
     </div>
 
     <div class="card" id="trainFormCard" hidden>
