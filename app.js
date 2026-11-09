@@ -6,6 +6,7 @@
 
 const PIN_KEY = "pau_pin";
 const HISTORY_KEY = "pau_history";
+const BODY_WEIGHT_KEY = "pau_body_weight"; // waga do liczenia kalorii przy nagrywaniu
 const THEME_KEY = "pau_theme";
 const LANG_KEY = "pau_lang";
 const PLANNED_ROUTES_KEY = "pau_planned_routes";
@@ -94,6 +95,11 @@ const TRANSLATIONS = {
     recDistLbl: "Dystans (km)",
     recPaceLbl: "Śr. tempo",
     recSpeedLbl: "Śr. prędkość",
+    recWeightLbl: "Twoja waga (kg) — do liczenia kalorii",
+    recWeightPh: "np. 75 (opcjonalnie)",
+    recKcalLbl: "🔥 Spalone kcal",
+    recKcalNoWeight: "🔥 kcal — podaj wagę przed startem",
+    recKcalNote: (kcal) => `🔥 ok. ${kcal} kcal (szacunek)`,
     recGpsLbl: "Dokładność GPS",
     recWaitingGps: "Szukam sygnału GPS… (najlepiej na otwartym terenie)",
     recGpsOk: "🟢 Nagrywanie — GPS działa",
@@ -110,7 +116,7 @@ const TRANSLATIONS = {
     recTooShort: "Nagrana trasa jest za krótka (poniżej 50 m). Odrzucić nagranie?",
     recConfirmDiscard: "Odrzucić nagranie? Trasa zostanie usunięta.",
     recNote: "📍 Nagrane telefonem (GPS)",
-    recFinishedHint: (km, time) => `📍 Nagrano ${km} km w ${time}. Sprawdź dane, dopisz tętno czy notatkę i kliknij „ZAPISZ TRENING”.`,
+    recFinishedHint: (km, time, kcal) => `📍 Nagrano ${km} km w ${time}${kcal ? `, spalono ok. ${kcal} kcal` : ""}. Sprawdź dane, dopisz tętno czy notatkę i kliknij „ZAPISZ TRENING”.`,
     chartTitle: "Progres dystansu",
     historyTitle: "Historia treningów",
     themeBtn: "Zmień motyw",
@@ -594,6 +600,11 @@ const TRANSLATIONS = {
     recDistLbl: "Distance (km)",
     recPaceLbl: "Avg pace",
     recSpeedLbl: "Avg speed",
+    recWeightLbl: "Your weight (kg) — for calorie count",
+    recWeightPh: "e.g. 75 (optional)",
+    recKcalLbl: "🔥 Calories burned",
+    recKcalNoWeight: "🔥 kcal — enter your weight before start",
+    recKcalNote: (kcal) => `🔥 approx. ${kcal} kcal (estimate)`,
     recGpsLbl: "GPS accuracy",
     recWaitingGps: "Looking for GPS signal… (open sky works best)",
     recGpsOk: "🟢 Recording — GPS OK",
@@ -610,7 +621,7 @@ const TRANSLATIONS = {
     recTooShort: "The recorded route is too short (under 50 m). Discard it?",
     recConfirmDiscard: "Discard the recording? The route will be deleted.",
     recNote: "📍 Recorded with phone (GPS)",
-    recFinishedHint: (km, time) => `📍 Recorded ${km} km in ${time}. Check the data, add heart rate or a note and tap "SAVE TRAINING".`,
+    recFinishedHint: (km, time, kcal) => `📍 Recorded ${km} km in ${time}${kcal ? `, burned approx. ${kcal} kcal` : ""}. Check the data, add heart rate or a note and tap "SAVE TRAINING".`,
     chartTitle: "Distance progress",
     historyTitle: "Training history",
     themeBtn: "Switch theme",
@@ -1055,6 +1066,7 @@ function applyLanguage() {
   renderWatchSteps();
   document.getElementById("trainHintClose").setAttribute("aria-label", dict.hintCloseLabel);
   document.getElementById("headerThemeBtn").setAttribute("aria-label", dict.themeBtn);
+  document.getElementById("recWeight").placeholder = dict.recWeightPh;
   if (isNativeApp()) document.querySelector('[data-i18n="recIntro"]').textContent = dict.recIntroNative;
   document.getElementById("samsungHintText").textContent = dict.samsungHintText;
   document.getElementById("samsungHintClose").setAttribute("aria-label", dict.hintCloseLabel);
@@ -1082,7 +1094,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "74";
+const APP_BUILD = "75";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -2173,7 +2185,7 @@ function exportCsv() {
 // --- Kopia zapasowa (plik JSON z danymi z localStorage) ---
 // PIN, klucz organizatora, identyfikator urządzenia i zgoda na statystyki zostają celowo poza kopią.
 const BACKUP_FORMAT = "polska-adventure-ultra-backup";
-const BACKUP_KEYS = [HISTORY_KEY, PLANNED_ROUTES_KEY, GOALS_KEY, CHALLENGE_KEY, CHALLENGE_INVITE_KEY, CHALLENGE_INVITE_TOKEN_KEY, THEME_KEY, LANG_KEY, NICK_KEY, SHARE_TOKENS_KEY, ROUTE_SHARE_TOKENS_KEY, EVENT_TOKENS_KEY, EVENTS_DONE_KEY];
+const BACKUP_KEYS = [HISTORY_KEY, BODY_WEIGHT_KEY, PLANNED_ROUTES_KEY, GOALS_KEY, CHALLENGE_KEY, CHALLENGE_INVITE_KEY, CHALLENGE_INVITE_TOKEN_KEY, THEME_KEY, LANG_KEY, NICK_KEY, SHARE_TOKENS_KEY, ROUTE_SHARE_TOKENS_KEY, EVENT_TOKENS_KEY, EVENTS_DONE_KEY];
 const BACKUP_JSON_KEYS = { [HISTORY_KEY]: "array", [PLANNED_ROUTES_KEY]: "array", [GOALS_KEY]: "array", [EVENT_TOKENS_KEY]: "object", [EVENTS_DONE_KEY]: "object", [CHALLENGE_KEY]: "object", [SHARE_TOKENS_KEY]: "object", [ROUTE_SHARE_TOKENS_KEY]: "object" };
 
 async function createBackup() {
@@ -4330,6 +4342,49 @@ const REC_GAP_S = 20;            // dłuższa przerwa = aplikacja była w tle / 
 const REC_MAX_KMH = { Bieg: 30, Trekking: 15, Kajak: 20, WodyOtwarte: 10, Rower: 90 };
 const REC_SAVE_MS = 10000;
 
+// Kalorie = MET × waga (kg) × czas (h). MET zależy od prędkości odcinka (km/h);
+// wartości wg Compendium of Physical Activities, między punktami - interpolacja liniowa.
+const MET_TABLES = {
+  Bieg: [[0, 2.0], [4, 3.5], [6.4, 6.5], [8, 8.3], [9.7, 9.8], [11.3, 11.0], [12.9, 11.8], [14.5, 12.8], [16.1, 14.5], [19.3, 19.0], [22.5, 23.0]],
+  Trekking: [[0, 2.0], [3.2, 4.0], [4.8, 5.3], [5.6, 6.0], [6.4, 7.0], [8, 8.3]],
+  Rower: [[0, 2.0], [10, 4.0], [16, 6.8], [19.3, 8.0], [22.5, 10.0], [25.7, 12.0], [32, 15.8]],
+  Kajak: [[0, 2.0], [4, 3.5], [6, 5.0], [8, 8.0], [10, 12.5]],
+  WodyOtwarte: [[0, 2.0], [1.5, 5.8], [2.5, 8.3], [3.5, 10.0], [4.5, 11.0]],
+};
+
+function metFor(disc, kmh) {
+  const table = MET_TABLES[disc] || MET_TABLES.Trekking;
+  if (kmh <= table[0][0]) return table[0][1];
+  for (let i = 1; i < table.length; i++) {
+    const [x1, y1] = table[i];
+    if (kmh <= x1) {
+      const [x0, y0] = table[i - 1];
+      return y0 + ((kmh - x0) / (x1 - x0)) * (y1 - y0);
+    }
+  }
+  return table[table.length - 1][1];
+}
+
+function parseBodyWeight(value) {
+  const kg = parseFloat(String(value).replace(",", "."));
+  return kg >= 20 && kg <= 300 ? kg : null;
+}
+
+// Ostatnio wpisana waga; jeśli brak - waga z ostatniego treningu w historii.
+function getBodyWeight() {
+  try {
+    const kg = parseBodyWeight(localStorage.getItem(BODY_WEIGHT_KEY));
+    if (kg) return kg;
+  } catch (e) { /* brak dostępu */ }
+  const withWeight = getHistory().filter((h) => parseBodyWeight(h.weight)).sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  return withWeight.length ? parseBodyWeight(withWeight[0].weight) : null;
+}
+
+function recAddKcal(disc, kmh, seconds) {
+  if (!rec || !rec.weightKg) return;
+  rec.kcal = (rec.kcal || 0) + metFor(disc, kmh) * rec.weightKg * (seconds / 3600);
+}
+
 let rec = null;            // { disc, startedAt, pausedMs, pausedAt, points: [[lat, lon, ele|null, t]], distKm, gaps }
 let recWatchId = null;
 let recTimer = null;
@@ -4421,6 +4476,8 @@ function recRender() {
   document.getElementById("recTime").textContent = formatClock(recMovingMs());
   document.getElementById("recDist").textContent = rec.distKm.toFixed(2);
   document.getElementById("recPace").textContent = recPaceText();
+  document.getElementById("recKcal").textContent = rec.weightKg ? String(Math.round(rec.kcal || 0)) : "–";
+  document.getElementById("recKcalLbl").textContent = rec.weightKg ? dict.recKcalLbl : dict.recKcalNoWeight;
   document.getElementById("recPaceLbl").textContent =
     rec.disc === "Bieg" || SWIM_DISCIPLINES.includes(rec.disc) ? dict.recPaceLbl : dict.recSpeedLbl;
   document.getElementById("recGps").textContent = recLastAccuracy == null ? "–" : `±${Math.round(recLastAccuracy)} m`;
@@ -4493,7 +4550,10 @@ function recOnPosition(pos) {
       rec.points.push(point);
     } else {
       if (dt > REC_GAP_S) rec.gaps = (rec.gaps || 0) + 1;
-      if (kmh <= maxKmh) rec.distKm += d;
+      if (kmh <= maxKmh) {
+        rec.distKm += d;
+        recAddKcal(rec.disc, kmh, dt);
+      }
       rec.points.push(point);
     }
     recRejects = 0;
@@ -4818,7 +4878,12 @@ function startRecording() {
     points: [],
     distKm: 0,
     gaps: 0,
+    weightKg: parseBodyWeight(document.getElementById("recWeight").value),
+    kcal: 0,
   };
+  if (rec.weightKg) {
+    try { localStorage.setItem(BODY_WEIGHT_KEY, String(rec.weightKg)); } catch (e) { /* brak dostępu */ }
+  }
   recRejects = 0;
   recLastAccuracy = null;
   recSave(true);
@@ -4871,15 +4936,19 @@ function finishRecording() {
   document.getElementById("date").value = toYmd(new Date(finished.startedAt));
   document.getElementById("dist").value = finished.distKm.toFixed(2);
   document.getElementById("time").value = (moving / 60000).toFixed(1);
+  const kcal = finished.weightKg ? Math.round(finished.kcal || 0) : 0;
+  const weightField = document.getElementById("weight");
+  if (finished.weightKg && !parseBodyWeight(weightField.value)) weightField.value = String(finished.weightKg);
   const notes = document.getElementById("notes");
   if (!notes.value.trim()) notes.value = dict.recNote;
+  if (kcal) notes.value += ` · ${dict.recKcalNote(kcal)}`;
   pendingRoute = recTrackForHistory();
   clearFieldState("dist");
   clearFieldState("time");
 
   discardRecording(true);
   openTrainForm();
-  showTrainHint(dict.recFinishedHint(finished.distKm.toFixed(2), formatClock(moving)));
+  showTrainHint(dict.recFinishedHint(finished.distKm.toFixed(2), formatClock(moving), kcal));
   focusField("dist");
 }
 
@@ -4935,6 +5004,8 @@ function initRecorder() {
   const select = document.getElementById("recDisc");
   const current = document.getElementById("discipline").value;
   if (REC_DISCIPLINES.includes(current)) select.value = current;
+  const savedWeight = getBodyWeight();
+  if (savedWeight) document.getElementById("recWeight").value = String(savedWeight);
   document.getElementById("recStartBtn").addEventListener("click", startRecording);
   document.getElementById("recPauseBtn").addEventListener("click", toggleRecordingPause);
   document.getElementById("recFinishBtn").addEventListener("click", finishRecording);

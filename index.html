@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "74";
+  window.PAU_PAGE_BUILD = "75";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -137,6 +137,8 @@
           <option value="WodyOtwarte" data-i18n="optWodyOtwarte">Pływanie – wody otwarte</option>
           <option value="Trekking" data-i18n="optTrekking">Trekking</option>
         </select>
+        <label for="recWeight" data-i18n="recWeightLbl">Twoja waga (kg) — do liczenia kalorii</label>
+        <input id="recWeight" type="number" step="0.1" min="20" max="300" inputmode="decimal" placeholder="np. 75 (opcjonalnie)">
         <button class="primary rec-start" id="recStartBtn" data-i18n="recStartBtn">▶ START</button>
       </div>
       <div id="recActive" hidden>
@@ -145,6 +147,7 @@
         <div class="stats-grid rec-grid">
           <div class="stat-tile"><div class="stat-value" id="recDist">0.00</div><div class="stat-label" data-i18n="recDistLbl">Dystans (km)</div></div>
           <div class="stat-tile"><div class="stat-value" id="recPace">–</div><div class="stat-label" id="recPaceLbl">Śr. tempo</div></div>
+          <div class="stat-tile rec-kcal-tile"><div class="stat-value" id="recKcal">–</div><div class="stat-label" id="recKcalLbl">🔥 Spalone kcal</div></div>
         </div>
         <p class="rec-status" id="recStatus" role="status"></p>
         <button type="button" class="primary" id="recSettingsBtn" hidden>⚙ Otwórz ustawienia</button>
