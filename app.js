@@ -53,6 +53,8 @@ const TRANSLATIONS = {
     labelTime: "Czas (min)",
     labelHr: "Śr. tętno (bpm)",
     labelSteps: "Kroki",
+    updateText: "🆕 Jest nowa wersja aplikacji w Sklepie Play.",
+    updateNowBtn: "AKTUALIZUJ",
     labelVo2max: "Pułap tlenowy VO2max",
     labelWeight: "Waga (kg)",
     labelNotes: "Notatki / Samopoczucie",
@@ -559,6 +561,8 @@ const TRANSLATIONS = {
     labelTime: "Time (min)",
     labelHr: "Avg. heart rate (bpm)",
     labelSteps: "Steps",
+    updateText: "🆕 A new version of the app is available on Google Play.",
+    updateNowBtn: "UPDATE",
     labelVo2max: "VO2max",
     labelWeight: "Weight (kg)",
     labelNotes: "Notes / How you felt",
@@ -1119,13 +1123,38 @@ if ("serviceWorker" in navigator) {
   // Nie przy pierwszej wizycie (wtedy nie było poprzedniej wersji) i nie w trakcie nagrywania GPS.
   const hadController = Boolean(navigator.serviceWorker.controller);
   let reloadedForUpdate = false;
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (!hadController || reloadedForUpdate) return;
+  let reloadPending = false;
+  // Po wczytaniu strona działa na starym kodzie bez problemu - przeładowanie nie może przerwać
+  // nagrywania ani wypełnianego formularza (np. powrót z wyboru pliku z zegarka).
+  const busyForReload = () => {
     let recording = false;
     try { recording = Boolean(localStorage.getItem("pau_recording")); } catch (e) { /* brak dostępu */ }
-    if (recording) return;
+    if (recording) return true;
+    if (document.readyState !== "complete") return false; // w trakcie wczytywania - przeładowujemy od razu
+    try { if (trainFormOpen) return true; } catch (e) { /* jeszcze nie zainicjowane */ }
+    const el = document.activeElement;
+    return Boolean(el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName));
+  };
+  const reloadForUpdate = () => {
+    if (busyForReload()) { reloadPending = true; return; }
     reloadedForUpdate = true;
     window.location.reload();
+  };
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController || reloadedForUpdate) return;
+    reloadForUpdate();
+  });
+  // Aplikacja długo otwarta w tle nie wczytuje się na nowo - przy powrocie pytamy serwer o nową wersję
+  // (najwyżej co 15 minut). Nowy service worker przejmuje stronę -> controllerchange -> przeładowanie.
+  let lastUpdateCheck = Date.now();
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible" || isNativeApp()) return;
+    if (reloadPending) { reloadPending = false; reloadForUpdate(); return; }
+    if (Date.now() - lastUpdateCheck < 15 * 60 * 1000 || navigator.onLine === false) return;
+    lastUpdateCheck = Date.now();
+    navigator.serviceWorker.getRegistration()
+      .then((reg) => reg && reg.update())
+      .catch(() => { /* offline / serwer niedostępny - spróbujemy następnym razem */ });
   });
 }
 
@@ -4636,6 +4665,53 @@ function capPlugin(name) {
   return capPlugins[name];
 }
 
+// --- Aktualizacje apki natywnej ze Sklepu Play (wtyczka @capawesome/capacitor-app-update) ---
+// Przy starcie i powrocie do apki (najwyżej co 6 godzin) pytamy Sklep Play o nową wersję.
+// Pasek nie pojawia się w trakcie nagrywania; „✕” chowa go do następnego uruchomienia.
+const UPDATE_AVAILABLE = 2;      // AppUpdateAvailability.UPDATE_AVAILABLE
+let updateCheckedAt = 0;
+let updateDismissed = false;
+
+async function checkNativeUpdate() {
+  if (!isNativeApp() || updateDismissed || Date.now() - updateCheckedAt < 6 * 3600 * 1000) return;
+  updateCheckedAt = Date.now();
+  try {
+    const info = await capPlugin("AppUpdate").getAppUpdateInfo();
+    const available = info && info.updateAvailability === UPDATE_AVAILABLE;
+    document.getElementById("updateBanner").hidden = !available || Boolean(rec);
+  } catch (e) {
+    // np. apka zainstalowana spoza Sklepu Play albo brak internetu - bez komunikatu
+    updateCheckedAt = 0;
+  }
+}
+
+async function startNativeUpdate() {
+  document.getElementById("updateBanner").hidden = true;
+  const plugin = capPlugin("AppUpdate");
+  try {
+    const info = await plugin.getAppUpdateInfo();
+    // Pełnoekranowe okno Google: pobiera, instaluje i uruchamia apkę ponownie.
+    if (info && info.immediateUpdateAllowed) {
+      await plugin.performImmediateUpdate();
+      return;
+    }
+  } catch (e) { /* niżej: Sklep Play */ }
+  try { await plugin.openAppStore(); } catch (e) { /* brak Sklepu Play */ }
+}
+
+function initNativeUpdates() {
+  if (!isNativeApp()) return;
+  document.getElementById("updateNowBtn").addEventListener("click", startNativeUpdate);
+  document.getElementById("updateLaterBtn").addEventListener("click", () => {
+    updateDismissed = true;
+    document.getElementById("updateBanner").hidden = true;
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") checkNativeUpdate();
+  });
+  checkNativeUpdate();
+}
+
 function isNativeApp() {
   return Boolean(window.Capacitor && typeof window.Capacitor.isNativePlatform === "function" && window.Capacitor.isNativePlatform());
 }
@@ -5171,6 +5247,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initRecorder();
   initTrainModes();
   initSamsungHint();
+  initNativeUpdates();
 
   // Sesja logowania trwa do zamknięcia karty przeglądarki (sessionStorage).
   // Dzięki temu nie trzeba podawać PIN-u za każdym odświeżeniem, ale po

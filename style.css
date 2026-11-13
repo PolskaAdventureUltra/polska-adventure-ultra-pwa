@@ -232,6 +232,10 @@ canvas { width: 100%; height: auto; background: var(--card); border-radius: 8px;
 .form-hint[hidden] { display: none; }
 .form-hint span { flex: 1; }
 .form-hint .form-hint-close { width: auto; flex-shrink: 0; margin: -4px -6px 0 0; padding: 4px 8px; background: transparent; color: var(--subtle-fg); font-size: 15px; }
+.update-banner { position: relative; border-left: 4px solid var(--accent); }
+.update-banner[hidden] { display: none; }
+.update-banner p { margin: 0 28px 8px 0; }
+.update-banner .form-hint-close { position: absolute; top: 8px; right: 8px; }
 .field-error { margin: 4px 0 0; font-size: 13px; font-weight: bold; color: var(--danger); }
 .field-error[hidden] { display: none; }
 input.field-invalid { border-color: var(--danger); box-shadow: 0 0 0 1px var(--danger); }
