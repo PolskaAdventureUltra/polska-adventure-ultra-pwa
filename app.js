@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     labelTime: "Czas (min)",
     labelHr: "Śr. tętno (bpm)",
     labelSteps: "Kroki",
+    importNoSteps: "\n👣 Ten plik nie zawiera kroków. Wyeksportuj trening jako FIT albo wpisz kroki ręcznie.",
     updateText: "🆕 Jest nowa wersja aplikacji w Sklepie Play.",
     updateNowBtn: "AKTUALIZUJ",
     labelVo2max: "Pułap tlenowy VO2max",
@@ -71,7 +72,7 @@ const TRANSLATIONS = {
     watchBrandOther: "Strava / inny",
     watchSteps: {
       garmin: ["Na stronie connect.garmin.com otwórz aktywność (aplikacja Garmin Connect w telefonie nie eksportuje plików — użyj przeglądarki).", "Ikona koła zębatego → „Eksportuj do GPX” lub „Eksportuj do TCX”."],
-      suunto: ["Suunto app: Dziennik → wybierz trening.", "⋮ / Udostępnij → Eksportuj → GPX albo FIT (basen: wybierz FIT)."],
+      suunto: ["Suunto app: Dziennik → wybierz trening.", "⋮ / Udostępnij → Eksportuj → wybierz FIT (ma też kroki i dane z basenu; GPX zawiera tylko trasę i tętno)."],
       polar: ["Na stronie flow.polar.com otwórz trening.", "„Eksportuj sesję” → GPX lub TCX."],
       samsung: ["Samsung Health w telefonie: otwórz trening z trasą GPS.", "⋮ → „Eksportuj do pliku GPX”. Opcja jest tylko przy treningach z GPS, a plik nie zawiera tętna."],
       huawei: ["Huawei Health: otwórz trening → ⋮ / udostępnij → „Eksportuj trasę” → GPX lub TCX.", "Nie ma tej opcji? Połącz Huawei Health ze Stravą (Ja → Udostępnianie danych i autoryzacja → Strava) i pobierz plik ze Stravy (wybierz „Strava / inny”)."],
@@ -561,6 +562,7 @@ const TRANSLATIONS = {
     labelTime: "Time (min)",
     labelHr: "Avg. heart rate (bpm)",
     labelSteps: "Steps",
+    importNoSteps: "\n👣 This file has no steps. Export the training as FIT or enter the steps manually.",
     updateText: "🆕 A new version of the app is available on Google Play.",
     updateNowBtn: "UPDATE",
     labelVo2max: "VO2max",
@@ -579,7 +581,7 @@ const TRANSLATIONS = {
     watchBrandOther: "Strava / other",
     watchSteps: {
       garmin: ["On connect.garmin.com open the activity (the Garmin Connect phone app can't export files — use a browser).", "Gear icon → “Export to GPX” or “Export to TCX”."],
-      suunto: ["Suunto app: Diary → choose the training.", "⋮ / Share → Export → GPX or FIT (pool swim: choose FIT)."],
+      suunto: ["Suunto app: Diary → choose the training.", "⋮ / Share → Export → choose FIT (it also has steps and pool data; GPX only has the route and heart rate)."],
       polar: ["On flow.polar.com open the training.", "“Export session” → GPX or TCX."],
       samsung: ["Samsung Health on your phone: open a workout with a GPS route.", "⋮ → “Export to GPX file”. Only available for GPS workouts; the file has no heart rate."],
       huawei: ["Huawei Health: open the workout → ⋮ / share → “Export route” → GPX or TCX.", "No such option? Link Huawei Health with Strava (Me → Data sharing and authorization → Strava) and download the file from Strava (choose “Strava / other”)."],
@@ -1100,7 +1102,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "76";
+const APP_BUILD = "77";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -4396,7 +4398,8 @@ function importTrainingFile(file) {
       pendingRoute = parsed.route && parsed.route.length >= 2 ? parsed.route : null;
       openTrainForm();
 
-      alert(t().importSuccess(parsed));
+      const noSteps = STEP_DISCIPLINES.includes(parsed.disc) && !parsed.steps;
+      alert(t().importSuccess(parsed) + (noSteps ? t().importNoSteps : ""));
     } catch (e) {
       alert(t().importError(e.message));
     }
