@@ -106,6 +106,12 @@ alter table public.events add constraint events_disc_check
   check (disc in ('Bieg', 'Rower', 'Kajak', 'Basen', 'WodyOtwarte', 'Trekking', 'Multi'));
 
 alter table public.devices enable row level security;
+-- Kroki (2026-11-13): tylko bieg i trekking, z zegarka lub wpisane ręcznie.
+alter table public.activities add column if not exists steps integer;
+alter table public.activities drop constraint if exists activities_steps_check;
+alter table public.activities add constraint activities_steps_check
+  check (steps is null or (steps > 0 and steps <= 300000 and disc in ('Bieg', 'Trekking')));
+
 alter table public.activities enable row level security;
 alter table public.community_routes enable row level security;
 alter table public.admin_keys enable row level security;
@@ -153,9 +159,12 @@ returns json language sql stable security definer set search_path = public as $$
   );
 $$;
 
+-- Stara wersja bez kroków - usuwamy, żeby nie było dwóch funkcji o tej samej nazwie.
+-- p_steps ma wartość domyślną, więc starsze wersje aplikacji (bez kroków) nadal działają.
+drop function if exists public.share_activity(text, text, date, numeric, numeric, jsonb, text);
 create or replace function public.share_activity(
   p_nick text, p_disc text, p_date date, p_dist_km numeric, p_time_min numeric,
-  p_route jsonb, p_delete_token text
+  p_route jsonb, p_delete_token text, p_steps integer default null
 ) returns uuid language plpgsql security definer set search_path = public as $$
 declare
   new_id uuid;
@@ -171,8 +180,8 @@ begin
      + (select count(*) from community_routes where created_at > now() - interval '1 minute') >= 20 then
     raise exception 'rate limit';
   end if;
-  insert into activities (nick, disc, activity_date, dist_km, time_min, route, delete_token_hash)
-  values (trim(p_nick), p_disc, p_date, p_dist_km, p_time_min, p_route,
+  insert into activities (nick, disc, activity_date, dist_km, time_min, steps, route, delete_token_hash)
+  values (trim(p_nick), p_disc, p_date, p_dist_km, p_time_min, p_steps, p_route,
           encode(sha256(convert_to(p_delete_token, 'UTF8')), 'hex'))
   returning id into new_id;
   return new_id;
@@ -186,11 +195,13 @@ begin
   return found;
 end $$;
 
-create or replace function public.list_activities(p_limit int default 50)
+-- Zmiana zwracanych kolumn wymaga usunięcia funkcji (uprawnienia nadawane są ponownie na końcu skryptu).
+drop function if exists public.list_activities(int);
+create function public.list_activities(p_limit int default 50)
 returns table (id uuid, nick text, disc text, activity_date date, dist_km numeric,
-               time_min numeric, route jsonb, created_at timestamptz)
+               time_min numeric, route jsonb, created_at timestamptz, steps integer)
 language sql stable security definer set search_path = public as $$
-  select id, nick, disc, activity_date, dist_km, time_min, route, created_at
+  select id, nick, disc, activity_date, dist_km, time_min, route, created_at, steps
   from activities
   order by created_at desc
   limit least(greatest(coalesce(p_limit, 50), 1), 100);
@@ -470,7 +481,7 @@ end $$;
 
 -- Dostęp z aplikacji tylko do powyższych funkcji (bez is_admin).
 revoke execute on function public.ping(uuid), public.forget_device(uuid), public.get_stats(),
-  public.share_activity(text, text, date, numeric, numeric, jsonb, text),
+  public.share_activity(text, text, date, numeric, numeric, jsonb, text, integer),
   public.delete_activity(uuid, text), public.list_activities(int),
   public.share_route(text, text, text, numeric, jsonb, text), public.delete_route(uuid, text),
   public.list_routes(int), public.get_route(uuid),
@@ -482,7 +493,7 @@ revoke execute on function public.ping(uuid), public.forget_device(uuid), public
   public.set_event_result(uuid, text, text, numeric, numeric, jsonb), public.list_event_results(uuid),
   public.check_challenge_invite(text), public.claim_challenge_invite(text, text) from public;
 grant execute on function public.ping(uuid), public.forget_device(uuid), public.get_stats(),
-  public.share_activity(text, text, date, numeric, numeric, jsonb, text),
+  public.share_activity(text, text, date, numeric, numeric, jsonb, text, integer),
   public.delete_activity(uuid, text), public.list_activities(int),
   public.share_route(text, text, text, numeric, jsonb, text), public.delete_route(uuid, text),
   public.list_routes(int), public.get_route(uuid),
