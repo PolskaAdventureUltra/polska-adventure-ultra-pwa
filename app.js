@@ -21,6 +21,8 @@ const EVENTS_DONE_KEY = "pau_events_done";       // { idWydarzenia: { title, dis
 const ADMIN_KEY_KEY = "pau_admin_key";           // klucz organizatora (tylko na telefonie administratora)
 const CHALLENGE_INVITE_KEY = "pau_challenge_invite"; // kod zaproszenia: dołączenie przed oficjalnymi zapisami
 const CHALLENGE_INVITE_TOKEN_KEY = "pau_challenge_invite_token"; // losowy token urządzenia, do którego przypisano kod
+const CHALLENGE_PROGRESS_TOKEN_KEY = "pau_challenge_progress_token"; // losowy token wiersza postępu w bazie (za zgodą)
+const CHALLENGE_SYNCED_KEY = "pau_challenge_synced";   // ostatnio wysłany postęp - nie wysyłamy tego samego ponownie
 const CHALLENGE_KEY = "pau_challenge";              // { start: "YYYY-MM-DD" } - udział w wyzwaniu 4000 km
 const GOALS_KEY = "pau_goals"; // [{ period: "week"|"month", disc: "all"|"Bieg"|..., km }]
 
@@ -209,6 +211,19 @@ const TRANSLATIONS = {
     flagOffTitle: "Oznacz jako odcinek wyzwania 4000 km",
     challengeLeaveBtn: "Zrezygnuj z wyzwania",
     confirmLeaveChallenge: "Zrezygnować z wyzwania? Postęp przestanie się liczyć (treningi zostają w Historii).",
+    chShareLabel: "Pokazuj mój postęp obserwatorom (nick i kilometry)",
+    chShareAsk: "Czy pokazywać Twój postęp innym osobom w aplikacji?\n\nWidoczne będą tylko: nick, data startu i przebyte kilometry (bieg/rower/kajak) — bez tras i treningów. Możesz to zmienić w każdej chwili w ustawieniach wyzwania.",
+    chShareOn: (nick) => `Postęp widoczny jako „${nick}”. Lista pojawi się u obserwatorów, gdy organizator ją udostępni.`,
+    chShareOff: "Twój postęp jest widoczny tylko dla Ciebie.",
+    chShareRemoveFailed: "Nie udało się usunąć Twojego postępu z serwera (brak internetu?). Spróbuj ponownie.",
+    chBoardTitle: (n) => `UCZESTNICY · ${n}`,
+    chBoardEmpty: "Nikt jeszcze nie udostępnił postępu.",
+    chBoardPreview: "Podgląd organizatora — obserwatorzy jeszcze tego nie widzą.",
+    chBoardShow: "👁 POKAŻ LISTĘ OBSERWATOROM",
+    chBoardHide: "🙈 UKRYJ LISTĘ PRZED OBSERWATORAMI",
+    chBoardConfirmShow: "Pokazać listę uczestników (nick + km) wszystkim użytkownikom aplikacji?",
+    chBoardConfirmHide: "Ukryć listę uczestników przed obserwatorami?",
+    chBoardNotAllowed: "Tylko główny organizator może zmienić widoczność listy.",
     chOf: (pct) => `z 4 000 km · ${pct}%`,
     chWeek: "TEN TYDZIEŃ",
     chStreak: (n) => `${n} ${n === 1 ? "dzień" : "dni"} z rzędu w ruchu`,
@@ -536,6 +551,7 @@ const TRANSLATIONS = {
       <ul>
         <li><b>Statystyki użytkowników</b> (tylko za zgodą): losowy identyfikator urządzenia i czas ostatniego użycia aplikacji. Cel: policzenie, ile osób korzysta z aplikacji (łącznie i w danym okresie). Liczymy tylko liczby — identyfikator nie jest powiązany z imieniem, nickiem ani treningami. Usuwany po 13 miesiącach braku aktywności lub od razu po wyłączeniu zgody.</li>
         <li><b>Udostępnione aktywności</b> (tylko te, które sam udostępnisz): nick, dyscyplina, data, dystans, czas, liczba kroków (bieg, trekking) i trasa (z wysokością n.p.m., jeśli trening ją ma) bez pierwszych/ostatnich 300 m. Nie są powiązane z identyfikatorem urządzenia. Przechowywane do czasu, aż je usuniesz. Widoczne dla wszystkich użytkowników aplikacji.</li>
+        <li><b>Postęp w wyzwaniu 4000 km</b> (tylko jeśli się na to zgodzisz): nick, data startu i przebyte kilometry w biegu, na rowerze i w kajaku — bez tras i szczegółów treningów. Powiązane z losowym tokenem z Twojego telefonu (w bazie tylko jego hash), nie z identyfikatorem urządzenia. Widoczne dla organizatora, a dla pozostałych użytkowników dopiero po udostępnieniu listy przez organizatora. Usuwane od razu po wyłączeniu zgody lub rezygnacji z wyzwania.</li>
         <li><b>Udostępnione trasy</b> (tylko te, które sam udostępnisz): nick, nazwa trasy, rodzaj, dystans i cała trasa. Nie są powiązane z identyfikatorem urządzenia. Przechowywane do czasu, aż je usuniesz. Widoczne dla wszystkich i możliwe do pobrania przez innych użytkowników.</li>
         <li><b>Zapisy na wydarzenia</b> (tylko gdy klikniesz „Biorę udział”): wyłącznie skrót (hash) losowego znacznika zapisanego na Twoim telefonie — bez nicku i identyfikatora urządzenia. Służy do policzenia chętnych i umożliwia wypisanie się. Usuwany po wypisaniu się albo razem z wydarzeniem, najpóźniej 30 dni po jego terminie.</li>
         <li><b>Ukończenie wydarzenia</b> (tylko gdy po kliknięciu „Zrobione” wybierzesz „pokaż wszystkim”): skrót (hash) losowego znacznika z Twojego telefonu, a po zapisaniu treningu także Twój wynik: dystans, czas, profil wysokości (wysokość względem przebytych kilometrów — bez współrzędnych i mapy trasy) oraz nick, jeśli wybrałeś „Pokaż z nickiem”. Służy do pokazania liczby osób, które ukończyły wydarzenie, i listy wyników. Usunięcie treningu z Historii usuwa też wynik z serwera. Usuwany po cofnięciu albo razem z wydarzeniem, najpóźniej 30 dni po jego terminie.</li>
@@ -718,6 +734,19 @@ const TRANSLATIONS = {
     flagOffTitle: "Mark as a 4000 km challenge stage",
     challengeLeaveBtn: "Leave the challenge",
     confirmLeaveChallenge: "Leave the challenge? Your progress will no longer be tracked (your trainings stay in History).",
+    chShareLabel: "Show my progress to observers (nickname and kilometres)",
+    chShareAsk: "Show your progress to other people in the app?\n\nOnly your nickname, start date and distance covered (running/cycling/kayaking) will be visible — no routes or trainings. You can change this at any time in the challenge settings.",
+    chShareOn: (nick) => `Progress visible as “${nick}”. Observers will see the list once the organizer makes it public.`,
+    chShareOff: "Your progress is visible only to you.",
+    chShareRemoveFailed: "Could not remove your progress from the server (no internet?). Please try again.",
+    chBoardTitle: (n) => `PARTICIPANTS · ${n}`,
+    chBoardEmpty: "Nobody has shared their progress yet.",
+    chBoardPreview: "Organizer preview — observers can't see this yet.",
+    chBoardShow: "👁 SHOW THE LIST TO OBSERVERS",
+    chBoardHide: "🙈 HIDE THE LIST FROM OBSERVERS",
+    chBoardConfirmShow: "Show the participant list (nickname + km) to all app users?",
+    chBoardConfirmHide: "Hide the participant list from observers?",
+    chBoardNotAllowed: "Only the main organizer can change the list visibility.",
     chOf: (pct) => `of 4,000 km · ${pct}%`,
     chWeek: "THIS WEEK",
     chStreak: (n) => `${n} ${n === 1 ? "day" : "days"} in a row`,
@@ -1045,6 +1074,7 @@ const TRANSLATIONS = {
       <ul>
         <li><b>User statistics</b> (only with consent): a random device ID and the time of last use. Purpose: counting how many people use the app (in total and over a given period). Only numbers are counted — the ID is not linked to any name, nickname or training. Deleted after 13 months of inactivity or immediately when you withdraw consent.</li>
         <li><b>Shared activities</b> (only those you share yourself): nickname, discipline, date, distance, time, step count (running, trekking) and the route (with altitude, if the training has it) without the first/last 300 m. Not linked to the device ID. Kept until you delete them. Visible to all app users.</li>
+        <li><b>4000 km challenge progress</b> (only if you agree): nickname, start date and distance covered running, cycling and kayaking — no routes or training details. Linked to a random token from your phone (only its hash is stored), not to the device ID. Visible to the organizer, and to other users only after the organizer makes the list public. Deleted immediately when you withdraw consent or leave the challenge.</li>
         <li><b>Shared routes</b> (only those you share yourself): nickname, route name, type, distance and the whole route. Not linked to the device ID. Kept until you delete them. Visible to and downloadable by all app users.</li>
         <li><b>Event sign-ups</b> (only when you tap “I'm going”): only a hash of a random marker stored on your phone — no nickname or device ID. Used to count participants and to let you cancel. Deleted when you cancel or together with the event, at the latest 30 days after it takes place.</li>
         <li><b>Event completions</b> (only when you choose “show everyone” after tapping “Done”): a hash of a random marker from your phone and, once you save the training, your result: distance, time, elevation profile (elevation against distance covered — no coordinates or route map) and your nickname if you chose “Show with my nickname”. Used to show how many people completed the event and the list of results. Deleting the training from your History also removes the result from the server. Deleted when you undo it or together with the event, at the latest 30 days after it takes place.</li>
@@ -1102,7 +1132,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "77";
+const APP_BUILD = "78";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -1742,14 +1772,181 @@ async function enterChallengeInvite() {
 
 function joinChallenge() {
   if (!canJoinChallenge()) return;
-  saveChallenge({ start: toYmd(new Date()) });
+  const challenge = { start: toYmd(new Date()) };
+  if (isCommunityConfigured() && confirm(t().chShareAsk) && askChallengeNick()) challenge.share = true;
+  saveChallenge(challenge);
   renderChallenge();
 }
 
-function leaveChallenge() {
+async function leaveChallenge() {
   if (!confirm(t().confirmLeaveChallenge)) return;
+  const challenge = getChallenge();
+  if (challenge && challenge.share && !(await removeChallengeProgress())) return;
   saveChallenge(null);
   renderChallenge();
+  loadChallengeBoard();
+}
+
+// --- Postęp uczestników widoczny dla innych (za zgodą uczestnika; listę udostępnia organizator) ---
+function askChallengeNick() {
+  const dict = t();
+  const nick = prompt(dict.promptNick, localStorage.getItem(NICK_KEY) || "");
+  if (nick === null) return false;
+  const trimmed = nick.trim();
+  if (trimmed.length < 1 || trimmed.length > 30) {
+    alert(dict.nickInvalid);
+    return false;
+  }
+  localStorage.setItem(NICK_KEY, trimmed);
+  return true;
+}
+
+function getChallengeProgressToken() {
+  let token = localStorage.getItem(CHALLENGE_PROGRESS_TOKEN_KEY);
+  if (!token) {
+    token = randomToken();
+    localStorage.setItem(CHALLENGE_PROGRESS_TOKEN_KEY, token);
+  }
+  return token;
+}
+
+function challengeProgressPayload() {
+  const st = challengeStats();
+  const km = (d) => Math.round((st.byDisc[d] || 0) * 10) / 10;
+  return {
+    p_nick: localStorage.getItem(NICK_KEY) || "",
+    p_start: getChallenge().start,
+    p_km_bieg: km("Bieg"),
+    p_km_rower: km("Rower"),
+    p_km_kajak: km("Kajak"),
+  };
+}
+
+// Wysyła postęp, gdy się zmienił. Bez internetu - spróbujemy przy następnym odświeżeniu.
+let challengeSyncTimer = null;
+function scheduleChallengeSync() {
+  clearTimeout(challengeSyncTimer);
+  challengeSyncTimer = setTimeout(syncChallengeProgress, 1500);
+}
+
+async function syncChallengeProgress() {
+  const challenge = getChallenge();
+  if (!challenge || !challenge.share || !isCommunityConfigured()) return;
+  const payload = challengeProgressPayload();
+  if (!payload.p_nick) return;
+  const key = JSON.stringify(payload);
+  if (localStorage.getItem(CHALLENGE_SYNCED_KEY) === key) return;
+  try {
+    await rpc("save_challenge_progress", { p_token: getChallengeProgressToken(), ...payload });
+    localStorage.setItem(CHALLENGE_SYNCED_KEY, key);
+  } catch (e) {
+    /* offline - ponowimy */
+  }
+}
+
+async function removeChallengeProgress() {
+  const token = localStorage.getItem(CHALLENGE_PROGRESS_TOKEN_KEY);
+  if (token && isCommunityConfigured()) {
+    try {
+      await rpc("delete_challenge_progress", { p_token: token });
+    } catch (e) {
+      alert(t().chShareRemoveFailed);
+      return false;
+    }
+  }
+  localStorage.removeItem(CHALLENGE_SYNCED_KEY);
+  return true;
+}
+
+async function toggleChallengeShare(e) {
+  const challenge = getChallenge();
+  if (!challenge) return;
+  if (e.target.checked) {
+    if (!askChallengeNick()) {
+      e.target.checked = false;
+      return;
+    }
+    localStorage.removeItem(CHALLENGE_SYNCED_KEY); // nick mógł się zmienić - wyślij na pewno
+    saveChallenge({ ...challenge, share: true });
+    renderChallengeShare();
+    await syncChallengeProgress();
+  } else {
+    if (!(await removeChallengeProgress())) {
+      e.target.checked = true;
+      return;
+    }
+    const { share, ...rest } = challenge;
+    saveChallenge(rest);
+    renderChallengeShare();
+  }
+  loadChallengeBoard();
+}
+
+function renderChallengeShare() {
+  const challenge = getChallenge();
+  const row = document.getElementById("challengeShareRow");
+  const hint = document.getElementById("challengeShareHint");
+  const on = Boolean(challenge && challenge.share);
+  row.style.display = challenge && isCommunityConfigured() ? "flex" : "none";
+  document.getElementById("challengeShare").checked = on;
+  hint.textContent = !challenge || !isCommunityConfigured() ? ""
+    : on ? t().chShareOn(localStorage.getItem(NICK_KEY) || "") : t().chShareOff;
+}
+
+// Lista uczestników z serwera: { visible, admin, superadmin, participants: [...] }.
+let challengeBoard = null;
+async function loadChallengeBoard() {
+  if (!isCommunityConfigured()) return;
+  try {
+    challengeBoard = await rpc("list_challenge_progress", { p_admin_key: getAdminKey() || null });
+  } catch (e) {
+    return; // bez internetu zostaje poprzedni stan
+  }
+  renderChallengeBoard();
+  renderChallenge();
+}
+
+function renderChallengeBoard() {
+  const el = document.getElementById("challengeBoard");
+  if (!el) return;
+  const b = challengeBoard;
+  if (!b || !(b.visible || b.admin)) {
+    el.hidden = true;
+    el.innerHTML = "";
+    return;
+  }
+  const dict = t();
+  const list = Array.isArray(b.participants) ? b.participants : [];
+  const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
+  const rows = list.map((p, i) => {
+    const km = num(p.km_bieg) + num(p.km_rower) + num(p.km_kajak);
+    const pct = Math.min(100, Math.floor((km / CHALLENGE_KM) * 100));
+    const discs = CHALLENGE_DISCIPLINES.map((d) => `${discIcon(d)}${Math.round(num(p["km_" + d.toLowerCase()]))}`).join(" ");
+    return `<li class="ch-board-row"><span class="ch-board-rank">${i + 1}</span>` +
+      `<span class="ch-board-main"><b>${escapeXml(String(p.nick || ""))}</b><span class="ch-board-discs">${discs}</span></span>` +
+      `<span class="ch-board-km"><b>${Math.round(km).toLocaleString(dict.dateLocale)}</b> km<span>${pct}%</span></span></li>`;
+  }).join("");
+  el.hidden = false;
+  el.innerHTML = `<div class="ch-box"><div class="ch-row"><span class="ch-label">${dict.chBoardTitle(list.length)}</span></div>` +
+    (!b.visible ? `<p class="ch-lock">${dict.chBoardPreview}</p>` : "") +
+    (rows ? `<ol class="ch-board">${rows}</ol>` : `<span class="ch-note">${dict.chBoardEmpty}</span>`) +
+    (b.superadmin ? `<button class="ch-invite" id="challengeBoardToggle">${b.visible ? dict.chBoardHide : dict.chBoardShow}</button>` : "") +
+    `</div>`;
+  const toggle = document.getElementById("challengeBoardToggle");
+  if (toggle) toggle.addEventListener("click", toggleChallengeBoardVisible);
+}
+
+async function toggleChallengeBoardVisible() {
+  const dict = t();
+  const show = !(challengeBoard && challengeBoard.visible);
+  if (!confirm(show ? dict.chBoardConfirmShow : dict.chBoardConfirmHide)) return;
+  try {
+    await rpc("admin_set_challenge_visible", { p_admin_key: getAdminKey(), p_visible: show });
+  } catch (e) {
+    alert(String(e && e.message).includes("not allowed") ? dict.chBoardNotAllowed : dict.communityError);
+    return;
+  }
+  loadChallengeBoard();
 }
 
 function pointAlongRoute(fraction) {
@@ -1860,7 +2057,8 @@ function challengeObserverHtml() {
     `<div class="ch-map"><div class="ch-map-left"><span class="ch-big" id="chDemoPct">1%</span>` +
     `<span class="ch-sub">${dict.chDemoSub}</span><span class="ch-small">${dict.chNow(1).split("<br>")[0]}</span>` +
     `${challengePartnersHtml()}</div>${challengeMapSvg(0, true)}</div>` +
-    `<p class="ch-lock"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>${dict.chParticipantsOnly}</p>` +
+    (challengeBoard && challengeBoard.visible ? "" :
+      `<p class="ch-lock"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>${dict.chParticipantsOnly}</p>`) +
     `<p class="ch-intro">${dict.challengeJoinText}</p>` +
     (canJoinChallenge()
       ? `<button class="ch-cta" id="challengeJoinBtn">${dict.challengeJoinBtn}</button>`
@@ -1924,8 +2122,10 @@ function renderChallenge() {
   updateDisciplineUi();
   el.innerHTML = challenge ? challengeParticipantHtml() : challengeObserverHtml();
   bindChallengeTicker(el);
+  renderChallengeShare();
   if (challenge) {
     document.getElementById("challengeStart").value = challenge.start;
+    if (challenge.share) scheduleChallengeSync();
   } else {
     document.getElementById("challengeJoinBtn").addEventListener("click", joinChallenge);
     const inviteBtn = document.getElementById("challengeInviteBtn");
@@ -2248,7 +2448,7 @@ function exportCsv() {
 // --- Kopia zapasowa (plik JSON z danymi z localStorage) ---
 // PIN, klucz organizatora, identyfikator urządzenia i zgoda na statystyki zostają celowo poza kopią.
 const BACKUP_FORMAT = "polska-adventure-ultra-backup";
-const BACKUP_KEYS = [HISTORY_KEY, BODY_WEIGHT_KEY, PLANNED_ROUTES_KEY, GOALS_KEY, CHALLENGE_KEY, CHALLENGE_INVITE_KEY, CHALLENGE_INVITE_TOKEN_KEY, THEME_KEY, LANG_KEY, NICK_KEY, SHARE_TOKENS_KEY, ROUTE_SHARE_TOKENS_KEY, EVENT_TOKENS_KEY, EVENTS_DONE_KEY];
+const BACKUP_KEYS = [HISTORY_KEY, BODY_WEIGHT_KEY, PLANNED_ROUTES_KEY, GOALS_KEY, CHALLENGE_KEY, CHALLENGE_INVITE_KEY, CHALLENGE_INVITE_TOKEN_KEY, CHALLENGE_PROGRESS_TOKEN_KEY, THEME_KEY, LANG_KEY, NICK_KEY, SHARE_TOKENS_KEY, ROUTE_SHARE_TOKENS_KEY, EVENT_TOKENS_KEY, EVENTS_DONE_KEY];
 const BACKUP_JSON_KEYS = { [HISTORY_KEY]: "array", [PLANNED_ROUTES_KEY]: "array", [GOALS_KEY]: "array", [EVENT_TOKENS_KEY]: "object", [EVENTS_DONE_KEY]: "object", [CHALLENGE_KEY]: "object", [SHARE_TOKENS_KEY]: "object", [ROUTE_SHARE_TOKENS_KEY]: "object" };
 
 async function createBackup() {
@@ -3575,6 +3775,7 @@ async function toggleOrganizer() {
     localStorage.removeItem(ADMIN_KEY_KEY);
     showEventForm(false);
     renderChallenge();
+    loadChallengeBoard();
     return;
   }
   const key = prompt(dict.promptAdminKey);
@@ -3592,6 +3793,7 @@ async function toggleOrganizer() {
   alert(dict.adminLoggedIn);
   refreshEvents(); // pobiera też listę wydarzeń, które ten organizator może usuwać
   renderChallenge();
+  loadChallengeBoard();
 }
 
 function showEventForm(visible) {
@@ -5214,8 +5416,10 @@ document.addEventListener("DOMContentLoaded", () => {
     showTab("challenge");
     renderChallenge();
     verifyChallengeInvite();
+    loadChallengeBoard();
   });
   document.getElementById("challengeLeaveBtn").addEventListener("click", leaveChallenge);
+  document.getElementById("challengeShare").addEventListener("change", toggleChallengeShare);
   document.getElementById("challengeStart").addEventListener("change", (e) => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) return;
     saveChallenge({ ...getChallenge(), start: e.target.value });

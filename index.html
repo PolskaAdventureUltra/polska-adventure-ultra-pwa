@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "77";
+  window.PAU_PAGE_BUILD = "78";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -109,10 +109,13 @@
 
   <div id="tabChallenge" class="tab-content">
     <div id="challengeScreen" class="challenge"></div>
+    <div id="challengeBoard" class="challenge challenge-board" hidden></div>
     <div class="card" id="challengeSettings" style="display:none">
       <label for="challengeStart" data-i18n="challengeStartLabel">Początek Twojego wyzwania</label>
       <input type="date" id="challengeStart">
       <p class="hint-text" data-i18n="challengeStartHint">Do wyzwania liczą się treningi od tej daty (wszystkie dyscypliny).</p>
+      <label class="checkbox-row" id="challengeShareRow" style="display:none"><input type="checkbox" id="challengeShare"> <span data-i18n="chShareLabel">Pokazuj mój postęp obserwatorom (nick i kilometry)</span></label>
+      <p class="hint-text" id="challengeShareHint"></p>
       <button id="challengeLeaveBtn" data-i18n="challengeLeaveBtn">Zrezygnuj z wyzwania</button>
     </div>
   </div>

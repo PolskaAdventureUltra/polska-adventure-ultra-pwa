@@ -105,6 +105,25 @@ alter table public.events drop constraint if exists events_disc_check;
 alter table public.events add constraint events_disc_check
   check (disc in ('Bieg', 'Rower', 'Kajak', 'Basen', 'WodyOtwarte', 'Trekking', 'Multi'));
 
+-- Postęp uczestników wyzwania 4000 km (2026-11-13). Tylko za zgodą uczestnika: nick + km, bez tras i treningów.
+-- Wiersz identyfikuje hash losowego tokenu z telefonu uczestnika (nie identyfikator urządzenia).
+create table if not exists public.challenge_progress (
+  token_hash text primary key,
+  nick text not null check (char_length(nick) between 1 and 30),
+  start_date date not null,
+  km_bieg numeric(8, 1) not null default 0 check (km_bieg between 0 and 20000),
+  km_rower numeric(8, 1) not null default 0 check (km_rower between 0 and 20000),
+  km_kajak numeric(8, 1) not null default 0 check (km_kajak between 0 and 20000),
+  updated_at timestamptz not null default now()
+);
+-- Ustawienia wyzwania: czy obserwatorzy widzą listę uczestników (włącza superadmin w aplikacji).
+create table if not exists public.challenge_settings (
+  id int primary key default 1 check (id = 1),
+  observers_visible boolean not null default false,
+  changed_at timestamptz not null default now()
+);
+insert into public.challenge_settings (id) values (1) on conflict (id) do nothing;
+
 alter table public.devices enable row level security;
 -- Kroki (2026-11-13): tylko bieg i trekking, z zegarka lub wpisane ręcznie.
 alter table public.activities add column if not exists steps integer;
@@ -129,8 +148,11 @@ alter table public.challenge_invites add column if not exists claimed_at timesta
 alter table public.event_participants enable row level security;
 alter table public.event_completions enable row level security;
 alter table public.challenge_invites enable row level security;
+alter table public.challenge_progress enable row level security;
+alter table public.challenge_settings enable row level security;
 revoke all on public.devices, public.activities, public.community_routes,
-  public.admin_keys, public.events, public.event_participants, public.event_completions, public.challenge_invites from anon, authenticated;
+  public.admin_keys, public.events, public.event_participants, public.event_completions, public.challenge_invites,
+  public.challenge_progress, public.challenge_settings from anon, authenticated;
 
 -- Zliczanie użytkowników (tylko za zgodą użytkownika w aplikacji). Przy okazji kasuje urządzenia
 -- nieaktywne dłużej niż 13 miesięcy (retencja danych).
@@ -479,6 +501,76 @@ begin
   return v_claimed = v_token_hash;
 end $$;
 
+-- --- Postęp uczestników wyzwania ---
+-- Zapis / aktualizacja własnego postępu (token zna tylko telefon uczestnika).
+create or replace function public.save_challenge_progress(
+  p_token text, p_nick text, p_start date, p_km_bieg numeric, p_km_rower numeric, p_km_kajak numeric
+) returns boolean language plpgsql security definer set search_path = public as $$
+declare
+  v_hash text;
+begin
+  if p_token is null or char_length(p_token) < 32 then
+    raise exception 'invalid token';
+  end if;
+  if p_start is null or p_start < date '2026-01-01' or p_start > current_date + 1 then
+    raise exception 'invalid start';
+  end if;
+  v_hash := encode(sha256(convert_to(p_token, 'UTF8')), 'hex');
+  -- Prosta ochrona przed spamem: nowych uczestników najwyżej 20 na minutę.
+  if not exists (select 1 from challenge_progress where token_hash = v_hash)
+     and (select count(*) from challenge_progress where updated_at > now() - interval '1 minute') >= 20 then
+    raise exception 'rate limit';
+  end if;
+  insert into challenge_progress (token_hash, nick, start_date, km_bieg, km_rower, km_kajak, updated_at)
+  values (v_hash, trim(p_nick), p_start, round(coalesce(p_km_bieg, 0), 1), round(coalesce(p_km_rower, 0), 1),
+          round(coalesce(p_km_kajak, 0), 1), now())
+  on conflict (token_hash) do update set
+    nick = excluded.nick, start_date = excluded.start_date, km_bieg = excluded.km_bieg,
+    km_rower = excluded.km_rower, km_kajak = excluded.km_kajak, updated_at = now();
+  return true;
+end $$;
+
+-- Wycofanie zgody / rezygnacja z wyzwania: usuwa wiersz uczestnika.
+create or replace function public.delete_challenge_progress(p_token text)
+returns boolean language plpgsql security definer set search_path = public as $$
+begin
+  delete from challenge_progress where token_hash = encode(sha256(convert_to(p_token, 'UTF8')), 'hex');
+  return found;
+end $$;
+
+-- Lista uczestników: obserwatorzy dostają ją dopiero po włączeniu przez superadmina;
+-- organizator (ważny klucz) widzi ją zawsze jako podgląd.
+create or replace function public.list_challenge_progress(p_admin_key text default null)
+returns jsonb language plpgsql stable security definer set search_path = public as $$
+declare
+  v_visible boolean;
+  v_admin boolean := p_admin_key is not null and is_admin(p_admin_key);
+  v_super boolean := v_admin and exists (select 1 from admin_keys
+    where key_hash = encode(sha256(convert_to(p_admin_key, 'UTF8')), 'hex') and superadmin);
+begin
+  select observers_visible into v_visible from challenge_settings where id = 1;
+  v_visible := coalesce(v_visible, false);
+  return jsonb_build_object(
+    'visible', v_visible, 'admin', v_admin, 'superadmin', v_super,
+    'participants', case when v_visible or v_admin then coalesce((
+      select jsonb_agg(jsonb_build_object('nick', nick, 'start', start_date, 'km_bieg', km_bieg,
+               'km_rower', km_rower, 'km_kajak', km_kajak, 'updated_at', updated_at)
+             order by km_bieg + km_rower + km_kajak desc, updated_at)
+      from challenge_progress), '[]'::jsonb) else '[]'::jsonb end);
+end $$;
+
+-- Włączenie / wyłączenie widoczności listy dla obserwatorów - tylko superadmin.
+create or replace function public.admin_set_challenge_visible(p_admin_key text, p_visible boolean)
+returns boolean language plpgsql security definer set search_path = public as $$
+begin
+  if not exists (select 1 from admin_keys
+                 where key_hash = encode(sha256(convert_to(p_admin_key, 'UTF8')), 'hex') and superadmin) then
+    raise exception 'not allowed';
+  end if;
+  update challenge_settings set observers_visible = coalesce(p_visible, false), changed_at = now() where id = 1;
+  return coalesce(p_visible, false);
+end $$;
+
 -- Dostęp z aplikacji tylko do powyższych funkcji (bez is_admin).
 revoke execute on function public.ping(uuid), public.forget_device(uuid), public.get_stats(),
   public.share_activity(text, text, date, numeric, numeric, jsonb, text, integer),
@@ -491,7 +583,9 @@ revoke execute on function public.ping(uuid), public.forget_device(uuid), public
   public.join_event(uuid, text), public.leave_event(uuid, text),
   public.list_events_v2(), public.complete_event(uuid, text), public.uncomplete_event(uuid, text),
   public.set_event_result(uuid, text, text, numeric, numeric, jsonb), public.list_event_results(uuid),
-  public.check_challenge_invite(text), public.claim_challenge_invite(text, text) from public;
+  public.check_challenge_invite(text), public.claim_challenge_invite(text, text),
+  public.save_challenge_progress(text, text, date, numeric, numeric, numeric), public.delete_challenge_progress(text),
+  public.list_challenge_progress(text), public.admin_set_challenge_visible(text, boolean) from public;
 grant execute on function public.ping(uuid), public.forget_device(uuid), public.get_stats(),
   public.share_activity(text, text, date, numeric, numeric, jsonb, text, integer),
   public.delete_activity(uuid, text), public.list_activities(int),
@@ -503,6 +597,8 @@ grant execute on function public.ping(uuid), public.forget_device(uuid), public.
   public.join_event(uuid, text), public.leave_event(uuid, text),
   public.list_events_v2(), public.complete_event(uuid, text), public.uncomplete_event(uuid, text),
   public.set_event_result(uuid, text, text, numeric, numeric, jsonb), public.list_event_results(uuid),
-  public.claim_challenge_invite(text, text) to anon;
+  public.claim_challenge_invite(text, text),
+  public.save_challenge_progress(text, text, date, numeric, numeric, numeric), public.delete_challenge_progress(text),
+  public.list_challenge_progress(text), public.admin_set_challenge_visible(text, boolean) to anon;
 -- Stara funkcja sprawdzania kodu (bez przypisania do urządzenia) była wcześniej dostępna - odbieramy ją wprost.
 revoke execute on function public.check_challenge_invite(text) from anon;
