@@ -54,7 +54,7 @@ Privacy: your trainings, routes and PIN are stored only on your phone. Only what
   (Nagrywanie GPS zostaje w telefonie — w Google „zbieranie” = wysłanie poza urządzenie; dotyczy tylko udostępnionych tras.)
 - **Informacje o aplikacji i wydajności / Identyfikatory urządzenia**: losowy identyfikator do anonimowych statystyk, **opcjonalny** (zgoda), cel: *Statystyki*.
 - **Imię/nick** (Dane osobowe → Imię): nick przy udostępnianiu, **opcjonalny**, cel: *Funkcje aplikacji*.
-- **Zdrowie i fitness → Fitness**: dystans/czas udostępnionych treningów, **opcjonalne**, cel: *Funkcje aplikacji*.
+- **Zdrowie i fitness → Fitness**: dystans/czas/kroki udostępnionych treningów, **opcjonalne**, cel: *Funkcje aplikacji*.
 - Reklamy: **Nie**. Konto/logowanie: **Nie** (tylko lokalny PIN).
 
 ## Ściąga: deklaracja uprawnień

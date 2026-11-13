@@ -52,6 +52,10 @@ const TRANSLATIONS = {
     labelDist: "Dystans (km)",
     labelTime: "Czas (min)",
     labelHr: "Śr. tętno (bpm)",
+    labelSteps: "Kroki",
+    importNoSteps: "\n👣 Ten plik nie zawiera kroków. Wyeksportuj trening jako FIT albo wpisz kroki ręcznie.",
+    updateText: "🆕 Jest nowa wersja aplikacji w Sklepie Play.",
+    updateNowBtn: "AKTUALIZUJ",
     labelVo2max: "Pułap tlenowy VO2max",
     labelWeight: "Waga (kg)",
     labelNotes: "Notatki / Samopoczucie",
@@ -68,7 +72,7 @@ const TRANSLATIONS = {
     watchBrandOther: "Strava / inny",
     watchSteps: {
       garmin: ["Na stronie connect.garmin.com otwórz aktywność (aplikacja Garmin Connect w telefonie nie eksportuje plików — użyj przeglądarki).", "Ikona koła zębatego → „Eksportuj do GPX” lub „Eksportuj do TCX”."],
-      suunto: ["Suunto app: Dziennik → wybierz trening.", "⋮ / Udostępnij → Eksportuj → GPX albo FIT (basen: wybierz FIT)."],
+      suunto: ["Suunto app: Dziennik → wybierz trening.", "⋮ / Udostępnij → Eksportuj → wybierz FIT (ma też kroki i dane z basenu; GPX zawiera tylko trasę i tętno)."],
       polar: ["Na stronie flow.polar.com otwórz trening.", "„Eksportuj sesję” → GPX lub TCX."],
       samsung: ["Samsung Health w telefonie: otwórz trening z trasą GPS.", "⋮ → „Eksportuj do pliku GPX”. Opcja jest tylko przy treningach z GPS, a plik nie zawiera tętna."],
       huawei: ["Huawei Health: otwórz trening → ⋮ / udostępnij → „Eksportuj trasę” → GPX lub TCX.", "Nie ma tej opcji? Połącz Huawei Health ze Stravą (Ja → Udostępnianie danych i autoryzacja → Strava) i pobierz plik ze Stravy (wybierz „Strava / inny”)."],
@@ -142,7 +146,7 @@ const TRANSLATIONS = {
     alertNoHistoryExport: "Brak danych do eksportu.",
     importSuccess: (p) =>
       `Wczytano trening z pliku:\nData: ${p.date}\nDystans: ${p.dist} km\n` +
-      `Czas: ${p.time} min\nŚr. tętno: ${p.hr} bpm\n\nSprawdź dane i kliknij "ZAPISZ TRENING".`,
+      `Czas: ${p.time} min\nŚr. tętno: ${p.hr} bpm\n${p.steps ? `Kroki: ${p.steps}\n` : ""}\nSprawdź dane i kliknij "ZAPISZ TRENING".`,
     importError: (msg) => `Błąd importu: ${msg}`,
     errNoGpxPoints: "Brak punktów trasy w pliku GPX.",
     errNoTcxData: "Brak danych treningu w pliku TCX.",
@@ -531,7 +535,7 @@ const TRANSLATIONS = {
       ${community ? `<p>Na serwer aplikacji trafiają wyłącznie dane, na które się zgodzisz:</p>
       <ul>
         <li><b>Statystyki użytkowników</b> (tylko za zgodą): losowy identyfikator urządzenia i czas ostatniego użycia aplikacji. Cel: policzenie, ile osób korzysta z aplikacji (łącznie i w danym okresie). Liczymy tylko liczby — identyfikator nie jest powiązany z imieniem, nickiem ani treningami. Usuwany po 13 miesiącach braku aktywności lub od razu po wyłączeniu zgody.</li>
-        <li><b>Udostępnione aktywności</b> (tylko te, które sam udostępnisz): nick, dyscyplina, data, dystans, czas i trasa (z wysokością n.p.m., jeśli trening ją ma) bez pierwszych/ostatnich 300 m. Nie są powiązane z identyfikatorem urządzenia. Przechowywane do czasu, aż je usuniesz. Widoczne dla wszystkich użytkowników aplikacji.</li>
+        <li><b>Udostępnione aktywności</b> (tylko te, które sam udostępnisz): nick, dyscyplina, data, dystans, czas, liczba kroków (bieg, trekking) i trasa (z wysokością n.p.m., jeśli trening ją ma) bez pierwszych/ostatnich 300 m. Nie są powiązane z identyfikatorem urządzenia. Przechowywane do czasu, aż je usuniesz. Widoczne dla wszystkich użytkowników aplikacji.</li>
         <li><b>Udostępnione trasy</b> (tylko te, które sam udostępnisz): nick, nazwa trasy, rodzaj, dystans i cała trasa. Nie są powiązane z identyfikatorem urządzenia. Przechowywane do czasu, aż je usuniesz. Widoczne dla wszystkich i możliwe do pobrania przez innych użytkowników.</li>
         <li><b>Zapisy na wydarzenia</b> (tylko gdy klikniesz „Biorę udział”): wyłącznie skrót (hash) losowego znacznika zapisanego na Twoim telefonie — bez nicku i identyfikatora urządzenia. Służy do policzenia chętnych i umożliwia wypisanie się. Usuwany po wypisaniu się albo razem z wydarzeniem, najpóźniej 30 dni po jego terminie.</li>
         <li><b>Ukończenie wydarzenia</b> (tylko gdy po kliknięciu „Zrobione” wybierzesz „pokaż wszystkim”): skrót (hash) losowego znacznika z Twojego telefonu, a po zapisaniu treningu także Twój wynik: dystans, czas, profil wysokości (wysokość względem przebytych kilometrów — bez współrzędnych i mapy trasy) oraz nick, jeśli wybrałeś „Pokaż z nickiem”. Służy do pokazania liczby osób, które ukończyły wydarzenie, i listy wyników. Usunięcie treningu z Historii usuwa też wynik z serwera. Usuwany po cofnięciu albo razem z wydarzeniem, najpóźniej 30 dni po jego terminie.</li>
@@ -557,6 +561,10 @@ const TRANSLATIONS = {
     labelDist: "Distance (km)",
     labelTime: "Time (min)",
     labelHr: "Avg. heart rate (bpm)",
+    labelSteps: "Steps",
+    importNoSteps: "\n👣 This file has no steps. Export the training as FIT or enter the steps manually.",
+    updateText: "🆕 A new version of the app is available on Google Play.",
+    updateNowBtn: "UPDATE",
     labelVo2max: "VO2max",
     labelWeight: "Weight (kg)",
     labelNotes: "Notes / How you felt",
@@ -573,7 +581,7 @@ const TRANSLATIONS = {
     watchBrandOther: "Strava / other",
     watchSteps: {
       garmin: ["On connect.garmin.com open the activity (the Garmin Connect phone app can't export files — use a browser).", "Gear icon → “Export to GPX” or “Export to TCX”."],
-      suunto: ["Suunto app: Diary → choose the training.", "⋮ / Share → Export → GPX or FIT (pool swim: choose FIT)."],
+      suunto: ["Suunto app: Diary → choose the training.", "⋮ / Share → Export → choose FIT (it also has steps and pool data; GPX only has the route and heart rate)."],
       polar: ["On flow.polar.com open the training.", "“Export session” → GPX or TCX."],
       samsung: ["Samsung Health on your phone: open a workout with a GPS route.", "⋮ → “Export to GPX file”. Only available for GPS workouts; the file has no heart rate."],
       huawei: ["Huawei Health: open the workout → ⋮ / share → “Export route” → GPX or TCX.", "No such option? Link Huawei Health with Strava (Me → Data sharing and authorization → Strava) and download the file from Strava (choose “Strava / other”)."],
@@ -647,7 +655,7 @@ const TRANSLATIONS = {
     alertNoHistoryExport: "No data to export.",
     importSuccess: (p) =>
       `Training loaded from file:\nDate: ${p.date}\nDistance: ${p.dist} km\n` +
-      `Time: ${p.time} min\nAvg. HR: ${p.hr} bpm\n\nCheck the data and click "SAVE TRAINING".`,
+      `Time: ${p.time} min\nAvg. HR: ${p.hr} bpm\n${p.steps ? `Steps: ${p.steps}\n` : ""}\nCheck the data and click "SAVE TRAINING".`,
     importError: (msg) => `Import error: ${msg}`,
     errNoGpxPoints: "No track points found in the GPX file.",
     errNoTcxData: "No training data found in the TCX file.",
@@ -1036,7 +1044,7 @@ const TRANSLATIONS = {
       ${community ? `<p>Only data you agree to is sent to the app's server:</p>
       <ul>
         <li><b>User statistics</b> (only with consent): a random device ID and the time of last use. Purpose: counting how many people use the app (in total and over a given period). Only numbers are counted — the ID is not linked to any name, nickname or training. Deleted after 13 months of inactivity or immediately when you withdraw consent.</li>
-        <li><b>Shared activities</b> (only those you share yourself): nickname, discipline, date, distance, time and the route (with altitude, if the training has it) without the first/last 300 m. Not linked to the device ID. Kept until you delete them. Visible to all app users.</li>
+        <li><b>Shared activities</b> (only those you share yourself): nickname, discipline, date, distance, time, step count (running, trekking) and the route (with altitude, if the training has it) without the first/last 300 m. Not linked to the device ID. Kept until you delete them. Visible to all app users.</li>
         <li><b>Shared routes</b> (only those you share yourself): nickname, route name, type, distance and the whole route. Not linked to the device ID. Kept until you delete them. Visible to and downloadable by all app users.</li>
         <li><b>Event sign-ups</b> (only when you tap “I'm going”): only a hash of a random marker stored on your phone — no nickname or device ID. Used to count participants and to let you cancel. Deleted when you cancel or together with the event, at the latest 30 days after it takes place.</li>
         <li><b>Event completions</b> (only when you choose “show everyone” after tapping “Done”): a hash of a random marker from your phone and, once you save the training, your result: distance, time, elevation profile (elevation against distance covered — no coordinates or route map) and your nickname if you chose “Show with my nickname”. Used to show how many people completed the event and the list of results. Deleting the training from your History also removes the result from the server. Deleted when you undo it or together with the event, at the latest 30 days after it takes place.</li>
@@ -1094,7 +1102,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "75";
+const APP_BUILD = "77";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -1117,13 +1125,38 @@ if ("serviceWorker" in navigator) {
   // Nie przy pierwszej wizycie (wtedy nie było poprzedniej wersji) i nie w trakcie nagrywania GPS.
   const hadController = Boolean(navigator.serviceWorker.controller);
   let reloadedForUpdate = false;
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (!hadController || reloadedForUpdate) return;
+  let reloadPending = false;
+  // Po wczytaniu strona działa na starym kodzie bez problemu - przeładowanie nie może przerwać
+  // nagrywania ani wypełnianego formularza (np. powrót z wyboru pliku z zegarka).
+  const busyForReload = () => {
     let recording = false;
     try { recording = Boolean(localStorage.getItem("pau_recording")); } catch (e) { /* brak dostępu */ }
-    if (recording) return;
+    if (recording) return true;
+    if (document.readyState !== "complete") return false; // w trakcie wczytywania - przeładowujemy od razu
+    try { if (trainFormOpen) return true; } catch (e) { /* jeszcze nie zainicjowane */ }
+    const el = document.activeElement;
+    return Boolean(el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName));
+  };
+  const reloadForUpdate = () => {
+    if (busyForReload()) { reloadPending = true; return; }
     reloadedForUpdate = true;
     window.location.reload();
+  };
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController || reloadedForUpdate) return;
+    reloadForUpdate();
+  });
+  // Aplikacja długo otwarta w tle nie wczytuje się na nowo - przy powrocie pytamy serwer o nową wersję
+  // (najwyżej co 15 minut). Nowy service worker przejmuje stronę -> controllerchange -> przeładowanie.
+  let lastUpdateCheck = Date.now();
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible" || isNativeApp()) return;
+    if (reloadPending) { reloadPending = false; reloadForUpdate(); return; }
+    if (Date.now() - lastUpdateCheck < 15 * 60 * 1000 || navigator.onLine === false) return;
+    lastUpdateCheck = Date.now();
+    navigator.serviceWorker.getRegistration()
+      .then((reg) => reg && reg.update())
+      .catch(() => { /* offline / serwer niedostępny - spróbujemy następnym razem */ });
   });
 }
 
@@ -1236,6 +1269,30 @@ const DISCIPLINES = ["Bieg", "Rower", "Kajak", "Basen", "WodyOtwarte", "Trekking
 // Do wyzwania 4000 km liczą się tylko te dyscypliny (pływanie i trekking - tylko do Historii/statystyk).
 const CHALLENGE_DISCIPLINES = ["Bieg", "Rower", "Kajak"];
 const SWIM_DISCIPLINES = ["Basen", "WodyOtwarte"];
+// Kroki mają sens tylko w dyscyplinach pieszych.
+const STEP_DISCIPLINES = ["Bieg", "Trekking"];
+const MAX_STEPS = 300000;
+
+// Liczba kroków z pola / wpisu; 0 = brak.
+function parseSteps(value) {
+  const n = Math.round(Number(value));
+  return Number.isFinite(n) && n > 0 && n <= MAX_STEPS ? n : 0;
+}
+
+function formatSteps(n) {
+  return n.toLocaleString(getLang() === "pl" ? "pl-PL" : "en-GB");
+}
+
+// Zegarki zapisują kroki albo „cykle” (1 cykl = 2 kroki). Wybieramy wariant z sensowną kadencją.
+function normalizeSteps(count, minutes, cyclesFirst) {
+  if (!(count > 0)) return 0;
+  const options = cyclesFirst ? [count * 2, count] : [count, count * 2];
+  if (minutes > 0) {
+    const fit = options.find((v) => v / minutes >= 40 && v / minutes <= 230);
+    return fit ? parseSteps(fit) : 0;
+  }
+  return parseSteps(options[0]);
+}
 
 function isChallengeDisc(disc) {
   return CHALLENGE_DISCIPLINES.includes(disc);
@@ -1256,6 +1313,7 @@ function updateDisciplineUi() {
   flagRow.style.display = show ? "flex" : "none";
   if (!show) document.getElementById("challengeFlag").checked = false;
   document.getElementById("dist").placeholder = SWIM_DISCIPLINES.includes(disc) ? t().distSwimPlaceholder : "";
+  document.getElementById("stepsRow").hidden = !STEP_DISCIPLINES.includes(disc);
 }
 
 function toYmd(d) {
@@ -1909,6 +1967,8 @@ function refreshHistoryList() {
       const pace = entryPaceText(item);
       if (pace) meta.push(pace);
       if (parseFloat(item.hr) > 0) meta.push(`♥ ${item.hr}`);
+      const steps = parseSteps(item.steps);
+      if (steps) meta.push(`👣 ${formatSteps(steps)}`);
       const extra = [];
       if (parseFloat(item.weight) > 0) extra.push(`${l.weight}: ${item.weight} kg`);
       if (parseFloat(item.vo2max) > 0) extra.push(`${l.vo2max}: ${item.vo2max}`);
@@ -2049,6 +2109,8 @@ function saveTraining() {
     weight: document.getElementById("weight").value || "0",
     notes: document.getElementById("notes").value.trim(),
   };
+  const steps = parseSteps(document.getElementById("steps").value);
+  if (steps && STEP_DISCIPLINES.includes(entry.disc)) entry.steps = steps;
   if (pendingRoute) entry.route = pendingRoute;
   if (pendingEventDone && entry.date === pendingEventDone.ymd) entry.event = pendingEventDone.id;
   if (getChallenge() && isChallengeDisc(entry.disc) && document.getElementById("challengeFlag").checked) entry.challenge = true;
@@ -2060,6 +2122,7 @@ function saveTraining() {
   const newlyReached = getGoals().filter((goal, i) => !reachedBefore[i] && reachedGoals(history)[i]);
 
   document.getElementById("dist").value = "";
+  document.getElementById("steps").value = "";
   document.getElementById("notes").value = "";
   document.getElementById("challengeFlag").checked = false;
   pendingRoute = null;
@@ -2174,9 +2237,9 @@ function exportCsv() {
     alert(t().alertNoHistoryExport);
     return;
   }
-  let csv = "Date;Discipline;Distance;Weight;HeartRate;VO2max;Notes\n";
+  let csv = "Date;Discipline;Distance;Weight;HeartRate;VO2max;Steps;Notes\n";
   history.forEach((item) => {
-    csv += `${item.date};${item.disc};${item.dist};${item.weight};${item.hr};${item.vo2max};${item.notes}\n`;
+    csv += `${item.date};${item.disc};${item.dist};${item.weight};${item.hr};${item.vo2max};${parseSteps(item.steps) || ""};${item.notes}\n`;
   });
 
   saveFile(new File(["﻿" + csv], "pau_data.csv", { type: "text/csv;charset=utf-8" }), "pau_data.csv");
@@ -2985,6 +3048,7 @@ async function toggleShareTraining(index) {
       p_date: entry.date,
       p_dist_km: parseFloat(entry.dist),
       p_time_min: time > 0 ? time : null,
+      p_steps: STEP_DISCIPLINES.includes(entry.disc) ? parseSteps(entry.steps) || null : null,
       p_route: route,
       p_delete_token: token,
     });
@@ -3659,6 +3723,7 @@ function renderActivityList() {
       const mine = Boolean(tokens[a.id]);
       const discName = dict.discNames[a.disc] || escapeXml(a.disc);
       const time = a.time_min ? `, ${Math.round(a.time_min)} min` : "";
+      const steps = parseSteps(a.steps) ? `, 👣 ${formatSteps(parseSteps(a.steps))}` : "";
       const mapBtn = Array.isArray(a.route) && a.route.length >= 2
         ? `<button class="route-btn" data-index="${index}" title="${dict.showRouteTitle}">🗺</button>`
         : "";
@@ -3667,7 +3732,7 @@ function renderActivityList() {
         : "";
       return `<div class="history-item">` +
         `<span><span class="activity-nick">${escapeXml(a.nick)}</span>${mine ? " " + dict.mineLabel : ""} — ` +
-        `${discName}, ${Number(a.dist_km).toFixed(2)} km${time} (${escapeXml(a.activity_date)})</span>` +
+        `${discName}, ${Number(a.dist_km).toFixed(2)} km${time}${steps} (${escapeXml(a.activity_date)})</span>` +
         `<div class="history-actions">${mapBtn}${delBtn}</div></div>`;
     })
     .join("");
@@ -4024,6 +4089,7 @@ function parseTcx(xml) {
 
   let distM = 0;
   let timeS = 0;
+  let stepCount = 0;
   const hrValues = [];
   const route = [];
   const startTimeAttr = laps[0].getAttribute("StartTime");
@@ -4035,6 +4101,9 @@ function parseTcx(xml) {
     const hrEl = lap.getElementsByTagName("AverageHeartRateBpm")[0];
     if (distEl) distM += parseFloat(distEl.textContent) || 0;
     if (timeEl) timeS += parseFloat(timeEl.textContent) || 0;
+    Array.from(lap.getElementsByTagName("*")).forEach((el) => {
+      if (el.localName === "Steps") stepCount += parseFloat(el.textContent) || 0;
+    });
     if (hrEl) {
       const valueEl = hrEl.getElementsByTagName("Value")[0];
       if (valueEl) hrValues.push(parseFloat(valueEl.textContent));
@@ -4058,13 +4127,15 @@ function parseTcx(xml) {
   const sport = activityEl ? activityEl.getAttribute("Sport") : "";
   const discMap = { Running: "Bieg", Biking: "Rower" };
   const avgHr = hrValues.length ? hrValues.reduce((a, b) => a + b, 0) / hrValues.length : 0;
+  const tcxDisc = discMap[sport] || activityTypeToDisc(sport) || "Bieg";
 
   return {
     date,
     dist: (distM / 1000).toFixed(2),
     time: (timeS / 60).toFixed(1),
     hr: avgHr ? String(Math.round(avgHr)) : "0",
-    disc: discMap[sport] || activityTypeToDisc(sport) || "Bieg",
+    disc: tcxDisc,
+    steps: STEP_DISCIPLINES.includes(tcxDisc) ? normalizeSteps(stepCount, timeS / 60, false) : 0,
     route: route.length >= 2 ? downsampleRoute(route, 200) : undefined,
   };
 }
@@ -4191,9 +4262,11 @@ function parseFit(buf) {
   let timeS = 0;
   let hrSum = 0;
   let hrTime = 0;
+  let cycles = 0;
   let startTs = null;
   let disc = null;
   sessions.forEach((s) => {
+    if (s[10] > 0) cycles += s[10];
     const sTime = (s[8] !== undefined ? s[8] : s[7] || 0) / 1000;   // czas ruchu, a gdy brak - całkowity
     distM += (s[9] || 0) / 100;
     timeS += sTime;
@@ -4221,6 +4294,8 @@ function parseFit(buf) {
     time: (timeS / 60).toFixed(1),
     hr: avgHr ? String(Math.round(avgHr)) : "0",
     disc: disc || "Bieg",
+    // W pływaniu i na rowerze „cykle” to ruchy ramion / obroty korby - nie kroki.
+    steps: STEP_DISCIPLINES.includes(disc || "Bieg") ? normalizeSteps(cycles, timeS / 60, true) : 0,
     route: route.length >= 2 ? downsampleRoute(route, 200) : undefined,
   };
 }
@@ -4317,12 +4392,14 @@ function importTrainingFile(file) {
       document.getElementById("dist").value = parsed.dist;
       document.getElementById("time").value = parsed.time;
       document.getElementById("hr").value = parsed.hr;
+      document.getElementById("steps").value = parsed.steps || "";
       document.getElementById("discipline").value = parsed.disc;
       updateDisciplineUi();
       pendingRoute = parsed.route && parsed.route.length >= 2 ? parsed.route : null;
       openTrainForm();
 
-      alert(t().importSuccess(parsed));
+      const noSteps = STEP_DISCIPLINES.includes(parsed.disc) && !parsed.steps;
+      alert(t().importSuccess(parsed) + (noSteps ? t().importNoSteps : ""));
     } catch (e) {
       alert(t().importError(e.message));
     }
@@ -4589,6 +4666,53 @@ function capPlugin(name) {
     else throw Object.assign(new Error("Capacitor plugin " + name + " unavailable"), { code: "NO_BRIDGE" });
   }
   return capPlugins[name];
+}
+
+// --- Aktualizacje apki natywnej ze Sklepu Play (wtyczka @capawesome/capacitor-app-update) ---
+// Przy starcie i powrocie do apki (najwyżej co 6 godzin) pytamy Sklep Play o nową wersję.
+// Pasek nie pojawia się w trakcie nagrywania; „✕” chowa go do następnego uruchomienia.
+const UPDATE_AVAILABLE = 2;      // AppUpdateAvailability.UPDATE_AVAILABLE
+let updateCheckedAt = 0;
+let updateDismissed = false;
+
+async function checkNativeUpdate() {
+  if (!isNativeApp() || updateDismissed || Date.now() - updateCheckedAt < 6 * 3600 * 1000) return;
+  updateCheckedAt = Date.now();
+  try {
+    const info = await capPlugin("AppUpdate").getAppUpdateInfo();
+    const available = info && info.updateAvailability === UPDATE_AVAILABLE;
+    document.getElementById("updateBanner").hidden = !available || Boolean(rec);
+  } catch (e) {
+    // np. apka zainstalowana spoza Sklepu Play albo brak internetu - bez komunikatu
+    updateCheckedAt = 0;
+  }
+}
+
+async function startNativeUpdate() {
+  document.getElementById("updateBanner").hidden = true;
+  const plugin = capPlugin("AppUpdate");
+  try {
+    const info = await plugin.getAppUpdateInfo();
+    // Pełnoekranowe okno Google: pobiera, instaluje i uruchamia apkę ponownie.
+    if (info && info.immediateUpdateAllowed) {
+      await plugin.performImmediateUpdate();
+      return;
+    }
+  } catch (e) { /* niżej: Sklep Play */ }
+  try { await plugin.openAppStore(); } catch (e) { /* brak Sklepu Play */ }
+}
+
+function initNativeUpdates() {
+  if (!isNativeApp()) return;
+  document.getElementById("updateNowBtn").addEventListener("click", startNativeUpdate);
+  document.getElementById("updateLaterBtn").addEventListener("click", () => {
+    updateDismissed = true;
+    document.getElementById("updateBanner").hidden = true;
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") checkNativeUpdate();
+  });
+  checkNativeUpdate();
 }
 
 function isNativeApp() {
@@ -4936,6 +5060,7 @@ function finishRecording() {
   document.getElementById("date").value = toYmd(new Date(finished.startedAt));
   document.getElementById("dist").value = finished.distKm.toFixed(2);
   document.getElementById("time").value = (moving / 60000).toFixed(1);
+  document.getElementById("steps").value = "";
   const kcal = finished.weightKg ? Math.round(finished.kcal || 0) : 0;
   const weightField = document.getElementById("weight");
   if (finished.weightKg && !parseBodyWeight(weightField.value)) weightField.value = String(finished.weightKg);
@@ -5125,6 +5250,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initRecorder();
   initTrainModes();
   initSamsungHint();
+  initNativeUpdates();
 
   // Sesja logowania trwa do zamknięcia karty przeglądarki (sessionStorage).
   // Dzięki temu nie trzeba podawać PIN-u za każdym odświeżeniem, ale po

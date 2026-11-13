@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "75";
+  window.PAU_PAGE_BUILD = "77";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -74,6 +74,13 @@
     <div class="app-title">Polska Adventure<br><span>Ultra</span></div>
     <button type="button" class="icon-btn" id="headerThemeBtn" aria-label="Zmień motyw"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></button>
   </header>
+
+  <!-- Apka natywna: nowa wersja w Sklepie Play (Google Play In-App Updates) -->
+  <div class="card update-banner" id="updateBanner" role="status" hidden>
+    <button type="button" class="form-hint-close" id="updateLaterBtn" aria-label="Później">✕</button>
+    <p id="updateText" data-i18n="updateText">🆕 Jest nowa wersja aplikacji w Sklepie Play.</p>
+    <button class="primary" id="updateNowBtn" data-i18n="updateNowBtn">AKTUALIZUJ</button>
+  </div>
 
   <!-- Samsung Internet: podpowiedź, jak dodać skrót bez ostrzeżenia Play Protect -->
   <div class="card samsung-hint" id="samsungHint" hidden>
@@ -206,6 +213,11 @@
 
       <label data-i18n="labelHr">Śr. tętno (bpm)</label>
       <input id="hr" type="number" inputmode="numeric">
+
+      <div id="stepsRow" hidden>
+        <label for="steps" data-i18n="labelSteps">Kroki</label>
+        <input id="steps" type="number" min="0" step="1" inputmode="numeric">
+      </div>
 
       <label data-i18n="labelVo2max">Pułap tlenowy VO2max</label>
       <input id="vo2max" type="number" step="0.1" inputmode="decimal">
