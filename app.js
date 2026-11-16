@@ -159,6 +159,14 @@ const TRANSLATIONS = {
     routeImportHint: "Trasę z Garmin Connect, Komoot, Strava czy od znajomych wczytasz tutaj. Przyciskiem 🧭 przy trasie uruchomisz prowadzenie w nagrywaniu telefonem.",
     routeImported: (name, km) => `Wczytano trasę „${name}” (${km} km). Przycisk 🧭 przy trasie uruchamia prowadzenie.`,
     navNotifTitle: "Polska Adventure Ultra — trasa",
+    navVoiceLbl: "🔊 Komunikaty głosowe przy prowadzeniu",
+    navVoiceOnTitle: "Głos włączony — dotknij, aby wyciszyć",
+    navVoiceOffTitle: "Głos wyciszony — dotknij, aby włączyć",
+    navSayOn: "Komunikaty głosowe włączone",
+    navSayStart: (km) => `Prowadzenie po trasie. Do końca ${km} ${plUnit(km, "kilometr", "kilometry", "kilometrów")}`,
+    navSayOff: (m) => `Uwaga, zboczyłeś z trasy o ${m} ${plUnit(m, "metr", "metry", "metrów")}`,
+    navSayBack: "Wróciłeś na trasę",
+    navSayFinish: "Koniec trasy. Gratulacje!",
     editEntryTitle: "Popraw trening (dystans, czas, notatki…)",
     editTitle: "✏️ Popraw trening",
     editSaveBtn: "ZAPISZ ZMIANY",
@@ -462,7 +470,7 @@ const TRANSLATIONS = {
           <li>„Cofnij punkt” usuwa ostatni punkt, „Wyczyść” — całą trasę. „ZAPISZ TRASĘ” zapisuje ją na liście poniżej mapy.</li>
           <li>„EKSPORTUJ DO GPX” (lub przycisk GPX przy zapisanej trasie) tworzy plik do zegarka. Na telefonie otworzy się menu „Udostępnij”.</li>
           <li><b>Garmin</b>: Garmin Connect (www) → Trening → Trasy → Importuj → wyślij na zegarek. <b>Suunto</b>: otwórz plik GPX w Suunto app i zsynchronizuj zegarek. <b>Polar</b>: Polar Flow (www) → Ulubione → Trasy → Importuj → synchronizuj.</li>
-          <li><b>🧭 Prowadzenie po trasie w telefonie</b>: „📂 WCZYTAJ TRASĘ Z PLIKU” (GPX / TCX / FIT, np. z Garmin Connect, Komoot, Strava) dodaje trasę do listy. Przycisk 🧭 przy trasie — albo pole „Prowadź po trasie” przed START w nagrywaniu telefonem — włącza prowadzenie: trasa jest na mapie, widać kilometry do końca, a gdy zboczysz o ok. 50 m (rower 60 m, kajak i pływanie 100 m), telefon zawibruje i pokaże czerwony komunikat; w aplikacji ze Sklepu Play przy zgaszonym ekranie dostaniesz powiadomienie. Przy słabym GPS ostrzeżenia są wstrzymane, żeby nie było fałszywych alarmów — trasa zostaje na mapie.</li>
+          <li><b>🧭 Prowadzenie po trasie w telefonie</b>: „📂 WCZYTAJ TRASĘ Z PLIKU” (GPX / TCX / FIT, np. z Garmin Connect, Komoot, Strava) dodaje trasę do listy. Przycisk 🧭 przy trasie — albo pole „Prowadź po trasie” przed START w nagrywaniu telefonem — włącza prowadzenie: trasa jest na mapie, widać kilometry do końca, a gdy zboczysz o ok. 50 m (rower 60 m, kajak i pływanie 100 m), telefon zawibruje, pokaże czerwony komunikat i powie to głosem (głos wyłączysz polem „🔊 Komunikaty głosowe” albo przyciskiem 🔊 w trakcie); w aplikacji ze Sklepu Play przy zgaszonym ekranie dostaniesz powiadomienie. Przy słabym GPS ostrzeżenia są wstrzymane, żeby nie było fałszywych alarmów — trasa zostaje na mapie.</li>
           <li>Wyznaczanie trasy po drogach wymaga internetu (darmowy serwis BRouter — wysyłane są wyłącznie współrzędne klikniętych punktów). Bez internetu odcinki będą liniami prostymi.</li>
         </ul>
       </details>
@@ -715,6 +723,14 @@ const TRANSLATIONS = {
     routeImportHint: "Load a route from Garmin Connect, Komoot, Strava or a friend here. The 🧭 button next to a route starts guidance in phone recording.",
     routeImported: (name, km) => `Loaded route “${name}” (${km} km). The 🧭 button next to the route starts guidance.`,
     navNotifTitle: "Polska Adventure Ultra — route",
+    navVoiceLbl: "🔊 Voice prompts during guidance",
+    navVoiceOnTitle: "Voice on — tap to mute",
+    navVoiceOffTitle: "Voice muted — tap to turn on",
+    navSayOn: "Voice prompts on",
+    navSayStart: (km) => `Route guidance started. ${km} kilometres to go`,
+    navSayOff: (m) => `Warning, you are ${m} metres off route`,
+    navSayBack: "Back on route",
+    navSayFinish: "End of the route. Well done!",
     editEntryTitle: "Edit training (distance, time, notes…)",
     editTitle: "✏️ Edit training",
     editSaveBtn: "SAVE CHANGES",
@@ -1018,7 +1034,7 @@ const TRANSLATIONS = {
           <li>“Undo point” removes the last point, “Clear” the whole route. “SAVE ROUTE” adds it to the list below the map.</li>
           <li>“EXPORT TO GPX” (or the GPX button next to a saved route) creates a file for your watch. On a phone the Share menu opens.</li>
           <li><b>Garmin</b>: Garmin Connect (web) → Training → Courses → Import → send to device. <b>Suunto</b>: open the GPX file in the Suunto app and sync the watch. <b>Polar</b>: Polar Flow (web) → Favorites → Routes → Import → sync.</li>
-          <li><b>🧭 Route guidance on the phone</b>: “📂 LOAD ROUTE FROM FILE” (GPX / TCX / FIT, e.g. from Garmin Connect, Komoot, Strava) adds a route to the list. The 🧭 button next to a route — or the “Follow a route” field before START in phone recording — turns on guidance: the route is on the map, you see the distance left, and when you go about 50 m off route (cycling 60 m, kayak and swimming 100 m) the phone vibrates and shows a red message; in the Play Store app you get a notification while the screen is off. With weak GPS, warnings are paused to avoid false alarms — the route stays on the map.</li>
+          <li><b>🧭 Route guidance on the phone</b>: “📂 LOAD ROUTE FROM FILE” (GPX / TCX / FIT, e.g. from Garmin Connect, Komoot, Strava) adds a route to the list. The 🧭 button next to a route — or the “Follow a route” field before START in phone recording — turns on guidance: the route is on the map, you see the distance left, and when you go about 50 m off route (cycling 60 m, kayak and swimming 100 m) the phone vibrates, shows a red message and says it out loud (turn the voice off with the “🔊 Voice prompts” box or the 🔊 button while recording); in the Play Store app you get a notification while the screen is off. With weak GPS, warnings are paused to avoid false alarms — the route stays on the map.</li>
           <li>Road routing needs internet (free BRouter service — only the coordinates of tapped points are sent). Offline, sections are straight lines.</li>
         </ul>
       </details>
@@ -1198,7 +1214,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "80";
+const APP_BUILD = "81";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -5664,7 +5680,75 @@ function navAlert(kind, meters) {
   const pattern = kind === "off" ? [400, 200, 400, 200, 400] : kind === "back" ? [150] : [200, 100, 200, 100, 600];
   try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) { /* brak wibracji */ }
   if (isNativeApp() && document.visibilityState === "hidden" && kind !== "back") navNotify(text);
-  // Tu w przyszłości: komunikat głosowy (z wyłącznikiem w ustawieniach).
+  navSpeak(kind === "off" ? dict.navSayOff(Math.round(meters)) : kind === "back" ? dict.navSayBack : dict.navSayFinish);
+}
+
+// Odmiana polska: 1 metr, 2-4 metry, 5+ metrów; ułamki ("16,7") -> "kilometra".
+function plUnit(n, one, few, many) {
+  const s = String(n);
+  if (/[.,]/.test(s)) return one === "kilometr" ? "kilometra" : many;
+  const v = Math.abs(parseInt(s, 10));
+  if (v === 1) return one;
+  const d = v % 10, h = v % 100;
+  return d >= 2 && d <= 4 && (h < 12 || h > 14) ? few : many;
+}
+
+// ---- Głos (synteza mowy) - z wyłącznikiem, zapamiętywanym w localStorage ----
+const NAV_VOICE_KEY = "pau_nav_voice";
+function navVoiceOn() {
+  try { return localStorage.getItem(NAV_VOICE_KEY) !== "0"; } catch (e) { return true; }
+}
+function navSetVoice(on) {
+  try { localStorage.setItem(NAV_VOICE_KEY, on ? "1" : "0"); } catch (e) { /* brak storage */ }
+  const box = document.getElementById("navVoice");
+  if (box) box.checked = on;
+  navRenderVoiceBtn();
+  if (on) navSpeak(t().navSayOn);
+  else navStopSpeech();
+}
+function navSpeechLang() {
+  return getLang() === "en" ? "en-GB" : "pl-PL";
+}
+// Liczby czytane po polsku z przecinkiem (16,7), po angielsku z kropką.
+function navSayKm(km) {
+  const s = (Math.round(km * 10) / 10).toFixed(1).replace(/\.0$/, "");
+  return getLang() === "en" ? s : s.replace(".", ",");
+}
+function navWebSpeak(text) {
+  try {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = navSpeechLang();
+    window.speechSynthesis.speak(u);
+  } catch (e) { /* brak syntezy mowy */ }
+}
+function navSpeak(text) {
+  if (!text || !navVoiceOn()) return;
+  if (isNativeApp()) {
+    try {
+      // queueStrategy 0 = przerwij poprzedni komunikat
+      capPlugin("TextToSpeech").speak({ text, lang: navSpeechLang(), rate: 1.0, queueStrategy: 0 })
+        .catch(() => navWebSpeak(text));
+      return;
+    } catch (e) { /* brak wtyczki - spróbuj mowy przeglądarki */ }
+  }
+  navWebSpeak(text);
+}
+function navStopSpeech() {
+  if (isNativeApp()) {
+    try { capPlugin("TextToSpeech").stop().catch(() => {}); } catch (e) { /* brak wtyczki */ }
+  }
+  try { if ("speechSynthesis" in window) window.speechSynthesis.cancel(); } catch (e) { /* brak */ }
+}
+function navRenderVoiceBtn() {
+  const btn = document.getElementById("recNavVoiceBtn");
+  if (!btn) return;
+  const on = navVoiceOn();
+  btn.textContent = on ? "🔊" : "🔇";
+  btn.title = on ? t().navVoiceOnTitle : t().navVoiceOffTitle;
+  btn.setAttribute("aria-label", btn.title);
+  btn.setAttribute("aria-pressed", on ? "true" : "false");
 }
 
 function navNotify(text) {
@@ -5693,6 +5777,7 @@ function navRender() {
   const dict = t();
   box.hidden = false;
   document.getElementById("recNavName").textContent = `🧭 ${rec.nav.name}`;
+  navRenderVoiceBtn();
   const left = navRt.progressKm == null ? rec.nav.totalKm : Math.max(0, rec.nav.totalKm - navRt.progressKm);
   document.getElementById("recNavLeft").textContent = dict.navLeft(formatKm(left));
   let status;
@@ -5734,6 +5819,11 @@ function initNavigation() {
     const file = importInput.files && importInput.files[0];
     if (file) importRouteFile(file);
   });
+  const voiceBox = document.getElementById("navVoice");
+  voiceBox.checked = navVoiceOn();
+  voiceBox.addEventListener("change", () => navSetVoice(voiceBox.checked));
+  document.getElementById("recNavVoiceBtn").addEventListener("click", () => navSetVoice(!navVoiceOn()));
+  navRenderVoiceBtn();
   navRefreshSelect();
 }
 
@@ -5758,6 +5848,7 @@ function startRecording() {
   const nav = navBuildSelected();
   if (nav) rec.nav = nav;
   navReset();
+  if (nav) navSpeak(t().navSayStart(navSayKm(nav.totalKm)));
   if (rec.weightKg) {
     try { localStorage.setItem(BODY_WEIGHT_KEY, String(rec.weightKg)); } catch (e) { /* brak dostępu */ }
   }

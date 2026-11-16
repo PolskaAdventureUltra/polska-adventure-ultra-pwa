@@ -39,6 +39,8 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Wibracja przy ostrzeżeniach nawigacji (navigator.vibrate w WebView wymaga tej zgody). -->
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- Niepotrzebne (dodawane przez wtyczkę powiadomień) - usuwamy, żeby Google Play nie wymagał deklaracji. -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />
