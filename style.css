@@ -176,6 +176,7 @@ body:not(.dark) .hero { border-color: transparent; }
 .history-item span { word-break: break-word; }
 .history-actions { display: flex; gap: 6px; flex-shrink: 0; max-width: 45%; }
 .history-item .delete-btn,
+.history-item .edit-btn,
 .history-item .route-btn,
 .history-item .gpx-btn,
 .history-item .share-btn,
@@ -190,6 +191,7 @@ body:not(.dark) .hero { border-color: transparent; }
 }
 .history-item .delete-btn { color: var(--danger); }
 .history-item .route-btn { color: var(--accent); }
+.edit-route-dist { width: 100%; margin-top: 6px; font-size: 13px; background: var(--subtle-bg); color: var(--accent); text-align: left; }
 .history-item .gpx-btn { font-size: 12px; color: var(--accent); }
 .history-item .copy-btn { color: var(--accent); }
 .history-item .flag-btn { opacity: 0.4; }

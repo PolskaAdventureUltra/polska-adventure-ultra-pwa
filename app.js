@@ -137,6 +137,15 @@ const TRANSLATIONS = {
     addTrainingTitle: "Dodaj trening",
     noHistory: "Brak zapisanych treningów.",
     deleteTitle: "Usuń wpis",
+    editEntryTitle: "Popraw trening (dystans, czas, notatki…)",
+    editTitle: "✏️ Popraw trening",
+    editSaveBtn: "ZAPISZ ZMIANY",
+    editCancelBtn: "Anuluj",
+    editSharedHint: "Ten trening jest udostępniony — po zapisaniu zaktualizuje się też w zakładce Aktywność.",
+    editRouteDist: (km) => `📏 Dystans zmierzony na trasie GPS: ${km} km — wstaw`,
+    editSaved: "Zmiany zapisane.",
+    editReshared: "Zmiany zapisane — udostępniony trening w Aktywności też jest poprawiony.",
+    editReshareFailed: "Zmiany zapisane na telefonie, ale nie udało się poprawić udostępnionego treningu w Aktywności (brak internetu?). Spróbuj ponownie: popraw i zapisz trening jeszcze raz.",
     confirmDelete: "Usunąć ten wpis z historii?",
     alertDistRequired: "Podaj dystans większy od 0.",
     alertSaved: "Zapisano trening!",
@@ -420,6 +429,7 @@ const TRANSLATIONS = {
           <li><b>🔥 Passa</b> to liczba kolejnych dni z treningiem. Obecna passa trwa, jeśli ostatni trening był dziś albo wczoraj.</li>
           <li><b>🏆 Rekordy osobiste</b> dla każdej dyscypliny: najdłuższy dystans i czas, najszybsze tempo (bieg) lub prędkość (rower, kajak), największe przewyższenie, a także najlepszy tydzień i miesiąc. Tempo i prędkość liczą się dla treningów od 1 km z wpisanym czasem.</li>
           <li>🗺 — pokazuje trasę treningu na mapie wraz z profilem wysokości (dla treningów zaimportowanych z pliku).</li>
+          <li>✏️ — poprawia trening: dystans, czas, datę, dyscyplinę, tętno, kroki i notatki. Trasa i profil wysokości zostają. Przy treningu z trasą GPS przycisk „📏” wstawia dystans zmierzony na trasie. Udostępniony trening poprawia się też w Aktywności.</li>
           <li>🗑 — usuwa wpis (po potwierdzeniu).</li>
           ${community ? "<li>📤 — udostępnia trening w zakładce Aktywność; 🌍 oznacza, że trening jest udostępniony (kliknij, aby cofnąć udostępnienie).</li>" : ""}
         </ul>
@@ -660,6 +670,15 @@ const TRANSLATIONS = {
     addTrainingTitle: "Add training",
     noHistory: "No saved trainings yet.",
     deleteTitle: "Delete entry",
+    editEntryTitle: "Edit training (distance, time, notes…)",
+    editTitle: "✏️ Edit training",
+    editSaveBtn: "SAVE CHANGES",
+    editCancelBtn: "Cancel",
+    editSharedHint: "This training is shared — after saving it will also be updated in the Activity tab.",
+    editRouteDist: (km) => `📏 Distance measured on the GPS route: ${km} km — use it`,
+    editSaved: "Changes saved.",
+    editReshared: "Changes saved — the shared training in Activity is updated too.",
+    editReshareFailed: "Changes saved on this phone, but the shared training in Activity could not be updated (no internet?). Try again: open and save the training once more.",
     confirmDelete: "Delete this entry from history?",
     alertDistRequired: "Enter a distance greater than 0.",
     alertSaved: "Training saved!",
@@ -943,6 +962,7 @@ const TRANSLATIONS = {
           <li><b>🔥 Streak</b> is the number of consecutive days with a training. The current streak continues as long as you train today or trained yesterday.</li>
           <li><b>🏆 Personal records</b> for each discipline: longest distance and time, fastest pace (running) or speed (cycling, kayaking), biggest ascent, plus your best week and month. Pace and speed count trainings of 1 km+ with time entered.</li>
           <li>🗺 — shows the training route on a map with its elevation profile (for trainings imported from a file).</li>
+          <li>✏️ — edits the training: distance, time, date, discipline, heart rate, steps and notes. The route and elevation profile are kept. For trainings with a GPS route, the “📏” button fills in the distance measured on the route. A shared training is updated in Activity too.</li>
           <li>🗑 — deletes the entry (after confirmation).</li>
           ${community ? "<li>📤 — shares the training in the Activity tab; 🌍 means it is shared (tap to unshare).</li>" : ""}
         </ul>
@@ -1132,7 +1152,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "78";
+const APP_BUILD = "79";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -2179,6 +2199,7 @@ function refreshHistoryList() {
              `<div class="history-meta">${meta.join(" · ")}</div>` +
              (extra.length ? `<div class="history-meta">${extra.join(" · ")}</div>` : "") + `</div>` +
              `<div class="history-actions">${flagBtn}${shareBtn}${routeBtn}` +
+             `<button class="edit-btn" data-index="${index}" title="${dict.editEntryTitle}">✏️</button>` +
              `<button class="delete-btn" data-index="${index}" title="${dict.deleteTitle}">🗑</button></div>` +
              `</div>`;
     })
@@ -2189,6 +2210,9 @@ function refreshHistoryList() {
   });
   list.querySelectorAll(".route-btn").forEach((btn) => {
     btn.addEventListener("click", () => showRoute(parseInt(btn.dataset.index, 10)));
+  });
+  list.querySelectorAll(".edit-btn").forEach((btn) => {
+    btn.addEventListener("click", () => openEditTraining(parseInt(btn.dataset.index, 10)));
   });
   list.querySelectorAll(".share-btn").forEach((btn) => {
     btn.addEventListener("click", () => toggleShareTraining(parseInt(btn.dataset.index, 10)));
@@ -2234,8 +2258,117 @@ function toggleChallengeFlag(index) {
   refreshHistoryList();
 }
 
+// --- Poprawianie zapisanego treningu (✏️ w Historii) ---
+// Zmienia tylko wpisane pola - trasa (z wysokością), flaga wyzwania i powiązanie z wydarzeniem zostają.
+let editIndex = null;
+
+function editNum(value) {
+  const n = parseFloat(value);
+  return n > 0 ? String(value) : "";
+}
+
+function updateEditStepsRow() {
+  document.getElementById("editStepsRow").hidden = !STEP_DISCIPLINES.includes(document.getElementById("editDisc").value);
+}
+
+function openEditTraining(index) {
+  const entry = getHistory()[index];
+  if (!entry) return;
+  editIndex = index;
+  document.getElementById("editDisc").value = entry.disc;
+  document.getElementById("editDate").value = entry.date || "";
+  document.getElementById("editDist").value = entry.dist || "";
+  document.getElementById("editTime").value = editNum(entry.time);
+  document.getElementById("editHr").value = editNum(entry.hr);
+  document.getElementById("editSteps").value = parseSteps(entry.steps) || "";
+  document.getElementById("editVo2max").value = editNum(entry.vo2max);
+  document.getElementById("editWeight").value = editNum(entry.weight);
+  document.getElementById("editNotes").value = entry.notes || "";
+  clearFieldState("editDist");
+  updateEditStepsRow();
+  const routeBtn = document.getElementById("editRouteDistBtn");
+  const routeKm = entry.route && entry.route.length >= 2 ? Math.round(trackDistanceKm(entry.route) * 100) / 100 : 0;
+  routeBtn.hidden = !(routeKm > 0);
+  routeBtn.dataset.km = routeKm > 0 ? String(routeKm) : "";
+  routeBtn.textContent = routeKm > 0 ? t().editRouteDist(formatKm(routeKm)) : "";
+  document.getElementById("editSharedHint").hidden = !entry.sharedId;
+  const card = document.getElementById("editCard");
+  card.hidden = false;
+  if (card.scrollIntoView) card.scrollIntoView({ block: "start", behavior: "smooth" });
+}
+
+function closeEditTraining() {
+  editIndex = null;
+  const card = document.getElementById("editCard");
+  if (card) card.hidden = true;
+}
+
+async function saveEditTraining() {
+  const history = getHistory();
+  const entry = editIndex != null ? history[editIndex] : null;
+  if (!entry) { closeEditTraining(); return; }
+  const dist = document.getElementById("editDist").value;
+  if (!dist || parseFloat(dist) <= 0) {
+    setFieldError("editDist", t().alertDistRequired);
+    focusField("editDist");
+    return;
+  }
+  clearFieldState("editDist");
+  const index = editIndex;
+  entry.disc = document.getElementById("editDisc").value;
+  entry.date = document.getElementById("editDate").value || entry.date;
+  entry.dist = dist;
+  entry.time = document.getElementById("editTime").value || "0";
+  entry.hr = document.getElementById("editHr").value || "0";
+  entry.vo2max = document.getElementById("editVo2max").value || "0";
+  entry.weight = document.getElementById("editWeight").value || "0";
+  entry.notes = document.getElementById("editNotes").value.trim();
+  const steps = parseSteps(document.getElementById("editSteps").value);
+  if (steps && STEP_DISCIPLINES.includes(entry.disc)) entry.steps = steps;
+  else delete entry.steps;
+  if (entry.challenge && !isChallengeDisc(entry.disc)) delete entry.challenge;
+  saveHistory(history);
+  closeEditTraining();
+  refreshTotalLabel();
+  refreshHistoryList();
+  if (entry.event) { renderEvents(); syncEventResult(entry.event); }
+
+  if (!entry.sharedId) { alert(t().editSaved); return; }
+  // Udostępniony: najpierw wysyłamy poprawioną wersję, potem usuwamy starą - przy błędzie sieci stara zostaje.
+  const oldId = entry.sharedId;
+  const nick = (localStorage.getItem(NICK_KEY) || "").trim();
+  if (!isCommunityConfigured() || nick.length < 1 || nick.length > 30) { alert(t().editReshareFailed); return; }
+  let newId;
+  try {
+    newId = await shareActivityRpc(entry, nick);
+  } catch (e) {
+    alert(t().editReshareFailed);
+    return;
+  }
+  await deleteSharedActivity(oldId);
+  const fresh = getHistory();
+  if (fresh[index]) {
+    fresh[index].sharedId = newId;
+    saveHistory(fresh);
+  }
+  refreshHistoryList();
+  alert(t().editReshared);
+}
+
+function initEditTraining() {
+  document.getElementById("editDisc").addEventListener("change", updateEditStepsRow);
+  document.getElementById("editDist").addEventListener("input", () => clearFieldState("editDist"));
+  document.getElementById("editRouteDistBtn").addEventListener("click", (e) => {
+    const km = e.currentTarget.dataset.km;
+    if (km) { document.getElementById("editDist").value = km; clearFieldState("editDist"); }
+  });
+  document.getElementById("editSaveBtn").addEventListener("click", saveEditTraining);
+  document.getElementById("editCancelBtn").addEventListener("click", closeEditTraining);
+}
+
 function deleteTraining(index) {
   if (!confirm(t().confirmDelete)) return;
+  closeEditTraining();
   const history = getHistory();
   history.splice(index, 1);
   saveHistory(history);
@@ -3239,29 +3372,34 @@ async function toggleShareTraining(index) {
   }
   localStorage.setItem(NICK_KEY, trimmedNick);
 
-  const token = randomToken();
   try {
-    const time = parseFloat(entry.time);
-    const id = await rpc("share_activity", {
-      p_nick: trimmedNick,
-      p_disc: entry.disc,
-      p_date: entry.date,
-      p_dist_km: parseFloat(entry.dist),
-      p_time_min: time > 0 ? time : null,
-      p_steps: STEP_DISCIPLINES.includes(entry.disc) ? parseSteps(entry.steps) || null : null,
-      p_route: route,
-      p_delete_token: token,
-    });
-    const tokens = getShareTokens();
-    tokens[id] = token;
-    saveShareTokens(tokens);
-    entry.sharedId = id;
+    entry.sharedId = await shareActivityRpc(entry, trimmedNick);
     saveHistory(history);
     refreshHistoryList();
     alert(t().shared);
   } catch (e) {
     alert(t().communityError);
   }
+}
+
+// Wysyła trening do Aktywności i zapamiętuje token do usuwania; zwraca id wpisu na serwerze.
+async function shareActivityRpc(entry, nick) {
+  const token = randomToken();
+  const time = parseFloat(entry.time);
+  const id = await rpc("share_activity", {
+    p_nick: nick,
+    p_disc: entry.disc,
+    p_date: entry.date,
+    p_dist_km: parseFloat(entry.dist),
+    p_time_min: time > 0 ? time : null,
+    p_steps: STEP_DISCIPLINES.includes(entry.disc) ? parseSteps(entry.steps) || null : null,
+    p_route: trimRouteEnds(entry.route),
+    p_delete_token: token,
+  });
+  const tokens = getShareTokens();
+  tokens[id] = token;
+  saveShareTokens(tokens);
+  return id;
 }
 
 // Usuwa udostępnienie z serwera; zwraca true, gdy wpisu już tam nie ma.
@@ -5403,6 +5541,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("planExportBtn").addEventListener("click", exportCurrentPlan);
 
   document.getElementById("saveBtn").addEventListener("click", saveTraining);
+  initEditTraining();
   document.getElementById("discipline").addEventListener("change", updateDisciplineUi);
   ["dist", "time"].forEach((id) => document.getElementById(id).addEventListener("input", () => clearFieldState(id)));
   document.getElementById("trainHintClose").addEventListener("click", hideTrainHint);
