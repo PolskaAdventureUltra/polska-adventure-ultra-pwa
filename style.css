@@ -521,3 +521,15 @@ body.dark .mode-tile.active { box-shadow: 0 6px 16px rgba(255, 106, 43, 0.25); }
 .rec-poi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .rec-poi-grid button { margin: 0; padding: 8px 4px; font-size: 22px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .rec-poi-grid button span { font-size: 12px; }
+
+/* Komunikaty organizatora */
+.tabs button { position: relative; }
+.tabs button.has-dot::after { content: ""; position: absolute; top: 6px; right: calc(50% - 16px); width: 9px; height: 9px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 0 2px var(--nav-bg, #fff); }
+.ch-msg { padding: 10px 12px; margin: 8px 0; border-radius: 10px; background: var(--subtle-bg); border-left: 4px solid var(--accent); }
+.ch-msg-important { border-left-color: var(--danger); }
+.ch-msg-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; color: var(--subtle-fg); }
+.ch-msg p { margin: 4px 0 0; font-size: 15px; overflow-wrap: anywhere; }
+.ch-msg small { color: var(--subtle-fg); }
+.ch-msg-badge { color: #fff; background: var(--danger); border-radius: 8px; padding: 0 6px; font-size: 11px; }
+.ch-msg-del { width: auto; margin: 0; padding: 2px 8px; background: transparent; border: 0; font-size: 16px; }
+.ch-msg-admin { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border, rgba(0,0,0,.1)); }

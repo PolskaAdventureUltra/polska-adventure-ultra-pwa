@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "86";
+  window.PAU_PAGE_BUILD = "87";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -110,6 +110,24 @@
   <div id="tabChallenge" class="tab-content">
     <div id="challengeScreen" class="challenge"></div>
     <div id="challengeBoard" class="challenge challenge-board" hidden></div>
+    <div class="card ch-msg-card" id="chMsgCard" hidden>
+      <h2 data-i18n="chMsgTitle">📢 Komunikaty organizatora</h2>
+      <div id="chMsgList"></div>
+      <div id="chMsgAdmin" class="ch-msg-admin" hidden>
+        <label for="chMsgBody" data-i18n="chMsgBodyLbl">Nowy komunikat dla uczestników</label>
+        <textarea id="chMsgBody" rows="3" maxlength="1000"></textarea>
+        <label class="checkbox-row"><input type="checkbox" id="chMsgImportant"> <span data-i18n="chMsgImportantLbl">⚠️ Ważny — telefon zawibruje mocniej i przeczyta go na głos</span></label>
+        <label for="chMsgExpiry" data-i18n="chMsgExpiryLbl">Pokazuj przez</label>
+        <select id="chMsgExpiry">
+          <option value="0" data-i18n="chMsgExpiry0">bez terminu (do usunięcia)</option>
+          <option value="1" data-i18n="chMsgExpiry1">1 dzień</option>
+          <option value="3" data-i18n="chMsgExpiry3">3 dni</option>
+          <option value="7" data-i18n="chMsgExpiry7">7 dni</option>
+        </select>
+        <button class="primary" id="chMsgSendBtn" data-i18n="chMsgSendBtn">📢 WYŚLIJ KOMUNIKAT</button>
+        <p class="hint-text" data-i18n="chMsgAdminHint">Komunikat zobaczą uczestnicy z kodem zaproszenia: od razu, jeśli mają otwartą aplikację albo nagrywają trening, a pozostali — przy najbliższym otwarciu aplikacji.</p>
+      </div>
+    </div>
     <div class="card" id="challengeSettings" style="display:none">
       <label for="challengeStart" data-i18n="challengeStartLabel">Początek Twojego wyzwania</label>
       <input type="date" id="challengeStart">

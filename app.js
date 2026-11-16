@@ -193,6 +193,28 @@ const TRANSLATIONS = {
     recRouteSaved: (name, n) => `Trasa „${name}” zapisana w zakładce Trasy${n ? ` (punkty: ${n})` : ""}. Tam dopiszesz nazwy i opisy punktów (🗺), wyeksportujesz GPX albo udostępnisz trasę.`,
     navNextPoi: (title, km) => `Następny punkt: ${title} — za ${km} km`,
     navSayPoi: (m, label) => `Za ${m} ${plUnit(m, "metr", "metry", "metrów")}: ${label}`,
+    chMsgTitle: "📢 Komunikaty organizatora",
+    chMsgEmpty: "Na razie brak komunikatów. Gdy organizator coś ogłosi, zobaczysz to tutaj — a w trakcie nagrywania telefon da znać od razu.",
+    chMsgNew: "nowy",
+    chMsgUntil: (d) => `aktualny do ${d}`,
+    chMsgBodyLbl: "Nowy komunikat dla uczestników",
+    chMsgImportantLbl: "⚠️ Ważny — telefon zawibruje mocniej i przeczyta go na głos",
+    chMsgExpiryLbl: "Pokazuj przez",
+    chMsgExpiry0: "bez terminu (do usunięcia)",
+    chMsgExpiry1: "1 dzień",
+    chMsgExpiry3: "3 dni",
+    chMsgExpiry7: "7 dni",
+    chMsgSendBtn: "📢 WYŚLIJ KOMUNIKAT",
+    chMsgAdminHint: "Komunikat zobaczą uczestnicy z kodem zaproszenia: od razu, jeśli mają otwartą aplikację albo nagrywają trening, a pozostali — przy najbliższym otwarciu aplikacji.",
+    chMsgEmptyBody: "Wpisz treść komunikatu.",
+    chMsgConfirmSend: (important) => important ? "Wysłać WAŻNY komunikat do wszystkich uczestników? Telefony przeczytają go na głos." : "Wysłać komunikat do wszystkich uczestników?",
+    chMsgSent: "Komunikat wysłany ✅",
+    chMsgSendError: "Nie udało się — sprawdź internet i spróbuj ponownie.",
+    chMsgConfirmDelete: "Usunąć ten komunikat? Zniknie u wszystkich uczestników.",
+    chMsgNotifTitle: "📢 Komunikat organizatora",
+    chMsgNotifTitleImportant: "⚠️ Ważny komunikat organizatora",
+    chMsgSay: (body) => `Ważny komunikat organizatora: ${body}`,
+    chMsgStatus: (body) => `📢 Komunikat organizatora: ${body} (zakładka Wyzwanie)`,
     navVoiceLbl: "🔊 Komunikaty głosowe przy prowadzeniu",
     navChannelName: "Ostrzeżenia trasy",
     navChannelDesc: "Wibracja i komunikat, gdy zboczysz z trasy przy zgaszonym ekranie",
@@ -448,6 +470,7 @@ const TRANSLATIONS = {
           <li>Zapisy ruszają we wrześniu 2027. Po dołączeniu ekran pokazuje Twój postęp: kilometry w każdej dyscyplinie, miejsce na trasie i prognozę mety.</li>
           <li>Masz kod zaproszenia od organizatora? Kliknij „Masz kod zaproszenia?” pod przyciskiem zapisów — po wpisaniu kodu możesz dołączyć wcześniej. Kod działa tylko na jednym telefonie (przy zmianie telefonu przywróć kopię zapasową albo poproś organizatora o zwolnienie kodu). Jeśli organizator wycofa kod, udział w wyzwaniu zostanie zakończony (treningi zostają w Historii).</li>
           <li>Do postępu liczą się <b>tylko odcinki wyzwania</b>: przy zapisie treningu zaznacz „🏁 Odcinek wyzwania 4000 km”, a w Historii możesz oznaczyć lub odznaczyć trening przyciskiem 🏁. Codzienne treningi gdzie indziej trafiają tylko do Historii. Wyzwanie to bieg, rower i kajak — pływanie i trekking się do niego nie liczą (nie mają pola 🏁).</li>
+          <li><b>📢 Komunikaty organizatora</b>: w zakładce Wyzwanie uczestnicy widzą ogłoszenia organizatora (np. zmiany trasy, niebezpieczne miejsca, posiłki). Nowe są oznaczone czerwoną kropką na zakładce. W trakcie nagrywania telefon daje znać od razu (wibracja, a przy zgaszonym ekranie powiadomienie), a ważne komunikaty czyta na głos (wyłącznik 🔊 jak przy prowadzeniu po trasie). Gdy aplikacja jest zamknięta, nowe komunikaty zobaczysz przy jej otwarciu.</li>
           <li>Po rezygnacji ekran wraca do widoku dla obserwatorów; treningi zostają w Historii.</li>
         </ul>
       </details>
@@ -794,6 +817,28 @@ const TRANSLATIONS = {
     recRouteSaved: (name, n) => `Route “${name}” saved in the Routes tab${n ? ` (points: ${n})` : ""}. There you can add names and descriptions of the points (🗺), export GPX or share the route.`,
     navNextPoi: (title, km) => `Next point: ${title} — in ${km} km`,
     navSayPoi: (m, label) => `In ${m} metres: ${label}`,
+    chMsgTitle: "📢 Organizer messages",
+    chMsgEmpty: "No messages yet. When the organizer posts something, you will see it here — and while recording the phone lets you know right away.",
+    chMsgNew: "new",
+    chMsgUntil: (d) => `valid until ${d}`,
+    chMsgBodyLbl: "New message for participants",
+    chMsgImportantLbl: "⚠️ Important — the phone vibrates harder and reads it out loud",
+    chMsgExpiryLbl: "Show for",
+    chMsgExpiry0: "no end date (until deleted)",
+    chMsgExpiry1: "1 day",
+    chMsgExpiry3: "3 days",
+    chMsgExpiry7: "7 days",
+    chMsgSendBtn: "📢 SEND MESSAGE",
+    chMsgAdminHint: "Participants with an invitation code see the message right away if the app is open or they are recording, others the next time they open the app.",
+    chMsgEmptyBody: "Type the message.",
+    chMsgConfirmSend: (important) => important ? "Send an IMPORTANT message to all participants? Phones will read it out loud." : "Send the message to all participants?",
+    chMsgSent: "Message sent ✅",
+    chMsgSendError: "That did not work — check the internet connection and try again.",
+    chMsgConfirmDelete: "Delete this message? It disappears for all participants.",
+    chMsgNotifTitle: "📢 Organizer message",
+    chMsgNotifTitleImportant: "⚠️ Important organizer message",
+    chMsgSay: (body) => `Important message from the organizer: ${body}`,
+    chMsgStatus: (body) => `📢 Organizer message: ${body} (Challenge tab)`,
     navVoiceLbl: "🔊 Voice prompts during guidance",
     navChannelName: "Route warnings",
     navChannelDesc: "Vibration and message when you go off route with the screen off",
@@ -1049,6 +1094,7 @@ const TRANSLATIONS = {
           <li>Sign-ups open in September 2027. After joining, the screen shows your progress: kilometres per discipline, your place on the route and a finish forecast.</li>
           <li>Got an invitation code from the organiser? Tap “Have an invitation code?” below the sign-up button — after entering it you can join early. The code works on one phone only (when changing phones, restore your backup or ask the organiser to release the code). If the organiser withdraws the code, your participation ends (your trainings stay in History).</li>
           <li>Only <b>challenge stages</b> count towards progress: when saving a training tick “🏁 4000 km challenge stage”, and in History you can mark or unmark a training with the 🏁 button. Everyday trainings elsewhere go only to History. The challenge is running, cycling and kayaking — swimming and hiking don't count towards it (they have no 🏁 option).</li>
+          <li><b>📢 Organizer messages</b>: in the Challenge tab participants see announcements from the organizer (e.g. route changes, dangerous spots, meals). New ones are marked with a red dot on the tab. While recording, the phone lets you know right away (vibration, and a notification with the screen off), and reads important messages out loud (🔊 switch as in route guidance). When the app is closed, you see new messages the next time you open it.</li>
           <li>After leaving, the screen returns to the observer view; your trainings stay in History.</li>
         </ul>
       </details>
@@ -1282,6 +1328,7 @@ function toggleLanguage() {
   redrawElevations();
   recRender();
   renderChallenge(); // pasek z hasłami i reszta ekranu Wyzwania w nowym języku
+  if (typeof renderChallengeMessages === "function") renderChallengeMessages();
   if (document.getElementById("tabActivity").classList.contains("active")) refreshActivityTab();
 }
 
@@ -1289,7 +1336,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "86";
+const APP_BUILD = "87";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -2294,6 +2341,196 @@ function renderChallenge() {
     if (inviteBtn) inviteBtn.addEventListener("click", enterChallengeInvite);
     if (document.getElementById("tabChallenge").classList.contains("active")) startChallengeDemo(el);
   }
+}
+
+// --- Komunikaty organizatora dla uczestników wyzwania (Supabase: challenge_messages) ---
+// Pisze tylko superadmin; czytają uczestnicy z kodem zaproszenia i organizatorzy.
+// Sprawdzamy przy starcie, po powrocie do aplikacji, co 5 min gdy apka jest otwarta
+// i przy odczytach GPS podczas nagrywania (wtedy działa też przy zgaszonym ekranie).
+const CH_MSG_CACHE_KEY = "pau_ch_msgs";
+const CH_MSG_SEEN_KEY = "pau_ch_msgs_seen";         // created_at najnowszego przeczytanego
+const CH_MSG_NOTIFIED_KEY = "pau_ch_msgs_notified"; // created_at najnowszego, o którym już powiadomiliśmy
+const CH_MSG_POLL_MS = 5 * 60 * 1000;
+const CH_MSG_NOTIF_ID = 7302;
+let chMsgState = null;
+let chMsgLastFetch = 0;
+let chMsgFetching = false;
+let chMsgLabelSeen = null; // stan „przeczytane” z chwili wejścia w zakładkę - etykiety „nowy” zostają do następnego wejścia
+
+function chMsgLoadCache() {
+  try { chMsgState = JSON.parse(localStorage.getItem(CH_MSG_CACHE_KEY)) || null; } catch (e) { chMsgState = null; }
+}
+
+function chMsgEligible() {
+  return isCommunityConfigured() && Boolean(getChallenge() || getAdminKey() ||
+    localStorage.getItem(CHALLENGE_INVITE_KEY) || toYmd(new Date()) >= CHALLENGE_SIGNUP_FROM);
+}
+
+function chMsgList() {
+  const now = Date.now();
+  const list = chMsgState && Array.isArray(chMsgState.messages) ? chMsgState.messages : [];
+  return list.filter((m) => !m.expires_at || Date.parse(m.expires_at) > now);
+}
+
+function chMsgUnreadCount() {
+  const seen = localStorage.getItem(CH_MSG_SEEN_KEY) || "";
+  return chMsgList().filter((m) => m.created_at > seen).length;
+}
+
+async function fetchChallengeMessages() {
+  if (chMsgFetching || !chMsgEligible()) return;
+  chMsgFetching = true;
+  chMsgLastFetch = Date.now();
+  try {
+    const inviteToken = localStorage.getItem(CHALLENGE_INVITE_KEY) ? localStorage.getItem(CHALLENGE_INVITE_TOKEN_KEY) : null;
+    const res = await rpc("list_challenge_messages", { p_invite_token: inviteToken, p_admin_key: getAdminKey() || null });
+    if (!res || typeof res !== "object") return;
+    chMsgState = { allowed: Boolean(res.allowed), superadmin: Boolean(res.superadmin), messages: Array.isArray(res.messages) ? res.messages : [] };
+    try { localStorage.setItem(CH_MSG_CACHE_KEY, JSON.stringify(chMsgState)); } catch (e) { /* brak miejsca */ }
+    chMsgCheckNew();
+  } catch (e) {
+    /* bez internetu - zostaje poprzedni stan */
+  } finally {
+    chMsgFetching = false;
+  }
+  renderChallengeMessages();
+}
+
+// Nowe komunikaty od ostatniego sprawdzenia: wibracja, powiadomienie (zgaszony ekran), ważne - głosem.
+// Przy pierwszym pobraniu nie powiadamiamy o starych komunikatach (zobaczysz je z kropką w zakładce).
+function chMsgCheckNew() {
+  const list = chMsgList();
+  if (!list.length) return;
+  const newest = list.reduce((a, m) => (m.created_at > a ? m.created_at : a), "");
+  const notified = localStorage.getItem(CH_MSG_NOTIFIED_KEY);
+  localStorage.setItem(CH_MSG_NOTIFIED_KEY, newest > (notified || "") ? newest : notified);
+  if (!notified) return;
+  const fresh = list.filter((m) => m.created_at > notified).sort((a, b) => (a.created_at < b.created_at ? -1 : 1));
+  if (!fresh.length) return;
+  const dict = t();
+  const important = fresh.filter((m) => m.important);
+  navVibrate(important.length ? [300, 150, 300, 150, 300] : [200, 100, 200]);
+  if (isNativeApp() && document.visibilityState === "hidden") {
+    try {
+      navEnsureChannel().then(() => capPlugin("LocalNotifications").schedule({
+        notifications: fresh.slice(-3).map((m, i) => ({
+          id: CH_MSG_NOTIF_ID + i,
+          title: m.important ? dict.chMsgNotifTitleImportant : dict.chMsgNotifTitle,
+          body: String(m.body).slice(0, 300),
+          channelId: NAV_CHANNEL_ID,
+        })),
+      })).catch(() => {});
+    } catch (e) { /* brak wtyczki */ }
+  }
+  important.slice(-2).forEach((m) => navSpeak(dict.chMsgSay(String(m.body).slice(0, 400))));
+  if (rec) recSetStatus(dict.chMsgStatus(String(fresh[fresh.length - 1].body).slice(0, 120)), false, 30000);
+  else if (document.visibilityState === "visible" && important.length) {
+    alert(`${dict.chMsgNotifTitleImportant}\n\n${important[important.length - 1].body}`);
+  }
+}
+
+function chMsgFormatDate(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleString(t().dateLocale, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+}
+
+function renderChallengeMessages() {
+  const card = document.getElementById("chMsgCard");
+  if (!card) return;
+  const dict = t();
+  const allowed = chMsgEligible() && chMsgState && chMsgState.allowed;
+  card.hidden = !allowed;
+  chMsgRenderBadge();
+  if (!allowed) return;
+  const superadmin = Boolean(chMsgState.superadmin);
+  document.getElementById("chMsgAdmin").hidden = !superadmin;
+  const seen = chMsgLabelSeen != null ? chMsgLabelSeen : localStorage.getItem(CH_MSG_SEEN_KEY) || "";
+  const list = chMsgList();
+  const box = document.getElementById("chMsgList");
+  box.innerHTML = list.length ? list.map((m) =>
+    `<div class="ch-msg${m.important ? " ch-msg-important" : ""}${m.created_at > seen ? " ch-msg-new" : ""}">` +
+    `<div class="ch-msg-head"><span>${m.important ? "⚠️ " : "📢 "}${escapeXml(chMsgFormatDate(m.created_at))}` +
+    (m.created_at > seen ? ` <b class="ch-msg-badge">${dict.chMsgNew}</b>` : "") + `</span>` +
+    (superadmin ? `<button class="ch-msg-del" data-id="${escapeXml(m.id)}" title="${dict.deleteTitle}">🗑</button>` : "") + `</div>` +
+    `<p>${escapeXml(m.body).replace(/\n/g, "<br>")}</p>` +
+    (m.expires_at ? `<small>${dict.chMsgUntil(escapeXml(chMsgFormatDate(m.expires_at)))}</small>` : "") +
+    `</div>`).join("") : `<p class="hint-text">${dict.chMsgEmpty}</p>`;
+  box.querySelectorAll(".ch-msg-del").forEach((btn) => btn.addEventListener("click", () => chMsgDelete(btn.dataset.id)));
+}
+
+function chMsgRenderBadge() {
+  const btn = document.getElementById("tabChallengeBtn");
+  if (btn) btn.classList.toggle("has-dot", chMsgEligible() && Boolean(chMsgState && chMsgState.allowed) && chMsgUnreadCount() > 0);
+}
+
+// Zakładka Wyzwanie otwarta = komunikaty przeczytane (kropka „nowy” zostaje do następnego wejścia).
+function chMsgMarkSeen() {
+  const list = chMsgList();
+  if (!list.length) return;
+  const newest = list.reduce((a, m) => (m.created_at > a ? m.created_at : a), "");
+  if (newest > (localStorage.getItem(CH_MSG_SEEN_KEY) || "")) localStorage.setItem(CH_MSG_SEEN_KEY, newest);
+  chMsgRenderBadge();
+}
+
+async function chMsgSend() {
+  const dict = t();
+  const bodyEl = document.getElementById("chMsgBody");
+  const body = bodyEl.value.trim();
+  if (!body) { alert(dict.chMsgEmptyBody); return; }
+  const days = parseInt(document.getElementById("chMsgExpiry").value, 10) || 0;
+  const important = document.getElementById("chMsgImportant").checked;
+  if (!confirm(dict.chMsgConfirmSend(important))) return;
+  try {
+    await rpc("admin_post_challenge_message", {
+      p_admin_key: getAdminKey() || null,
+      p_body: body,
+      p_important: important,
+      p_expires_at: days ? new Date(Date.now() + days * 86400000).toISOString() : null,
+    });
+  } catch (e) {
+    alert(dict.chMsgSendError);
+    return;
+  }
+  bodyEl.value = "";
+  document.getElementById("chMsgImportant").checked = false;
+  await fetchChallengeMessages();
+  chMsgMarkSeen();
+  renderChallengeMessages();
+  alert(dict.chMsgSent);
+}
+
+async function chMsgDelete(id) {
+  if (!confirm(t().chMsgConfirmDelete)) return;
+  try {
+    await rpc("admin_delete_challenge_message", { p_admin_key: getAdminKey() || null, p_id: id });
+  } catch (e) {
+    alert(t().chMsgSendError);
+    return;
+  }
+  await fetchChallengeMessages();
+}
+
+function chMsgMaybePoll() {
+  if (Date.now() - chMsgLastFetch >= CH_MSG_POLL_MS) fetchChallengeMessages();
+}
+
+function initChallengeMessages() {
+  chMsgLoadCache();
+  renderChallengeMessages();
+  document.getElementById("chMsgSendBtn").addEventListener("click", chMsgSend);
+  document.getElementById("tabChallengeBtn").addEventListener("click", async () => {
+    chMsgLabelSeen = localStorage.getItem(CH_MSG_SEEN_KEY) || "";
+    renderChallengeMessages(); // najpierw pokaż z etykietą „nowy”, potem oznacz jako przeczytane
+    chMsgMarkSeen();
+    await fetchChallengeMessages();
+    if (document.getElementById("tabChallenge").classList.contains("active")) chMsgMarkSeen();
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && Date.now() - chMsgLastFetch > 60000) fetchChallengeMessages();
+  });
+  setInterval(() => { if (document.visibilityState === "visible" || rec) chMsgMaybePoll(); }, 60000);
+  fetchChallengeMessages();
 }
 
 // --- Historia ---
@@ -5474,6 +5711,7 @@ function recOnPosition(pos) {
     return;
   }
   if (rec.nav) navOnFix(c.latitude, c.longitude, c.accuracy);
+  chMsgMaybePoll(); // komunikaty organizatora - działa też przy zgaszonym ekranie (odczyty GPS budzą JS)
   const ts = pos.timestamp || Date.now();
   const ele = Number.isFinite(c.altitude) ? Math.round(c.altitude) : null;
   const point = [+c.latitude.toFixed(6), +c.longitude.toFixed(6), ele, ts];
@@ -6611,6 +6849,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("pinChangeBtn").addEventListener("click", changePin);
   document.getElementById("langBtn").addEventListener("click", toggleLanguage);
   initRecorder();
+  initChallengeMessages();
   initTrainModes();
   initSamsungHint();
   initNativeUpdates();
