@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "80";
+  window.PAU_PAGE_BUILD = "81";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -153,6 +153,7 @@
         <select id="recNavRoute"></select>
         <input type="file" id="navFile" style="display:none">
         <p class="hint-text" id="recNavInfo" data-i18n="navRouteHint">Trasa z zakładki Trasy albo z pliku GPX / TCX / FIT (np. z Garmin Connect, Komoot, Strava). Pokażę ją na mapie, policzę kilometry do końca i ostrzegę, gdy zboczysz.</p>
+        <label class="checkbox-row"><input type="checkbox" id="navVoice"> <span data-i18n="navVoiceLbl">🔊 Komunikaty głosowe przy prowadzeniu</span></label>
         <button class="primary rec-start" id="recStartBtn" data-i18n="recStartBtn">▶ START</button>
       </div>
       <div id="recActive" hidden>
@@ -168,7 +169,7 @@
         <p class="hint-text rec-diag" id="recDiag" hidden></p>
         <p class="hint-text"><span data-i18n="recGpsLbl">Dokładność GPS</span>: <b id="recGps">–</b></p>
         <div class="rec-nav" id="recNav" hidden>
-          <div class="rec-nav-head"><span id="recNavName"></span><b id="recNavLeft"></b></div>
+          <div class="rec-nav-head"><span id="recNavName"></span><b id="recNavLeft"></b><button type="button" class="rec-nav-voice" id="recNavVoiceBtn"></button></div>
           <p class="rec-nav-status" id="recNavStatus" role="status" aria-live="polite"></p>
         </div>
         <div id="recMap" class="rec-map"></div>
