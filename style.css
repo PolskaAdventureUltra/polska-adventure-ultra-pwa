@@ -504,3 +504,20 @@ body.dark .mode-tile.active { box-shadow: 0 6px 16px rgba(255, 106, 43, 0.25); }
 .rec-nav.nav-gps .rec-nav-status { color: var(--subtle-fg); }
 .rec-nav-head { align-items: center; }
 .rec-nav-voice { width: auto; margin: 0 0 0 4px; padding: 2px 8px; font-size: 18px; line-height: 1.2; background: transparent; border: 1px solid var(--subtle-fg); border-radius: 8px; color: inherit; }
+
+/* Punkty na trasie (żywienie, przepak, nocleg, sklep, woda) */
+.poi-icon { background: transparent; border: 0; }
+.poi-icon span { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: #fff; border: 2px solid #2F6FD0; font-size: 17px; line-height: 1; box-shadow: 0 1px 4px rgba(0,0,0,.35); }
+#planPoiBtn.poi-armed { background: var(--accent); color: #fff; }
+.poi-form { margin-top: 10px; padding: 12px; border-radius: 10px; background: var(--subtle-bg); border-left: 4px solid #2F6FD0; }
+.poi-form h3 { margin: 0 0 6px; font-size: 16px; }
+.poi-list h3 { margin: 14px 0 6px; font-size: 16px; }
+.poi-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border, rgba(0,0,0,.1)); }
+.poi-km { flex: 0 0 auto; min-width: 64px; font-family: var(--display); font-weight: 700; font-size: 14px; }
+.poi-text { flex: 1 1 auto; font-size: 14px; overflow-wrap: anywhere; }
+.poi-item .poi-edit { width: auto; margin: 0; padding: 2px 8px; background: transparent; border: 0; font-size: 16px; }
+.rec-nav-next { margin: 4px 0 0; font-size: 14px; }
+.rec-poi-pick { margin-top: 8px; }
+.rec-poi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.rec-poi-grid button { margin: 0; padding: 8px 4px; font-size: 22px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.rec-poi-grid button span { font-size: 12px; }

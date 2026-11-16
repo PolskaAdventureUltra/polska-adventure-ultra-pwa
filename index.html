@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "84";
+  window.PAU_PAGE_BUILD = "85";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -152,6 +152,7 @@
         <label for="recNavRoute" data-i18n="navRouteLbl">🧭 Prowadź po trasie (opcjonalnie)</label>
         <select id="recNavRoute"></select>
         <input type="file" id="navFile" style="display:none">
+        <label class="checkbox-row"><input type="checkbox" id="recSaveRoute"> <span data-i18n="recSaveRouteLbl">🗺 Zapisz przebytą trasę w zakładce Trasy (np. żeby inni mogli nią potem pobiec)</span></label>
         <p class="hint-text" id="recNavInfo" data-i18n="navRouteHint">Trasa z zakładki Trasy albo z pliku GPX / TCX / FIT (np. z Garmin Connect, Komoot, Strava). Pokażę ją na mapie, policzę kilometry do końca i ostrzegę, gdy zboczysz.</p>
         <label class="checkbox-row"><input type="checkbox" id="navVoice"> <span data-i18n="navVoiceLbl">🔊 Komunikaty głosowe przy prowadzeniu</span></label>
         <button class="primary rec-start" id="recStartBtn" data-i18n="recStartBtn">▶ START</button>
@@ -171,12 +172,27 @@
         <div class="rec-nav" id="recNav" hidden>
           <div class="rec-nav-head"><span id="recNavName"></span><b id="recNavLeft"></b><button type="button" class="rec-nav-voice" id="recNavVoiceBtn"></button></div>
           <p class="rec-nav-status" id="recNavStatus" role="status" aria-live="polite"></p>
+          <p class="rec-nav-next" id="recNavNext" hidden></p>
         </div>
         <div id="recMap" class="rec-map"></div>
         <div class="plan-actions">
           <button id="recPauseBtn">⏸ PAUZA</button>
           <button class="primary" id="recFinishBtn" data-i18n="recFinishBtn">■ ZAKOŃCZ</button>
         </div>
+        <button id="recPoiBtn" data-i18n="recPoiBtn">📍 PUNKT TUTAJ</button>
+        <div id="recPoiPick" class="rec-poi-pick" hidden>
+          <p class="hint-text" data-i18n="recPoiPickHint">Co jest w tym miejscu? Nazwę i opis dopiszesz potem w zakładce Trasy.</p>
+          <div class="rec-poi-grid">
+            <button type="button" data-type="food">🍌<span data-i18n="poiFood">Żywienie</span></button>
+            <button type="button" data-type="drop">🎒<span data-i18n="poiDrop">Przepak</span></button>
+            <button type="button" data-type="sleep">🛏<span data-i18n="poiSleep">Nocleg</span></button>
+            <button type="button" data-type="shop">🛒<span data-i18n="poiShop">Sklep</span></button>
+            <button type="button" data-type="water">💧<span data-i18n="poiWater">Woda</span></button>
+            <button type="button" data-type="danger">⚠️<span data-i18n="poiDanger">Uwaga</span></button>
+            <button type="button" data-type="other">📍<span data-i18n="poiOther">Inne</span></button>
+          </div>
+        </div>
+        <p class="hint-text" id="recPoiInfo" hidden></p>
         <button class="link-btn" id="recDiscardBtn" data-i18n="recDiscardBtn">Odrzuć nagranie</button>
       </div>
     </div>
@@ -386,6 +402,22 @@
         <button id="planUndoBtn" data-i18n="planUndoBtn">Cofnij punkt</button>
         <button id="planClearBtn" data-i18n="planClearBtn">Wyczyść</button>
       </div>
+      <button id="planPoiBtn" data-i18n="planPoiBtn">📍 DODAJ PUNKT NA TRASIE</button>
+      <div id="poiForm" class="poi-form" hidden>
+        <h3 id="poiFormTitle">Nowy punkt na trasie</h3>
+        <label for="poiType" data-i18n="poiTypeLbl">Rodzaj</label>
+        <select id="poiType"></select>
+        <label for="poiName" data-i18n="poiNameLbl">Nazwa (np. Żabka, Schronisko Orlica)</label>
+        <input id="poiName" type="text" maxlength="60">
+        <label for="poiNote" data-i18n="poiNoteLbl">Opis (godziny otwarcia, wskazówki…)</label>
+        <textarea id="poiNote" rows="2" maxlength="300"></textarea>
+        <button class="primary" id="poiSaveBtn" data-i18n="poiSaveBtn">ZAPISZ PUNKT</button>
+        <div class="plan-actions">
+          <button id="poiDeleteBtn" data-i18n="poiDeleteBtn">Usuń punkt</button>
+          <button id="poiCancelBtn" data-i18n="poiCancelBtn">Anuluj</button>
+        </div>
+      </div>
+      <div id="planPoiList" class="poi-list"></div>
       <button class="primary" id="planSaveBtn" data-i18n="planSaveBtn">ZAPISZ TRASĘ</button>
       <button id="planExportBtn" data-i18n="planExportBtn">EKSPORTUJ DO GPX (ZEGAREK)</button>
       <p class="hint-text" data-i18n="planExportHint">Garmin: Garmin Connect (www) → Trening → Trasy → Importuj. Suunto: otwórz plik GPX w Suunto app. Polar: Polar Flow (www) → Ulubione → Trasy → Importuj.</p>

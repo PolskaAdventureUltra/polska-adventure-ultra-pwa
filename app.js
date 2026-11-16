@@ -159,6 +159,37 @@ const TRANSLATIONS = {
     routeImportHint: "Trasę z Garmin Connect, Komoot, Strava czy od znajomych wczytasz tutaj. Przyciskiem 🧭 przy trasie uruchomisz prowadzenie w nagrywaniu telefonem.",
     routeImported: (name, km) => `Wczytano trasę „${name}” (${km} km). Przycisk 🧭 przy trasie uruchamia prowadzenie.`,
     navNotifTitle: "Polska Adventure Ultra — trasa",
+    poiTypes: { food: "Punkt żywieniowy", drop: "Przepak", sleep: "Nocleg", shop: "Sklep", water: "Woda", danger: "Uwaga – niebezpieczne miejsce", other: "Inne" },
+    poiFood: "Żywienie", poiDrop: "Przepak", poiSleep: "Nocleg", poiShop: "Sklep", poiWater: "Woda", poiDanger: "Uwaga", poiOther: "Inne",
+    navDanger: (m, name) => `⚠️ Za ${m} m niebezpieczne miejsce${name ? `: ${name}` : ""} — uważaj!`,
+    navSayDanger: (m, name) => `Uwaga! Za ${m} ${plUnit(m, "metr", "metry", "metrów")} niebezpieczne miejsce${name ? `: ${name}` : ""}`,
+    planPoiBtn: "📍 DODAJ PUNKT NA TRASIE",
+    planPoiArmed: "👆 Kliknij na mapie miejsce punktu (dotknij tu, aby anulować)",
+    poiNeedRoute: "Najpierw wyznacz albo wczytaj trasę — punkty dodaje się do istniejącej trasy.",
+    poiFormNew: "📍 Nowy punkt na trasie",
+    poiFormEdit: "✏️ Popraw punkt",
+    poiTypeLbl: "Rodzaj",
+    poiNameLbl: "Nazwa (np. Żabka, Schronisko Orlica)",
+    poiNoteLbl: "Opis (godziny otwarcia, wskazówki…)",
+    poiSaveBtn: "ZAPISZ PUNKT",
+    poiDeleteBtn: "Usuń punkt",
+    poiCancelBtn: "Anuluj",
+    poiConfirmDelete: "Usunąć ten punkt z trasy?",
+    poiListTitle: "📍 Punkty na trasie",
+    poiKm: (km) => `km ${km}`,
+    poiOff: (m) => `${m} m od trasy`,
+    poiUnsaved: "Punkt dodany. Zapisze się razem z trasą — kliknij „ZAPISZ TRASĘ”.",
+    poiCount: (n) => `📍 ${n}`,
+    poiNoGps: "Poczekaj na sygnał GPS — punkt zapisuje się w miejscu, w którym jesteś.",
+    recPoiBtn: "📍 PUNKT TUTAJ",
+    recPoiPickHint: "Co jest w tym miejscu? Nazwę i opis dopiszesz potem w zakładce Trasy.",
+    recPoiAdded: (label) => `📍 Dodano punkt: ${label}`,
+    recPoiCount: (n) => `📍 Dodane punkty: ${n} — po zakończeniu zapiszesz je razem z trasą w zakładce Trasy.`,
+    recSaveRouteLbl: "🗺 Zapisz przebytą trasę w zakładce Trasy (np. żeby inni mogli nią potem pobiec)",
+    recSaveRouteAsk: (n) => `Na trasie dodałeś punkty (${n}). Zapisać przebytą trasę razem z punktami w zakładce Trasy?`,
+    recRouteSaved: (name, n) => `Trasa „${name}” zapisana w zakładce Trasy${n ? ` (punkty: ${n})` : ""}. Tam dopiszesz nazwy i opisy punktów (🗺), wyeksportujesz GPX albo udostępnisz trasę.`,
+    navNextPoi: (title, km) => `Następny punkt: ${title} — za ${km} km`,
+    navSayPoi: (m, label) => `Za ${m} ${plUnit(m, "metr", "metry", "metrów")}: ${label}`,
     navVoiceLbl: "🔊 Komunikaty głosowe przy prowadzeniu",
     navChannelName: "Ostrzeżenia trasy",
     navChannelDesc: "Wibracja i komunikat, gdy zboczysz z trasy przy zgaszonym ekranie",
@@ -472,6 +503,7 @@ const TRANSLATIONS = {
           <li>„Cofnij punkt” usuwa ostatni punkt, „Wyczyść” — całą trasę. „ZAPISZ TRASĘ” zapisuje ją na liście poniżej mapy.</li>
           <li>„EKSPORTUJ DO GPX” (lub przycisk GPX przy zapisanej trasie) tworzy plik do zegarka. Na telefonie otworzy się menu „Udostępnij”.</li>
           <li><b>Garmin</b>: Garmin Connect (www) → Trening → Trasy → Importuj → wyślij na zegarek. <b>Suunto</b>: otwórz plik GPX w Suunto app i zsynchronizuj zegarek. <b>Polar</b>: Polar Flow (www) → Ulubione → Trasy → Importuj → synchronizuj.</li>
+          <li><b>📍 Punkty na trasie</b> (żywienie, przepak, nocleg, sklep, woda, ⚠️ niebezpieczne miejsce, inne): otwórz trasę (🗺), kliknij „📍 DODAJ PUNKT NA TRASIE” i dotknij miejsca na mapie — wybierasz rodzaj, nazwę i opis; kliknięcie ikony na mapie albo ✏️ na liście pozwala punkt poprawić lub usunąć. W nagrywaniu telefonem przycisk „📍 PUNKT TUTAJ” zapisuje punkt w miejscu, w którym jesteś; po zakończeniu zapiszesz przebytą trasę z punktami w zakładce Trasy (albo zaznacz przed START „🗺 Zapisz przebytą trasę”). Trasę z zegarka wczytasz „📂 WCZYTAJ TRASĘ Z PLIKU” i dodasz punkty potem. Punkty trafiają do pliku GPX (zegarek pokaże je jako punkty trasy), a przy prowadzeniu po trasie widać „Następny punkt: … za X km”, a głos uprzedza ok. 300 m wcześniej (przed niebezpiecznym miejscem 500 m wcześniej, z wibracją).</li>
           <li><b>🧭 Prowadzenie po trasie w telefonie</b>: „📂 WCZYTAJ TRASĘ Z PLIKU” (GPX / TCX / FIT, np. z Garmin Connect, Komoot, Strava) dodaje trasę do listy. Przycisk 🧭 przy trasie — albo pole „Prowadź po trasie” przed START w nagrywaniu telefonem — włącza prowadzenie: trasa jest na mapie, widać kilometry do końca, a gdy zboczysz o ok. 50 m (rower 60 m, kajak i pływanie 100 m), telefon zawibruje, pokaże czerwony komunikat i powie to głosem (głos wyłączysz polem „🔊 Komunikaty głosowe” albo przyciskiem 🔊 w trakcie); w aplikacji ze Sklepu Play przy zgaszonym ekranie dostaniesz powiadomienie. Przy słabym GPS ostrzeżenia są wstrzymane, żeby nie było fałszywych alarmów — trasa zostaje na mapie.</li>
           <li>Wyznaczanie trasy po drogach wymaga internetu (darmowy serwis BRouter — wysyłane są wyłącznie współrzędne klikniętych punktów). Bez internetu odcinki będą liniami prostymi.</li>
         </ul>
@@ -725,6 +757,37 @@ const TRANSLATIONS = {
     routeImportHint: "Load a route from Garmin Connect, Komoot, Strava or a friend here. The 🧭 button next to a route starts guidance in phone recording.",
     routeImported: (name, km) => `Loaded route “${name}” (${km} km). The 🧭 button next to the route starts guidance.`,
     navNotifTitle: "Polska Adventure Ultra — route",
+    poiTypes: { food: "Food station", drop: "Drop bag", sleep: "Overnight stay", shop: "Shop", water: "Water", danger: "Caution – dangerous spot", other: "Other" },
+    poiFood: "Food", poiDrop: "Drop bag", poiSleep: "Sleep", poiShop: "Shop", poiWater: "Water", poiDanger: "Caution", poiOther: "Other",
+    navDanger: (m, name) => `⚠️ Dangerous spot in ${m} m${name ? `: ${name}` : ""} — take care!`,
+    navSayDanger: (m, name) => `Caution! Dangerous spot in ${m} metres${name ? `: ${name}` : ""}`,
+    planPoiBtn: "📍 ADD A POINT ON THE ROUTE",
+    planPoiArmed: "👆 Tap the place on the map (tap here to cancel)",
+    poiNeedRoute: "Plan or load a route first — points are added to an existing route.",
+    poiFormNew: "📍 New point on the route",
+    poiFormEdit: "✏️ Edit point",
+    poiTypeLbl: "Type",
+    poiNameLbl: "Name (e.g. shop name, mountain hut)",
+    poiNoteLbl: "Description (opening hours, tips…)",
+    poiSaveBtn: "SAVE POINT",
+    poiDeleteBtn: "Delete point",
+    poiCancelBtn: "Cancel",
+    poiConfirmDelete: "Delete this point from the route?",
+    poiListTitle: "📍 Points on the route",
+    poiKm: (km) => `km ${km}`,
+    poiOff: (m) => `${m} m from the route`,
+    poiUnsaved: "Point added. It is saved together with the route — tap “SAVE ROUTE”.",
+    poiCount: (n) => `📍 ${n}`,
+    poiNoGps: "Wait for the GPS signal — the point is saved where you are.",
+    recPoiBtn: "📍 POINT HERE",
+    recPoiPickHint: "What is here? You can add a name and description later in the Routes tab.",
+    recPoiAdded: (label) => `📍 Point added: ${label}`,
+    recPoiCount: (n) => `📍 Points added: ${n} — after finishing you can save them with the route in the Routes tab.`,
+    recSaveRouteLbl: "🗺 Save the recorded route in the Routes tab (e.g. so others can follow it later)",
+    recSaveRouteAsk: (n) => `You added points on the way (${n}). Save the recorded route with the points in the Routes tab?`,
+    recRouteSaved: (name, n) => `Route “${name}” saved in the Routes tab${n ? ` (points: ${n})` : ""}. There you can add names and descriptions of the points (🗺), export GPX or share the route.`,
+    navNextPoi: (title, km) => `Next point: ${title} — in ${km} km`,
+    navSayPoi: (m, label) => `In ${m} metres: ${label}`,
     navVoiceLbl: "🔊 Voice prompts during guidance",
     navChannelName: "Route warnings",
     navChannelDesc: "Vibration and message when you go off route with the screen off",
@@ -1038,6 +1101,7 @@ const TRANSLATIONS = {
           <li>“Undo point” removes the last point, “Clear” the whole route. “SAVE ROUTE” adds it to the list below the map.</li>
           <li>“EXPORT TO GPX” (or the GPX button next to a saved route) creates a file for your watch. On a phone the Share menu opens.</li>
           <li><b>Garmin</b>: Garmin Connect (web) → Training → Courses → Import → send to device. <b>Suunto</b>: open the GPX file in the Suunto app and sync the watch. <b>Polar</b>: Polar Flow (web) → Favorites → Routes → Import → sync.</li>
+          <li><b>📍 Points on the route</b> (food, drop bag, overnight, shop, water, ⚠️ dangerous spot, other): open a route (🗺), tap “📍 ADD A POINT ON THE ROUTE” and tap the place on the map — choose the type, name and description; tapping the icon on the map or ✏️ in the list lets you edit or delete it. In phone recording, “📍 POINT HERE” saves a point where you are; after finishing you can save the recorded route with the points in the Routes tab (or tick “🗺 Save the recorded route” before START). Load a watch route with “📂 LOAD ROUTE FROM FILE” and add points afterwards. Points go into the GPX file (the watch shows them as course points), and during route guidance you see “Next point: … in X km” and the voice warns about 300 m ahead (500 m ahead with vibration before a dangerous spot).</li>
           <li><b>🧭 Route guidance on the phone</b>: “📂 LOAD ROUTE FROM FILE” (GPX / TCX / FIT, e.g. from Garmin Connect, Komoot, Strava) adds a route to the list. The 🧭 button next to a route — or the “Follow a route” field before START in phone recording — turns on guidance: the route is on the map, you see the distance left, and when you go about 50 m off route (cycling 60 m, kayak and swimming 100 m) the phone vibrates, shows a red message and says it out loud (turn the voice off with the “🔊 Voice prompts” box or the 🔊 button while recording); in the Play Store app you get a notification while the screen is off. With weak GPS, warnings are paused to avoid false alarms — the route stays on the map.</li>
           <li>Road routing needs internet (free BRouter service — only the coordinates of tapped points are sent). Offline, sections are straight lines.</li>
         </ul>
@@ -1218,7 +1282,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "84";
+const APP_BUILD = "85";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -2869,6 +2933,325 @@ let planSegments = [];    // planSegments[i] = trasa od punktu i do i+1: [{ lat,
 let planEditingIndex = null; // indeks edytowanej zapisanej trasy (null = nowa trasa)
 let planRequestId = 0;
 
+// --- Punkty na trasie (żywienie, przepak, nocleg, sklep, woda...) ---
+// Zapisywane w trasie jako route.pois = [{ lat, lon, type, name, note }]. Kilometr liczymy na bieżąco
+// (najbliższy punkt trasy), więc po zmianie przebiegu trasy punkty same „przesuwają się” po kilometrach.
+const POI_TYPES = ["food", "drop", "sleep", "shop", "water", "danger", "other"];
+const POI_ICONS = { food: "🍌", drop: "🎒", sleep: "🛏", shop: "🛒", water: "💧", danger: "⚠️", other: "📍" };
+// Symbole GPX rozpoznawane przez Garmina (Garmin Connect pokazuje je jako punkty kursu).
+const POI_GPX_SYM = { food: "Restaurant", drop: "Flag, Blue", sleep: "Lodging", shop: "Shopping Center", water: "Drinking Water", danger: "Danger Area", other: "Flag, Red" };
+let planPois = [];
+let poiArmed = false;
+let poiEditIndex = null; // indeks edytowanego punktu w planPois, -1 = nowy
+let poiDraft = null;     // { lat, lon } nowego punktu
+
+function poiLabel(type) {
+  const types = t().poiTypes;
+  return types[type] || types.other;
+}
+
+function poiNormalize(p) {
+  const lat = +Number(p.lat).toFixed(6);
+  const lon = +Number(p.lon).toFixed(6);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return null;
+  const out = { lat, lon, type: POI_TYPES.includes(p.type) ? p.type : "other" };
+  const name = String(p.name || "").trim().slice(0, 60);
+  const note = String(p.note || "").trim().slice(0, 300);
+  if (name) out.name = name;
+  if (note) out.note = note;
+  return out;
+}
+
+function poiTitle(p) {
+  return `${POI_ICONS[p.type] || POI_ICONS.other} ${p.name || poiLabel(p.type)}`;
+}
+
+// Kilometr każdego punktu wzdłuż trasy i odległość od niej. Zwraca kopie posortowane po km.
+function poisWithKm(track, pois) {
+  if (!pois || !pois.length) return [];
+  const cum = [0];
+  for (let i = 1; i < track.length; i++) cum.push(cum[i - 1] + haversineKm(track[i - 1].lat, track[i - 1].lon, track[i].lat, track[i].lon));
+  return pois.map((p, index) => {
+    let best = Infinity;
+    let bi = 0;
+    for (let i = 0; i < track.length; i++) {
+      const d = haversineKm(p.lat, p.lon, track[i].lat, track[i].lon);
+      if (d < best) { best = d; bi = i; }
+    }
+    return { ...p, index, km: track.length ? cum[bi] : 0, offKm: track.length ? best : 0 };
+  }).sort((a, b) => a.km - b.km);
+}
+
+function poiMarker(p) {
+  const icon = L.divIcon({
+    className: "poi-icon",
+    html: `<span>${POI_ICONS[p.type] || POI_ICONS.other}</span>`,
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+  });
+  return L.marker([p.lat, p.lon], { icon, title: p.name || poiLabel(p.type), keyboard: false });
+}
+
+function poiTypeOptionsHtml(selected) {
+  return POI_TYPES.map((type) =>
+    `<option value="${type}"${type === selected ? " selected" : ""}>${POI_ICONS[type]} ${escapeXml(poiLabel(type))}</option>`).join("");
+}
+
+// Punkty edytowanej (już zapisanej) trasy zapisujemy od razu - żeby nie przepadły, gdy ktoś zapomni „ZAPISZ TRASĘ”.
+function poiAutosave() {
+  if (planEditingIndex == null) return false;
+  const routes = getPlannedRoutes();
+  const route = routes[planEditingIndex];
+  if (!route) return false;
+  if (planPois.length) route.pois = planPois.slice();
+  else delete route.pois;
+  savePlannedRoutes(routes);
+  refreshSavedRoutesList();
+  return true;
+}
+
+function poiSetArmed(on) {
+  poiArmed = on;
+  const btn = document.getElementById("planPoiBtn");
+  if (!btn) return;
+  btn.textContent = on ? t().planPoiArmed : t().planPoiBtn;
+  btn.classList.toggle("poi-armed", on);
+}
+
+function poiToggleArmed() {
+  if (!poiArmed && getPlanTrack().length < 2) {
+    alert(t().poiNeedRoute);
+    return;
+  }
+  poiCloseForm();
+  poiSetArmed(!poiArmed);
+}
+
+function poiPlaceDraft(lat, lon) {
+  poiSetArmed(false);
+  poiDraft = { lat, lon };
+  poiEditIndex = -1;
+  poiOpenForm({ type: "food", name: "", note: "" });
+}
+
+function poiEdit(index) {
+  const p = planPois[index];
+  if (!p) return;
+  poiSetArmed(false);
+  poiDraft = null;
+  poiEditIndex = index;
+  poiOpenForm(p);
+}
+
+function poiOpenForm(p) {
+  const dict = t();
+  const form = document.getElementById("poiForm");
+  document.getElementById("poiFormTitle").textContent = poiEditIndex === -1 ? dict.poiFormNew : dict.poiFormEdit;
+  document.getElementById("poiType").innerHTML = poiTypeOptionsHtml(p.type || "food");
+  document.getElementById("poiName").value = p.name || "";
+  document.getElementById("poiNote").value = p.note || "";
+  document.getElementById("poiDeleteBtn").hidden = poiEditIndex === -1;
+  form.hidden = false;
+  form.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function poiCloseForm() {
+  const form = document.getElementById("poiForm");
+  if (form) form.hidden = true;
+  poiEditIndex = null;
+  poiDraft = null;
+}
+
+function poiSaveForm() {
+  const base = poiEditIndex === -1 ? poiDraft : planPois[poiEditIndex];
+  if (!base) { poiCloseForm(); return; }
+  const p = poiNormalize({
+    lat: base.lat,
+    lon: base.lon,
+    type: document.getElementById("poiType").value,
+    name: document.getElementById("poiName").value,
+    note: document.getElementById("poiNote").value,
+  });
+  if (!p) { poiCloseForm(); return; }
+  if (poiEditIndex === -1) planPois.push(p);
+  else planPois[poiEditIndex] = p;
+  poiCloseForm();
+  const saved = poiAutosave();
+  redrawPlan();
+  if (!saved) refreshPlanStats(t().poiUnsaved);
+}
+
+function poiDeleteCurrent() {
+  if (poiEditIndex == null || poiEditIndex < 0) { poiCloseForm(); return; }
+  if (!confirm(t().poiConfirmDelete)) return;
+  planPois.splice(poiEditIndex, 1);
+  poiCloseForm();
+  poiAutosave();
+  redrawPlan();
+}
+
+function renderPlanPoiList(track) {
+  const box = document.getElementById("planPoiList");
+  if (!box) return;
+  const dict = t();
+  const list = poisWithKm(track, planPois);
+  if (!list.length) { box.innerHTML = ""; return; }
+  box.innerHTML = `<h3>${dict.poiListTitle}</h3>` + list.map((p) =>
+    `<div class="poi-item">` +
+    `<span class="poi-km">${dict.poiKm(formatKm(p.km))}</span>` +
+    `<span class="poi-text"><b>${escapeXml(poiTitle(p))}</b>` +
+    (p.name ? ` <small>${escapeXml(poiLabel(p.type))}</small>` : "") +
+    (p.offKm > 0.15 ? ` <small>· ${dict.poiOff(Math.round(p.offKm * 1000))}</small>` : "") +
+    (p.note ? `<br><small>${escapeXml(p.note)}</small>` : "") + `</span>` +
+    `<button class="poi-edit" data-index="${p.index}" title="${dict.poiFormEdit}">✏️</button>` +
+    `</div>`).join("");
+  box.querySelectorAll(".poi-edit").forEach((btn) => {
+    btn.addEventListener("click", () => poiEdit(parseInt(btn.dataset.index, 10)));
+  });
+}
+
+function drawPlanPois() {
+  planPois.forEach((p, i) => {
+    poiMarker(p).bindTooltip(escapeXml(poiTitle(p))).on("click", () => poiEdit(i)).addTo(planLayerGroup);
+  });
+}
+
+// Typ punktu z pliku GPX: nasz zapis "pau:<typ>", a w obcych plikach zgadujemy po symbolu i nazwie.
+function poiGuessType(text) {
+  const s = String(text || "").toLowerCase();
+  const m = s.match(/pau:(\w+)/);
+  if (m && POI_TYPES.includes(m[1])) return m[1];
+  if (/danger|uwaga|niebezp|ostrzeż|ostrzez|caution|warning|hazard|stromo|stromy|śliski|sliski|ruchliw/.test(s)) return "danger";
+  if (/water|woda|wody|drink|źród|zrod|fountain|kran/.test(s)) return "water";
+  if (/przepak|drop ?bag|depozyt/.test(s)) return "drop";
+  if (/lodg|hotel|nocleg|camp|biwak|schronisk|hostel|shelter|bed/.test(s)) return "sleep";
+  if (/shop|sklep|store|market|stacja|convenience|grocery|żabka|zabka|biedronka|lidl|dino|lewiatan|stokrotka|carrefour|netto|delikatesy|orlen/.test(s)) return "shop";
+  if (/food|restaur|jedzen|żyw|zyw|bufet|aid station|bar |cafe|kawiarn|posił/.test(s)) return "food";
+  return "other";
+}
+
+function parseGpxPois(xml) {
+  return Array.from(xml.getElementsByTagName("wpt")).map((w) => {
+    const child = (tag) => {
+      const el = Array.from(w.children).find((c) => c.localName === tag);
+      return el ? el.textContent.trim() : "";
+    };
+    const name = child("name");
+    return poiNormalize({
+      lat: parseFloat(w.getAttribute("lat")),
+      lon: parseFloat(w.getAttribute("lon")),
+      type: poiGuessType(`${child("type")} ${child("sym")} ${name}`),
+      name,
+      note: child("desc") || child("cmt"),
+    });
+  }).filter(Boolean).slice(0, 500);
+}
+
+function gpxWaypoints(pois) {
+  return (pois || []).map((p) =>
+    `  <wpt lat="${p.lat.toFixed(6)}" lon="${p.lon.toFixed(6)}">` +
+    `<name>${escapeXml(p.name || poiLabel(p.type))}</name>` +
+    (p.note ? `<desc>${escapeXml(p.note)}</desc>` : "") +
+    `<sym>${POI_GPX_SYM[p.type] || POI_GPX_SYM.other}</sym><type>pau:${p.type}</type></wpt>\n`).join("");
+}
+
+// --- Punkt „tutaj” podczas nagrywania telefonem ---
+let recPoiLayer = null;
+
+function recTogglePoiPick() {
+  const pick = document.getElementById("recPoiPick");
+  if (!rec) return;
+  if (!rec.points.length) { alert(t().poiNoGps); return; }
+  pick.hidden = !pick.hidden;
+}
+
+function recAddPoi(type) {
+  if (!rec || !rec.points.length) return;
+  const last = rec.points[rec.points.length - 1];
+  const p = poiNormalize({ lat: last[0], lon: last[1], type });
+  if (!p) return;
+  rec.pois = (rec.pois || []).concat(p);
+  recSave(true);
+  document.getElementById("recPoiPick").hidden = true;
+  recSetStatus(t().recPoiAdded(`${POI_ICONS[type]} ${poiLabel(type)}`), false, 6000);
+  recDrawPois();
+  recRender();
+}
+
+function recDrawPois() {
+  if (!recMap || typeof L === "undefined") return;
+  if (!recPoiLayer) recPoiLayer = L.layerGroup().addTo(recMap);
+  recPoiLayer.clearLayers();
+  const navPois = rec && rec.nav && rec.nav.pois ? rec.nav.pois : [];
+  const own = rec && rec.pois ? rec.pois : [];
+  navPois.concat(own).forEach((p) => poiMarker(p).bindTooltip(escapeXml(poiTitle(p))).addTo(recPoiLayer));
+}
+
+function recRenderPoiInfo() {
+  const info = document.getElementById("recPoiInfo");
+  if (!info) return;
+  const n = rec && rec.pois ? rec.pois.length : 0;
+  info.hidden = n === 0;
+  info.textContent = n ? t().recPoiCount(n) : "";
+}
+
+// Po zakończeniu nagrania: przebyta trasa (z punktami) do zakładki Trasy - np. żeby inni mogli nią pobiec.
+function recOfferSaveRoute(finished) {
+  const dict = t();
+  const pois = finished.pois || [];
+  if (!finished.saveRoute && !pois.length) return;
+  if (!finished.saveRoute && !confirm(dict.recSaveRouteAsk(pois.length))) return;
+  const defName = `${dict.discNames[finished.disc] || finished.disc} ${toYmd(new Date(finished.startedAt))}`;
+  const name = prompt(dict.promptRouteName, defName);
+  if (name === null) return;
+  const track = finished.points.map((p) => (p[2] == null ? { lat: p[0], lon: p[1] } : { lat: p[0], lon: p[1], ele: p[2] }));
+  const index = saveImportedRoute(name.trim() || defName, simplifyTrack(track, 0.00002), pois);
+  const routes = getPlannedRoutes();
+  routes[index].recorded = true;
+  savePlannedRoutes(routes);
+  refreshSavedRoutesList();
+  alert(dict.recRouteSaved(routes[index].name, pois.length));
+}
+
+// --- Najbliższy punkt podczas prowadzenia po trasie ---
+const NAV_POI_SAY_KM = 0.3;
+const NAV_DANGER_SAY_KM = 0.5; // niebezpieczne miejsca - uprzedzamy wcześniej i z wibracją
+
+function navPoisFor(pts, pois) {
+  if (!pois || !pois.length) return undefined;
+  const track = pts.map(([lat, lon]) => ({ lat, lon }));
+  return poisWithKm(track, pois).filter((p) => p.offKm <= 2).map((p) => {
+    const out = { lat: p.lat, lon: p.lon, type: p.type, km: +p.km.toFixed(3) };
+    if (p.name) out.name = p.name;
+    return out;
+  });
+}
+
+function navNextPoi() {
+  if (!rec || !rec.nav || !rec.nav.pois || navRt.progressKm == null) return null;
+  return rec.nav.pois.find((p) => p.km > navRt.progressKm + 0.02) || null;
+}
+
+function navCheckPoi() {
+  const next = navNextPoi();
+  if (!next) return;
+  const leftKm = next.km - navRt.progressKm;
+  const key = `${next.km}`;
+  const danger = next.type === "danger";
+  if (leftKm <= (danger ? NAV_DANGER_SAY_KM : NAV_POI_SAY_KM) + 0.01 && !navRt.poiSaid[key]) {
+    navRt.poiSaid[key] = true;
+    const m = Math.max(50, Math.round((leftKm * 1000) / 50) * 50);
+    if (danger) {
+      const text = t().navDanger(m, next.name || "");
+      navVibrate([300, 150, 300]);
+      if (isNativeApp() && document.visibilityState === "hidden") navNotify(text);
+      navSpeak(t().navSayDanger(m, next.name || ""));
+    } else {
+      navSpeak(t().navSayPoi(m, next.name || poiLabel(next.type)));
+    }
+  }
+}
+
 function getPlannedRoutes() {
   try {
     return JSON.parse(localStorage.getItem(PLANNED_ROUTES_KEY)) || [];
@@ -2889,7 +3272,7 @@ function initPlanMap() {
       attribution: "&copy; OpenStreetMap contributors",
     }).addTo(planMapInstance);
     planLayerGroup = L.layerGroup().addTo(planMapInstance);
-    planMapInstance.on("click", (e) => addPlanPoint(e.latlng.lat, e.latlng.lng));
+    planMapInstance.on("click", (e) => (poiArmed ? poiPlaceDraft(e.latlng.lat, e.latlng.lng) : addPlanPoint(e.latlng.lat, e.latlng.lng)));
   }
   // Zakładka była ukryta (display:none) - Leaflet musi przeliczyć rozmiar.
   requestAnimationFrame(() => planMapInstance.invalidateSize());
@@ -2952,7 +3335,9 @@ function redrawPlan() {
     const color = i === 0 ? "#3D7A22" : isLast ? "#c62828" : "#1565C0";
     L.circleMarker([p.lat, p.lon], { radius: 6, color, fillColor: color, fillOpacity: 1 }).addTo(planLayerGroup);
   });
+  drawPlanPois();
   refreshPlanStats();
+  renderPlanPoiList(track);
   showElevation("plan", track);
 }
 
@@ -3008,6 +3393,9 @@ function undoPlanPoint() {
 function clearPlan() {
   planWaypoints = [];
   planSegments = [];
+  planPois = [];
+  poiCloseForm();
+  poiSetArmed(false);
   planEditingIndex = null;
   redrawPlan();
 }
@@ -3030,6 +3418,9 @@ function savePlannedRoute() {
     waypoints: planWaypoints,
     segments: planSegments,
   };
+  if (planPois.length) route.pois = planPois.slice();
+  if (existing && existing.imported) route.imported = true;
+  if (existing && existing.recorded) route.recorded = true;
   if (existing && existing.sharedId) route.sharedId = existing.sharedId;
   if (existing) routes[planEditingIndex] = route;
   else {
@@ -3047,6 +3438,9 @@ function loadPlannedRoute(index) {
   initPlanMap();
   planWaypoints = route.waypoints;
   planSegments = route.segments;
+  planPois = (route.pois || []).slice();
+  poiCloseForm();
+  poiSetArmed(false);
   planEditingIndex = index;
   document.getElementById("planMode").value = route.mode;
   redrawPlan();
@@ -3074,7 +3468,7 @@ function escapeXml(text) {
 }
 
 // GPX z pojedynczym trackiem - Garmin Connect, Suunto app i Polar Flow importują go jako trasę do nawigacji.
-function buildGpx(name, track) {
+function buildGpx(name, track, pois) {
   const pts = track
     .map((p) => {
       const ele = p.ele != null ? `<ele>${p.ele}</ele>` : "";
@@ -3084,7 +3478,7 @@ function buildGpx(name, track) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <gpx version="1.1" creator="Polska Adventure Ultra" xmlns="http://www.topografix.com/GPX/1/1">
   <metadata><name>${escapeXml(name)}</name></metadata>
-  <trk>
+${gpxWaypoints(pois)}  <trk>
     <name>${escapeXml(name)}</name>
     <trkseg>
 ${pts}
@@ -3094,10 +3488,10 @@ ${pts}
 `;
 }
 
-async function downloadGpx(name, track) {
+async function downloadGpx(name, track, pois) {
   const fileName = (name.replace(/[^\p{L}\p{N}_-]+/gu, "_") || "trasa") + ".gpx";
   // Na telefonie systemowe "Udostępnij" pozwala od razu otworzyć plik np. w Suunto app.
-  await saveFile(new File([buildGpx(name, track)], fileName, { type: "application/gpx+xml" }), name);
+  await saveFile(new File([buildGpx(name, track, pois)], fileName, { type: "application/gpx+xml" }), name);
 }
 
 // Natywna aplikacja: plik trafia do pamięci podręcznej apki, a systemowe "Udostępnij" pozwala zapisać go
@@ -3149,7 +3543,7 @@ function exportCurrentPlan() {
   }
   const routes = getPlannedRoutes();
   const name = planEditingIndex != null && routes[planEditingIndex] ? routes[planEditingIndex].name : t().defaultRouteName;
-  downloadGpx(name, getPlanTrack());
+  downloadGpx(name, getPlanTrack(), planPois);
 }
 
 function plannedRouteTrack(route) {
@@ -3161,7 +3555,7 @@ function plannedRouteTrack(route) {
 function exportPlannedRoute(index) {
   const route = getPlannedRoutes()[index];
   if (!route) return;
-  downloadGpx(route.name, plannedRouteTrack(route));
+  downloadGpx(route.name, plannedRouteTrack(route), route.pois);
 }
 
 function refreshSavedRoutesList() {
@@ -3176,7 +3570,7 @@ function refreshSavedRoutesList() {
   list.innerHTML = routes
     .map((r, index) =>
       `<div class="history-item">` +
-      `<span>${escapeXml(r.name)} — ${r.distKm} km (${r.created})</span>` +
+      `<span>${escapeXml(r.name)} — ${r.distKm} km (${r.created})${r.pois && r.pois.length ? ` · ${dict.poiCount(r.pois.length)}` : ""}</span>` +
       `<div class="history-actions">` +
       `<button class="nav-btn" data-index="${index}" title="${dict.navRouteTitle}">🧭</button>` +
       `<button class="route-btn" data-index="${index}" title="${dict.editRouteTitle}">🗺</button>` +
@@ -4980,6 +5374,7 @@ function recRender() {
   document.getElementById("recDiscLbl").textContent = `📍 ${dict.discNames[rec.disc] || rec.disc}`;
   document.getElementById("recPauseBtn").textContent = rec.pausedAt ? dict.recResumeBtn : dict.recPauseBtn;
   document.getElementById("recCard").classList.toggle("rec-paused", Boolean(rec.pausedAt));
+  recRenderPoiInfo();
   navRender();
 }
 
@@ -5440,7 +5835,7 @@ let navCumFor = null;
 let navRt = {};                // stan bieżący (nie zapisywany - po wznowieniu liczony od nowa)
 
 function navReset() {
-  navRt = { idx: 0, progressKm: null, offM: null, off: false, offCount: 0, lastAlertAt: 0, lastGoodFixAt: 0, since: Date.now(), finished: false };
+  navRt = { idx: 0, progressKm: null, offM: null, off: false, offCount: 0, lastAlertAt: 0, lastGoodFixAt: 0, since: Date.now(), finished: false, poiSaid: {} };
   navCum = null;
   navCumFor = null;
 }
@@ -5468,17 +5863,20 @@ function plannedRouteTrack(route) {
   return track;
 }
 
-function navMake(name, track) {
+function navMake(name, track, pois) {
   if (!track || track.length < 2) return null;
   const pts = navSimplify(track).map((p) => [+p.lat.toFixed(6), +p.lon.toFixed(6)]);
-  return { name: String(name || "").slice(0, 60), pts, totalKm: trackDistanceKm(pts.map(([lat, lon]) => ({ lat, lon }))) };
+  const nav = { name: String(name || "").slice(0, 60), pts, totalKm: trackDistanceKm(pts.map(([lat, lon]) => ({ lat, lon }))) };
+  const navPois = navPoisFor(pts, pois);
+  if (navPois && navPois.length) nav.pois = navPois;
+  return nav;
 }
 
 function navBuildSelected() {
-  if (navSelected === "file" && navFileRoute) return navMake(navFileRoute.name, navFileRoute.track);
+  if (navSelected === "file" && navFileRoute) return navMake(navFileRoute.name, navFileRoute.track, navFileRoute.pois);
   if (navSelected.startsWith("r:")) {
     const route = getPlannedRoutes()[parseInt(navSelected.slice(2), 10)];
-    if (route) return navMake(route.name, plannedRouteTrack(route));
+    if (route) return navMake(route.name, plannedRouteTrack(route), route.pois);
   }
   return null;
 }
@@ -5503,6 +5901,7 @@ function navParseFile(buf, fileName) {
   const fallbackName = String(fileName || "").replace(/\.[^.]+$/, "") || t().defaultRouteName;
   let track = [];
   let name = "";
+  let pois = [];
   if (isFitFile(buf)) {
     const parsed = parseFit(buf);
     track = parsed.routeFull || parsed.route || [];
@@ -5536,10 +5935,11 @@ function navParseFile(buf, fileName) {
       return parent ? Array.from(parent.children).find((el) => el.localName === "name") : null;
     }).find(Boolean) || (xml.getElementsByTagName("Course")[0] ? Array.from(xml.getElementsByTagName("Course")[0].children).find((el) => el.localName === "Name") : null);
     name = nameEl ? nameEl.textContent.trim() : "";
+    pois = parseGpxPois(xml);
   }
   track = track.filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lon) && Math.abs(p.lat) <= 90 && Math.abs(p.lon) <= 180);
   if (track.length < 2) throw new Error(t().navNoPoints);
-  return { name: (name || fallbackName).slice(0, 60), track };
+  return { name: (name || fallbackName).slice(0, 60), track, pois };
 }
 
 function readFileBuffer(file) {
@@ -5552,7 +5952,7 @@ function readFileBuffer(file) {
 }
 
 // Trasa z pliku zapisana jako zwykła zapisana trasa (Trasy): GPX do zegarka, udostępnianie i 🧭 działają tak samo.
-function saveImportedRoute(name, track) {
+function saveImportedRoute(name, track, pois) {
   const pts = navSimplify(track).map((p) => (Number.isFinite(p.ele)
     ? { lat: +p.lat.toFixed(6), lon: +p.lon.toFixed(6), ele: Math.round(p.ele) }
     : { lat: +p.lat.toFixed(6), lon: +p.lon.toFixed(6) }));
@@ -5566,6 +5966,7 @@ function saveImportedRoute(name, track) {
     segments: [pts],
     imported: true,
   });
+  if (pois && pois.length) routes[routes.length - 1].pois = pois.slice();
   savePlannedRoutes(routes);
   return routes.length - 1;
 }
@@ -5576,7 +5977,7 @@ async function importRouteFile(file) {
     const parsed = navParseFile(await readFileBuffer(file), file.name);
     const name = prompt(dict.promptRouteName, parsed.name);
     if (name === null) return;
-    const index = saveImportedRoute(name.trim() || parsed.name, parsed.track);
+    const index = saveImportedRoute(name.trim() || parsed.name, parsed.track, parsed.pois);
     refreshSavedRoutesList();
     try { loadPlannedRoute(index); } catch (e) { console.warn("Podgląd trasy", e); } // trasa jest już zapisana
     const route = getPlannedRoutes()[index];
@@ -5592,7 +5993,7 @@ async function navLoadFileForRecording(file) {
   try {
     const parsed = navParseFile(await readFileBuffer(file), file.name);
     if (confirm(dict.navSaveToRoutes(parsed.name))) {
-      const index = saveImportedRoute(parsed.name, parsed.track);
+      const index = saveImportedRoute(parsed.name, parsed.track, parsed.pois);
       navSelected = "r:" + index;
       refreshSavedRoutesList();
     } else {
@@ -5675,6 +6076,7 @@ function navOnFix(lat, lon, accuracy) {
   } else if (navRt.off && now - navRt.lastAlertAt > NAV_REPEAT_MS) {
     navAlert("off", loc.d);
   }
+  if (!navRt.off) navCheckPoi();
   const total = rec.nav.totalKm;
   if (!navRt.finished && !navRt.off && total - loc.km < 0.1 && rec.distKm >= total * 0.5) {
     navRt.finished = true;
@@ -5817,6 +6219,7 @@ function navDraw() {
     navStartMarker.setLatLng(pts[0]).addTo(recMap);
     navEndMarker.setLatLng(pts[pts.length - 1]).addTo(recMap);
   }
+  recDrawPois();
 }
 
 function navRender() {
@@ -5842,6 +6245,10 @@ function navRender() {
   else if (navRt.progressKm != null) status = dict.navOn;
   else status = dict.navWaiting;
   document.getElementById("recNavStatus").textContent = status;
+  const nextEl = document.getElementById("recNavNext");
+  const next = navNextPoi();
+  nextEl.hidden = !next;
+  if (next) nextEl.textContent = dict.navNextPoi(`${POI_ICONS[next.type] || POI_ICONS.other} ${next.name || poiLabel(next.type)}`, formatKm(next.km - navRt.progressKm));
   box.classList.toggle("nav-off", cls === "nav-off");
   box.classList.toggle("nav-gps", cls === "nav-gps");
 }
@@ -5896,6 +6303,8 @@ function startRecording() {
   };
   const nav = navBuildSelected();
   if (nav) rec.nav = nav;
+  if (document.getElementById("recSaveRoute").checked) rec.saveRoute = true;
+  document.getElementById("recSaveRoute").checked = false;
   navReset();
   if (nav) navSpeak(t().navSayStart(navSayKm(nav.totalKm)));
   if (nav && isNativeApp()) { try { navEnsureChannel(); } catch (e) { /* brak wtyczki */ } }
@@ -5963,6 +6372,7 @@ function finishRecording() {
   if (!notes.value.trim()) notes.value = dict.recNote;
   if (kcal) notes.value += ` · ${dict.recKcalNote(kcal)}`;
   pendingRoute = recTrackForHistory();
+  recOfferSaveRoute(finished);
   clearFieldState("dist");
   clearFieldState("time");
 
@@ -6032,6 +6442,10 @@ function initRecorder() {
   document.getElementById("recPauseBtn").addEventListener("click", toggleRecordingPause);
   document.getElementById("recFinishBtn").addEventListener("click", finishRecording);
   document.getElementById("recDiscardBtn").addEventListener("click", () => discardRecording(false));
+  document.getElementById("recPoiBtn").addEventListener("click", recTogglePoiPick);
+  document.querySelectorAll("#recPoiPick button[data-type]").forEach((btn) => {
+    btn.addEventListener("click", () => recAddPoi(btn.dataset.type));
+  });
   document.getElementById("recSettingsBtn").addEventListener("click", recOnPermAction);
   document.getElementById("recStatus").addEventListener("click", recOnPermAction);
   document.getElementById("tabTrainBtn").addEventListener("click", () => { if (rec) recInitMap(); });
@@ -6093,6 +6507,10 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("statsConsentToggle").addEventListener("change", (e) => setStatsConsent(e.target.checked));
   document.getElementById("deleteMySharesBtn").addEventListener("click", deleteAllMyShares);
   document.getElementById("planUndoBtn").addEventListener("click", undoPlanPoint);
+  document.getElementById("planPoiBtn").addEventListener("click", poiToggleArmed);
+  document.getElementById("poiSaveBtn").addEventListener("click", poiSaveForm);
+  document.getElementById("poiDeleteBtn").addEventListener("click", poiDeleteCurrent);
+  document.getElementById("poiCancelBtn").addEventListener("click", poiCloseForm);
   document.getElementById("planClearBtn").addEventListener("click", clearPlan);
   document.getElementById("planSaveBtn").addEventListener("click", savePlannedRoute);
   document.getElementById("planExportBtn").addEventListener("click", exportCurrentPlan);
