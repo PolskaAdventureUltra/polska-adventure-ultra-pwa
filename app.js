@@ -1218,7 +1218,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "82";
+const APP_BUILD = "84";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -1923,7 +1923,12 @@ async function syncChallengeProgress() {
   const key = JSON.stringify(payload);
   if (localStorage.getItem(CHALLENGE_SYNCED_KEY) === key) return;
   try {
-    await rpc("save_challenge_progress", { p_token: getChallengeProgressToken(), ...payload });
+    // Serwer przyjmuje postęp tylko od zaproszonych (przypisany kod) albo superadmina - inaczej zwraca false.
+    const inviteToken = localStorage.getItem(CHALLENGE_INVITE_KEY) ? localStorage.getItem(CHALLENGE_INVITE_TOKEN_KEY) : null;
+    await rpc("save_challenge_progress_v2", {
+      p_token: getChallengeProgressToken(), ...payload,
+      p_invite_token: inviteToken, p_admin_key: getAdminKey() || null,
+    });
     localStorage.setItem(CHALLENGE_SYNCED_KEY, key);
   } catch (e) {
     /* offline - ponowimy */
@@ -5682,7 +5687,7 @@ function navAlert(kind, meters) {
   navRt.lastAlertAt = Date.now();
   const text = kind === "off" ? dict.navOff(Math.round(meters)) : kind === "back" ? dict.navBack : dict.navFinished;
   const pattern = kind === "off" ? [400, 200, 400, 200, 400] : kind === "back" ? [150] : [200, 100, 200, 100, 600];
-  try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) { /* brak wibracji */ }
+  navVibrate(pattern);
   if (isNativeApp() && document.visibilityState === "hidden") navNotify(text);
   navSpeak(kind === "off" ? dict.navSayOff(Math.round(meters)) : kind === "back" ? dict.navSayBack : dict.navSayFinish);
 }
@@ -5695,6 +5700,28 @@ function plUnit(n, one, few, many) {
   if (v === 1) return one;
   const d = v % 10, h = v % 100;
   return d >= 2 && d <= 4 && (h < 12 || h > 14) ? few : many;
+}
+
+// Wibracja: w apce natywnej przez wtyczkę Haptics (Android Vibrator) - działa też przy zgaszonym
+// ekranie, bo nagrywanie trzyma usługę pierwszego planu; navigator.vibrate w WebView jest wtedy ignorowane.
+// Wzór [wibracja, przerwa, wibracja, ...] w ms jak w navigator.vibrate.
+function navVibrate(pattern) {
+  if (isNativeApp()) {
+    try {
+      const haptics = capPlugin("Haptics");
+      let at = 0;
+      pattern.forEach((ms, i) => {
+        if (i % 2 === 0) {
+          const d = ms;
+          if (at === 0) haptics.vibrate({ duration: d }).catch(() => {});
+          else setTimeout(() => haptics.vibrate({ duration: d }).catch(() => {}), at);
+        }
+        at += ms;
+      });
+      return;
+    } catch (e) { /* brak wtyczki - spróbuj wibracji przeglądarki */ }
+  }
+  try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) { /* brak wibracji */ }
 }
 
 // ---- Głos (synteza mowy) - z wyłącznikiem, zapamiętywanym w localStorage ----

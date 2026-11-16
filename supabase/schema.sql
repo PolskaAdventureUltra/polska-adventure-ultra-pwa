@@ -602,3 +602,144 @@ grant execute on function public.ping(uuid), public.forget_device(uuid), public.
   public.list_challenge_progress(text), public.admin_set_challenge_visible(text, boolean) to anon;
 -- Stara funkcja sprawdzania kodu (bez przypisania do urządzenia) była wcześniej dostępna - odbieramy ją wprost.
 revoke execute on function public.check_challenge_invite(text) from anon;
+
+-- Postęp wyzwania tylko dla zaproszonych (2026-11-16).
+-- Powód: recenzenci Google (kod/klucz z "Dostęp do aplikacji") pojawiali się na liście uczestników,
+-- a stara funkcja zapisu nie sprawdzała zaproszenia (dało się dopisać z pominięciem aplikacji).
+-- Zapis dozwolony, gdy: telefon ma przypisany kod zaproszenia (nie kod recenzentów Google)
+-- ALBO klucz superadmina ALBO zaczęły się oficjalne zapisy (od 2027-09-01, jak CHALLENGE_SIGNUP_FROM w app.js).
+-- Niedozwolony zapis zwraca false (bez błędu) - aplikacja nic nie pokazuje, wpis nie trafia na listę.
+create or replace function public.save_challenge_progress_v2(
+  p_token text, p_nick text, p_start date, p_km_bieg numeric, p_km_rower numeric, p_km_kajak numeric,
+  p_invite_token text default null, p_admin_key text default null
+) returns boolean language plpgsql security definer set search_path = public as $$
+declare
+  v_hash text;
+  v_allowed boolean;
+begin
+  if p_token is null or char_length(p_token) < 32 then
+    raise exception 'invalid token';
+  end if;
+  if p_start is null or p_start < date '2026-01-01' or p_start > current_date + 1 then
+    raise exception 'invalid start';
+  end if;
+  v_allowed := current_date >= date '2027-09-01'
+    or (coalesce(char_length(p_invite_token), 0) >= 32 and exists (
+          select 1 from challenge_invites
+          where claimed_token_hash = encode(sha256(convert_to(p_invite_token, 'UTF8')), 'hex')
+            and label <> 'Google Play review'))
+    or (coalesce(char_length(p_admin_key), 0) >= 32 and exists (
+          select 1 from admin_keys
+          where key_hash = encode(sha256(convert_to(p_admin_key, 'UTF8')), 'hex') and superadmin));
+  if not v_allowed then
+    return false;
+  end if;
+  v_hash := encode(sha256(convert_to(p_token, 'UTF8')), 'hex');
+  if not exists (select 1 from challenge_progress where token_hash = v_hash)
+     and (select count(*) from challenge_progress where updated_at > now() - interval '1 minute') >= 20 then
+    raise exception 'rate limit';
+  end if;
+  insert into challenge_progress (token_hash, nick, start_date, km_bieg, km_rower, km_kajak, updated_at)
+  values (v_hash, trim(p_nick), p_start, round(coalesce(p_km_bieg, 0), 1), round(coalesce(p_km_rower, 0), 1),
+          round(coalesce(p_km_kajak, 0), 1), now())
+  on conflict (token_hash) do update set
+    nick = excluded.nick, start_date = excluded.start_date, km_bieg = excluded.km_bieg,
+    km_rower = excluded.km_rower, km_kajak = excluded.km_kajak, updated_at = now();
+  return true;
+end $$;
+
+revoke execute on function public.save_challenge_progress_v2(text, text, date, numeric, numeric, numeric, text, text) from public;
+grant execute on function public.save_challenge_progress_v2(text, text, date, numeric, numeric, numeric, text, text) to anon;
+-- Stara funkcja zapisu (bez sprawdzania zaproszenia) - zamykamy dostęp z aplikacji/internetu.
+revoke execute on function public.save_challenge_progress(text, text, date, numeric, numeric, numeric) from anon;
+
+-- Wydawanie kodów zaproszenia do wyzwania prosto z Supabase (2026-11-16).
+-- Użycie (SQL Editor -> Run):
+--   select * from public.wydaj_kod('Jan Kowalski');          -- imię i nazwisko albo nick
+--   select * from public.wydaj_kod('Kasia', 17);             -- + numer startowy
+--   select * from public.nowy_kod('Kasia');                  -- zgubiony kod: nowy kod, stary przestaje działać
+--   select * from public.lista_kodow;                        -- kto ma kod, numer, czy już użyty
+-- Kod pokazuje się TYLKO raz (w bazie jest wyłącznie jego hash SHA-256) - skopiuj go od razu i wyślij.
+-- Funkcje działają tylko z SQL Editora (konto właściciela bazy) - aplikacja i internet nie mają do nich dostępu.
+
+alter table public.challenge_invites add column if not exists bib int;
+create unique index if not exists challenge_invites_label_uq on public.challenge_invites (lower(label));
+create unique index if not exists challenge_invites_bib_uq on public.challenge_invites (bib) where bib is not null;
+
+-- Losowy kod PAU-XXXX-XXXX (bez 0/O/1/I/L), losowość z gen_random_uuid().
+create or replace function public.pau_losuj_kod() returns text language plpgsql volatile as $$
+declare
+  v_abc constant text := 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  v_b bytea := uuid_send(gen_random_uuid()) || uuid_send(gen_random_uuid());
+  v_out text := '';
+  i int;
+begin
+  for i in 0..7 loop
+    -- bajty 0-3 i 16-19 obu UUID są w pełni losowe
+    v_out := v_out || substr(v_abc, (get_byte(v_b, case when i < 4 then i else 12 + i end) % 31) + 1, 1);
+  end loop;
+  return 'PAU-' || substr(v_out, 1, 4) || '-' || substr(v_out, 5, 4);
+end $$;
+
+create or replace function public.wydaj_kod(p_dla text, p_numer int default null, p_limit int default 60)
+returns table (kod text, dla text, numer int, wydanych int)
+language plpgsql security definer set search_path = public as $$
+declare
+  v_kod text;
+  v_ile int;
+begin
+  if coalesce(trim(p_dla), '') = '' then
+    raise exception 'Podaj imię i nazwisko, nick albo opis osoby';
+  end if;
+  if exists (select 1 from challenge_invites where lower(label) = lower(trim(p_dla))) then
+    raise exception 'Kod dla "%" już istnieje. Zgubiony kod? Użyj: select * from public.nowy_kod(''%'');', trim(p_dla), trim(p_dla);
+  end if;
+  if p_numer is not null and exists (select 1 from challenge_invites where bib = p_numer) then
+    raise exception 'Numer startowy % jest już przypisany', p_numer;
+  end if;
+  select count(*) into v_ile from challenge_invites where label <> 'Google Play review';
+  if v_ile >= p_limit then
+    raise exception 'Osiągnięto limit % kodów. Większy limit: select * from public.wydaj_kod(''%'', %, 80);', p_limit, trim(p_dla), coalesce(p_numer::text, 'null');
+  end if;
+  loop
+    v_kod := pau_losuj_kod();
+    exit when not exists (select 1 from challenge_invites where code_hash = encode(sha256(convert_to(v_kod, 'UTF8')), 'hex'));
+  end loop;
+  insert into challenge_invites (code_hash, label, bib)
+  values (encode(sha256(convert_to(v_kod, 'UTF8')), 'hex'), trim(p_dla), p_numer);
+  return query select v_kod, trim(p_dla), p_numer, v_ile + 1;
+end $$;
+
+-- Nowy kod dla osoby, która już miała kod (zgubiła go / zmienia telefon i chce nowy).
+-- Stary kod przestaje działać, przypisanie do telefonu jest kasowane.
+create or replace function public.nowy_kod(p_dla text)
+returns table (kod text, dla text, numer int)
+language plpgsql security definer set search_path = public as $$
+declare
+  v_kod text;
+  v_label text;
+  v_bib int;
+begin
+  select label, bib into v_label, v_bib from challenge_invites where lower(label) = lower(trim(p_dla));
+  if not found then
+    raise exception 'Brak kodu dla "%". Nowa osoba? Użyj: select * from public.wydaj_kod(''%'');', trim(p_dla), trim(p_dla);
+  end if;
+  loop
+    v_kod := pau_losuj_kod();
+    exit when not exists (select 1 from challenge_invites where code_hash = encode(sha256(convert_to(v_kod, 'UTF8')), 'hex'));
+  end loop;
+  update challenge_invites
+     set code_hash = encode(sha256(convert_to(v_kod, 'UTF8')), 'hex'), claimed_token_hash = null, claimed_at = null
+   where lower(label) = lower(trim(p_dla));
+  return query select v_kod, v_label, v_bib;
+end $$;
+
+create or replace view public.lista_kodow with (security_invoker = true) as
+  select label as dla, bib as numer, created_at::date as wydany,
+         case when claimed_at is null then 'nie' else 'tak, ' || to_char(claimed_at, 'YYYY-MM-DD') end as uzyty
+  from public.challenge_invites
+  order by bib nulls last, label;
+
+-- Tylko właściciel bazy (SQL Editor). Aplikacja (anon) i zalogowani nie mają dostępu.
+revoke all on function public.pau_losuj_kod(), public.wydaj_kod(text, int, int), public.nowy_kod(text) from public, anon, authenticated;
+revoke all on public.lista_kodow from public, anon, authenticated;
