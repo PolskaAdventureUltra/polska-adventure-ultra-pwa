@@ -176,6 +176,7 @@ body:not(.dark) .hero { border-color: transparent; }
 .history-item span { word-break: break-word; }
 .history-actions { display: flex; gap: 6px; flex-shrink: 0; max-width: 45%; }
 .history-item .delete-btn,
+.history-item .edit-btn,
 .history-item .route-btn,
 .history-item .gpx-btn,
 .history-item .share-btn,
@@ -190,6 +191,7 @@ body:not(.dark) .hero { border-color: transparent; }
 }
 .history-item .delete-btn { color: var(--danger); }
 .history-item .route-btn { color: var(--accent); }
+.edit-route-dist { width: 100%; margin-top: 6px; font-size: 13px; background: var(--subtle-bg); color: var(--accent); text-align: left; }
 .history-item .gpx-btn { font-size: 12px; color: var(--accent); }
 .history-item .copy-btn { color: var(--accent); }
 .history-item .flag-btn { opacity: 0.4; }
@@ -385,6 +387,18 @@ body.dark .challenge { --ch-bg: #0A1322; --ch-band: #131E31; }
 .challenge .ch-cta:disabled { opacity: 0.55; cursor: default; }
 .ch-lock { display: flex; align-items: center; gap: 6px; margin: 8px 0 0; padding: 8px 10px; border-radius: 10px; background: var(--ch-track); font-size: 12px; font-weight: 600; color: var(--ch-fg); }
 .ch-lock svg { flex-shrink: 0; color: var(--ch-accent); }
+.challenge-board { padding-top: 16px; }
+.challenge-board[hidden] { display: none; }
+.challenge-board .ch-box { margin-top: 0; }
+.ch-board { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.ch-board-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-top: 1px solid var(--ch-line); }
+.ch-board-row:first-child { border-top: 0; }
+.ch-board-rank { width: 22px; flex-shrink: 0; text-align: center; font-family: var(--ch-display); font-weight: 700; color: var(--ch-accent); }
+.ch-board-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; overflow-wrap: anywhere; }
+.ch-board-discs { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--ch-muted); }
+.ch-board-discs svg { width: 14px; height: 14px; }
+.ch-board-km { flex-shrink: 0; text-align: right; display: flex; flex-direction: column; font-size: 13px; }
+.ch-board-km span { font-size: 12px; color: var(--ch-muted); }
 .ch-partners { margin-top: 12px; }
 .ch-partners .ch-kicker { font-size: 9px; letter-spacing: 0.1em; }
 .ch-partner-grid { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }

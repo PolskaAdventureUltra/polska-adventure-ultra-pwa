@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "77";
+  window.PAU_PAGE_BUILD = "79";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -109,10 +109,13 @@
 
   <div id="tabChallenge" class="tab-content">
     <div id="challengeScreen" class="challenge"></div>
+    <div id="challengeBoard" class="challenge challenge-board" hidden></div>
     <div class="card" id="challengeSettings" style="display:none">
       <label for="challengeStart" data-i18n="challengeStartLabel">Początek Twojego wyzwania</label>
       <input type="date" id="challengeStart">
       <p class="hint-text" data-i18n="challengeStartHint">Do wyzwania liczą się treningi od tej daty (wszystkie dyscypliny).</p>
+      <label class="checkbox-row" id="challengeShareRow" style="display:none"><input type="checkbox" id="challengeShare"> <span data-i18n="chShareLabel">Pokazuj mój postęp obserwatorom (nick i kilometry)</span></label>
+      <p class="hint-text" id="challengeShareHint"></p>
       <button id="challengeLeaveBtn" data-i18n="challengeLeaveBtn">Zrezygnuj z wyzwania</button>
     </div>
   </div>
@@ -294,6 +297,44 @@
     <div class="card">
       <h2 data-i18n="historyTitle">Historia treningów</h2>
       <div id="historyList"></div>
+    </div>
+
+    <div class="card" id="editCard" hidden>
+      <h2 data-i18n="editTitle">✏️ Popraw trening</h2>
+      <label for="editDisc" data-i18n="labelDiscipline">Dyscyplina</label>
+      <select id="editDisc">
+        <option value="Bieg" data-i18n="optBieg">Bieg</option>
+        <option value="Rower" data-i18n="optRower">Rower</option>
+        <option value="Kajak" data-i18n="optKajak">Kajak</option>
+        <option value="Basen" data-i18n="optBasen">Pływanie – basen</option>
+        <option value="WodyOtwarte" data-i18n="optWodyOtwarte">Pływanie – wody otwarte</option>
+        <option value="Trekking" data-i18n="optTrekking">Trekking</option>
+      </select>
+      <label for="editDate" data-i18n="labelDate">Data</label>
+      <input id="editDate" type="date">
+      <label for="editDist" data-i18n="labelDist">Dystans (km)</label>
+      <input id="editDist" type="number" step="0.01" inputmode="decimal" aria-describedby="editDistError">
+      <p class="field-error" id="editDistError" role="alert" hidden></p>
+      <button type="button" class="edit-route-dist" id="editRouteDistBtn" hidden></button>
+      <label for="editTime" data-i18n="labelTime">Czas (min)</label>
+      <input id="editTime" type="number" step="0.1" inputmode="decimal">
+      <label for="editHr" data-i18n="labelHr">Śr. tętno (bpm)</label>
+      <input id="editHr" type="number" inputmode="numeric">
+      <div id="editStepsRow" hidden>
+        <label for="editSteps" data-i18n="labelSteps">Kroki</label>
+        <input id="editSteps" type="number" min="0" step="1" inputmode="numeric">
+      </div>
+      <label for="editVo2max" data-i18n="labelVo2max">Pułap tlenowy VO2max</label>
+      <input id="editVo2max" type="number" step="0.1" inputmode="decimal">
+      <label for="editWeight" data-i18n="labelWeight">Waga (kg)</label>
+      <input id="editWeight" type="number" step="0.1" inputmode="decimal">
+      <label for="editNotes" data-i18n="labelNotes">Notatki / Samopoczucie</label>
+      <textarea id="editNotes" rows="2"></textarea>
+      <p class="hint-text" id="editSharedHint" data-i18n="editSharedHint" hidden>Ten trening jest udostępniony — po zapisaniu zaktualizuje się też w zakładce Aktywność.</p>
+      <div class="plan-actions">
+        <button class="primary" id="editSaveBtn" data-i18n="editSaveBtn">ZAPISZ ZMIANY</button>
+        <button id="editCancelBtn" data-i18n="editCancelBtn">Anuluj</button>
+      </div>
     </div>
 
     <div class="card">
