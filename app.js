@@ -160,6 +160,8 @@ const TRANSLATIONS = {
     routeImported: (name, km) => `Wczytano trasę „${name}” (${km} km). Przycisk 🧭 przy trasie uruchamia prowadzenie.`,
     navNotifTitle: "Polska Adventure Ultra — trasa",
     navVoiceLbl: "🔊 Komunikaty głosowe przy prowadzeniu",
+    navChannelName: "Ostrzeżenia trasy",
+    navChannelDesc: "Wibracja i komunikat, gdy zboczysz z trasy przy zgaszonym ekranie",
     navVoiceOnTitle: "Głos włączony — dotknij, aby wyciszyć",
     navVoiceOffTitle: "Głos wyciszony — dotknij, aby włączyć",
     navSayOn: "Komunikaty głosowe włączone",
@@ -724,6 +726,8 @@ const TRANSLATIONS = {
     routeImported: (name, km) => `Loaded route “${name}” (${km} km). The 🧭 button next to the route starts guidance.`,
     navNotifTitle: "Polska Adventure Ultra — route",
     navVoiceLbl: "🔊 Voice prompts during guidance",
+    navChannelName: "Route warnings",
+    navChannelDesc: "Vibration and message when you go off route with the screen off",
     navVoiceOnTitle: "Voice on — tap to mute",
     navVoiceOffTitle: "Voice muted — tap to turn on",
     navSayOn: "Voice prompts on",
@@ -1214,7 +1218,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "81";
+const APP_BUILD = "82";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -5679,7 +5683,7 @@ function navAlert(kind, meters) {
   const text = kind === "off" ? dict.navOff(Math.round(meters)) : kind === "back" ? dict.navBack : dict.navFinished;
   const pattern = kind === "off" ? [400, 200, 400, 200, 400] : kind === "back" ? [150] : [200, 100, 200, 100, 600];
   try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) { /* brak wibracji */ }
-  if (isNativeApp() && document.visibilityState === "hidden" && kind !== "back") navNotify(text);
+  if (isNativeApp() && document.visibilityState === "hidden") navNotify(text);
   navSpeak(kind === "off" ? dict.navSayOff(Math.round(meters)) : kind === "back" ? dict.navSayBack : dict.navSayFinish);
 }
 
@@ -5751,11 +5755,29 @@ function navRenderVoiceBtn() {
   btn.setAttribute("aria-pressed", on ? "true" : "false");
 }
 
+// Przy zgaszonym ekranie WebView ignoruje navigator.vibrate - wibrację daje powiadomienie
+// na osobnym kanale z wibracją (ważność wysoka). Ustawień kanału nie da się zmienić po utworzeniu,
+// więc przy zmianie parametrów trzeba nadać nowe id.
+const NAV_CHANNEL_ID = "pau_nav_alerts";
+let navChannelReady = null;
+function navEnsureChannel() {
+  if (!navChannelReady) {
+    navChannelReady = capPlugin("LocalNotifications").createChannel({
+      id: NAV_CHANNEL_ID,
+      name: t().navChannelName,
+      description: t().navChannelDesc,
+      importance: 4,
+      visibility: 1,
+      vibration: true,
+    }).catch(() => {});
+  }
+  return navChannelReady;
+}
 function navNotify(text) {
   try {
-    capPlugin("LocalNotifications").schedule({
-      notifications: [{ id: NAV_NOTIF_ID, title: t().navNotifTitle, body: text }],
-    }).catch(() => {});
+    navEnsureChannel().then(() => capPlugin("LocalNotifications").schedule({
+      notifications: [{ id: NAV_NOTIF_ID, title: t().navNotifTitle, body: text, channelId: NAV_CHANNEL_ID }],
+    })).catch(() => {});
   } catch (e) { /* brak wtyczki */ }
 }
 
@@ -5849,6 +5871,7 @@ function startRecording() {
   if (nav) rec.nav = nav;
   navReset();
   if (nav) navSpeak(t().navSayStart(navSayKm(nav.totalKm)));
+  if (nav && isNativeApp()) { try { navEnsureChannel(); } catch (e) { /* brak wtyczki */ } }
   if (rec.weightKg) {
     try { localStorage.setItem(BODY_WEIGHT_KEY, String(rec.weightKg)); } catch (e) { /* brak dostępu */ }
   }
