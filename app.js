@@ -182,7 +182,10 @@ const TRANSLATIONS = {
     poiCount: (n) => `📍 ${n}`,
     poiNoGps: "Poczekaj na sygnał GPS — punkt zapisuje się w miejscu, w którym jesteś.",
     recPoiBtn: "📍 PUNKT TUTAJ",
-    recPoiPickHint: "Co jest w tym miejscu? Nazwę i opis dopiszesz potem w zakładce Trasy.",
+    recPoiPickHint: "Wpisz albo podyktuj nazwę (mikrofon na klawiaturze) i dotknij rodzaju punktu. Bez nazwy też się zapisze.",
+    recPoiNamePh: "Nazwa / notatka (opcjonalnie), np. źródło przy kapliczce",
+    recPoiRename: "Nazwa punktu (np. Żabka, źródło przy kapliczce):",
+    recPoiNote: "Opis (opcjonalnie — godziny otwarcia, wskazówki):",
     recPoiAdded: (label) => `📍 Dodano punkt: ${label}`,
     recPoiCount: (n) => `📍 Dodane punkty: ${n} — po zakończeniu zapiszesz je razem z trasą w zakładce Trasy.`,
     recSaveRouteLbl: "🗺 Zapisz przebytą trasę w zakładce Trasy (np. żeby inni mogli nią potem pobiec)",
@@ -503,7 +506,7 @@ const TRANSLATIONS = {
           <li>„Cofnij punkt” usuwa ostatni punkt, „Wyczyść” — całą trasę. „ZAPISZ TRASĘ” zapisuje ją na liście poniżej mapy.</li>
           <li>„EKSPORTUJ DO GPX” (lub przycisk GPX przy zapisanej trasie) tworzy plik do zegarka. Na telefonie otworzy się menu „Udostępnij”.</li>
           <li><b>Garmin</b>: Garmin Connect (www) → Trening → Trasy → Importuj → wyślij na zegarek. <b>Suunto</b>: otwórz plik GPX w Suunto app i zsynchronizuj zegarek. <b>Polar</b>: Polar Flow (www) → Ulubione → Trasy → Importuj → synchronizuj.</li>
-          <li><b>📍 Punkty na trasie</b> (żywienie, przepak, nocleg, sklep, woda, ⚠️ niebezpieczne miejsce, inne): otwórz trasę (🗺), kliknij „📍 DODAJ PUNKT NA TRASIE” i dotknij miejsca na mapie — wybierasz rodzaj, nazwę i opis; kliknięcie ikony na mapie albo ✏️ na liście pozwala punkt poprawić lub usunąć. W nagrywaniu telefonem przycisk „📍 PUNKT TUTAJ” zapisuje punkt w miejscu, w którym jesteś; po zakończeniu zapiszesz przebytą trasę z punktami w zakładce Trasy (albo zaznacz przed START „🗺 Zapisz przebytą trasę”). Trasę z zegarka wczytasz „📂 WCZYTAJ TRASĘ Z PLIKU” i dodasz punkty potem. Punkty trafiają do pliku GPX (zegarek pokaże je jako punkty trasy), a przy prowadzeniu po trasie widać „Następny punkt: … za X km”, a głos uprzedza ok. 300 m wcześniej (przed niebezpiecznym miejscem 500 m wcześniej, z wibracją).</li>
+          <li><b>📍 Punkty na trasie</b> (żywienie, przepak, nocleg, sklep, woda, ⚠️ niebezpieczne miejsce, inne): otwórz trasę (🗺), kliknij „📍 DODAJ PUNKT NA TRASIE” i dotknij miejsca na mapie — wybierasz rodzaj, nazwę i opis; kliknięcie ikony na mapie albo ✏️ na liście pozwala punkt poprawić lub usunąć. W nagrywaniu telefonem przycisk „📍 PUNKT TUTAJ” zapisuje punkt w miejscu, w którym jesteś (nazwę możesz od razu wpisać albo podyktować, a pod spodem jest lista dodanych punktów z ✏️ i 🗑); po zakończeniu zapiszesz przebytą trasę z punktami w zakładce Trasy (albo zaznacz przed START „🗺 Zapisz przebytą trasę”). Trasę z zegarka wczytasz „📂 WCZYTAJ TRASĘ Z PLIKU” i dodasz punkty potem. Punkty trafiają do pliku GPX (zegarek pokaże je jako punkty trasy), a przy prowadzeniu po trasie widać „Następny punkt: … za X km”, a głos uprzedza ok. 300 m wcześniej (przed niebezpiecznym miejscem 500 m wcześniej, z wibracją).</li>
           <li><b>🧭 Prowadzenie po trasie w telefonie</b>: „📂 WCZYTAJ TRASĘ Z PLIKU” (GPX / TCX / FIT, np. z Garmin Connect, Komoot, Strava) dodaje trasę do listy. Przycisk 🧭 przy trasie — albo pole „Prowadź po trasie” przed START w nagrywaniu telefonem — włącza prowadzenie: trasa jest na mapie, widać kilometry do końca, a gdy zboczysz o ok. 50 m (rower 60 m, kajak i pływanie 100 m), telefon zawibruje, pokaże czerwony komunikat i powie to głosem (głos wyłączysz polem „🔊 Komunikaty głosowe” albo przyciskiem 🔊 w trakcie); w aplikacji ze Sklepu Play przy zgaszonym ekranie dostaniesz powiadomienie. Przy słabym GPS ostrzeżenia są wstrzymane, żeby nie było fałszywych alarmów — trasa zostaje na mapie.</li>
           <li>Wyznaczanie trasy po drogach wymaga internetu (darmowy serwis BRouter — wysyłane są wyłącznie współrzędne klikniętych punktów). Bez internetu odcinki będą liniami prostymi.</li>
         </ul>
@@ -780,7 +783,10 @@ const TRANSLATIONS = {
     poiCount: (n) => `📍 ${n}`,
     poiNoGps: "Wait for the GPS signal — the point is saved where you are.",
     recPoiBtn: "📍 POINT HERE",
-    recPoiPickHint: "What is here? You can add a name and description later in the Routes tab.",
+    recPoiPickHint: "Type or dictate a name (keyboard microphone) and tap the point type. It also saves without a name.",
+    recPoiNamePh: "Name / note (optional), e.g. spring by the chapel",
+    recPoiRename: "Point name (e.g. shop, spring by the chapel):",
+    recPoiNote: "Description (optional — opening hours, tips):",
     recPoiAdded: (label) => `📍 Point added: ${label}`,
     recPoiCount: (n) => `📍 Points added: ${n} — after finishing you can save them with the route in the Routes tab.`,
     recSaveRouteLbl: "🗺 Save the recorded route in the Routes tab (e.g. so others can follow it later)",
@@ -1101,7 +1107,7 @@ const TRANSLATIONS = {
           <li>“Undo point” removes the last point, “Clear” the whole route. “SAVE ROUTE” adds it to the list below the map.</li>
           <li>“EXPORT TO GPX” (or the GPX button next to a saved route) creates a file for your watch. On a phone the Share menu opens.</li>
           <li><b>Garmin</b>: Garmin Connect (web) → Training → Courses → Import → send to device. <b>Suunto</b>: open the GPX file in the Suunto app and sync the watch. <b>Polar</b>: Polar Flow (web) → Favorites → Routes → Import → sync.</li>
-          <li><b>📍 Points on the route</b> (food, drop bag, overnight, shop, water, ⚠️ dangerous spot, other): open a route (🗺), tap “📍 ADD A POINT ON THE ROUTE” and tap the place on the map — choose the type, name and description; tapping the icon on the map or ✏️ in the list lets you edit or delete it. In phone recording, “📍 POINT HERE” saves a point where you are; after finishing you can save the recorded route with the points in the Routes tab (or tick “🗺 Save the recorded route” before START). Load a watch route with “📂 LOAD ROUTE FROM FILE” and add points afterwards. Points go into the GPX file (the watch shows them as course points), and during route guidance you see “Next point: … in X km” and the voice warns about 300 m ahead (500 m ahead with vibration before a dangerous spot).</li>
+          <li><b>📍 Points on the route</b> (food, drop bag, overnight, shop, water, ⚠️ dangerous spot, other): open a route (🗺), tap “📍 ADD A POINT ON THE ROUTE” and tap the place on the map — choose the type, name and description; tapping the icon on the map or ✏️ in the list lets you edit or delete it. In phone recording, “📍 POINT HERE” saves a point where you are (you can type or dictate a name right away; below there is a list of added points with ✏️ and 🗑); after finishing you can save the recorded route with the points in the Routes tab (or tick “🗺 Save the recorded route” before START). Load a watch route with “📂 LOAD ROUTE FROM FILE” and add points afterwards. Points go into the GPX file (the watch shows them as course points), and during route guidance you see “Next point: … in X km” and the voice warns about 300 m ahead (500 m ahead with vibration before a dangerous spot).</li>
           <li><b>🧭 Route guidance on the phone</b>: “📂 LOAD ROUTE FROM FILE” (GPX / TCX / FIT, e.g. from Garmin Connect, Komoot, Strava) adds a route to the list. The 🧭 button next to a route — or the “Follow a route” field before START in phone recording — turns on guidance: the route is on the map, you see the distance left, and when you go about 50 m off route (cycling 60 m, kayak and swimming 100 m) the phone vibrates, shows a red message and says it out loud (turn the voice off with the “🔊 Voice prompts” box or the 🔊 button while recording); in the Play Store app you get a notification while the screen is off. With weak GPS, warnings are paused to avoid false alarms — the route stays on the map.</li>
           <li>Road routing needs internet (free BRouter service — only the coordinates of tapped points are sent). Offline, sections are straight lines.</li>
         </ul>
@@ -1255,6 +1261,7 @@ function applyLanguage() {
   document.getElementById("trainHintClose").setAttribute("aria-label", dict.hintCloseLabel);
   document.getElementById("headerThemeBtn").setAttribute("aria-label", dict.themeBtn);
   document.getElementById("recWeight").placeholder = dict.recWeightPh;
+  document.getElementById("recPoiName").placeholder = dict.recPoiNamePh;
   if (isNativeApp()) document.querySelector('[data-i18n="recIntro"]').textContent = dict.recIntroNative;
   document.getElementById("samsungHintText").textContent = dict.samsungHintText;
   document.getElementById("samsungHintClose").setAttribute("aria-label", dict.hintCloseLabel);
@@ -1282,7 +1289,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "85";
+const APP_BUILD = "86";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -3168,12 +3175,14 @@ function recTogglePoiPick() {
 function recAddPoi(type) {
   if (!rec || !rec.points.length) return;
   const last = rec.points[rec.points.length - 1];
-  const p = poiNormalize({ lat: last[0], lon: last[1], type });
+  const nameEl = document.getElementById("recPoiName");
+  const p = poiNormalize({ lat: last[0], lon: last[1], type, name: nameEl.value });
   if (!p) return;
   rec.pois = (rec.pois || []).concat(p);
   recSave(true);
+  nameEl.value = "";
   document.getElementById("recPoiPick").hidden = true;
-  recSetStatus(t().recPoiAdded(`${POI_ICONS[type]} ${poiLabel(type)}`), false, 6000);
+  recSetStatus(t().recPoiAdded(poiTitle(p)), false, 6000);
   recDrawPois();
   recRender();
 }
@@ -3189,10 +3198,46 @@ function recDrawPois() {
 
 function recRenderPoiInfo() {
   const info = document.getElementById("recPoiInfo");
-  if (!info) return;
-  const n = rec && rec.pois ? rec.pois.length : 0;
-  info.hidden = n === 0;
-  info.textContent = n ? t().recPoiCount(n) : "";
+  const list = document.getElementById("recPoiList");
+  if (!info || !list) return;
+  const dict = t();
+  const pois = rec && rec.pois ? rec.pois : [];
+  info.hidden = pois.length === 0;
+  info.textContent = pois.length ? dict.recPoiCount(pois.length) : "";
+  const sig = JSON.stringify(pois) + getLang();
+  if (list.dataset.sig === sig) return; // recRender woła to przy każdym odczycie GPS - nie przebudowujemy listy bez potrzeby
+  list.dataset.sig = sig;
+  list.innerHTML = pois.map((p, i) =>
+    `<div class="poi-item"><span class="poi-text"><b>${escapeXml(poiTitle(p))}</b>` +
+    (p.note ? `<br><small>${escapeXml(p.note)}</small>` : "") + `</span>` +
+    `<button class="poi-edit rec-poi-edit" data-index="${i}" title="${dict.poiFormEdit}">✏️</button>` +
+    `<button class="poi-edit rec-poi-del" data-index="${i}" title="${dict.poiDeleteBtn}">🗑</button></div>`).join("");
+  list.querySelectorAll(".rec-poi-edit").forEach((btn) => btn.addEventListener("click", () => recEditPoi(parseInt(btn.dataset.index, 10))));
+  list.querySelectorAll(".rec-poi-del").forEach((btn) => btn.addEventListener("click", () => recDeletePoi(parseInt(btn.dataset.index, 10))));
+}
+
+function recEditPoi(index) {
+  const p = rec && rec.pois ? rec.pois[index] : null;
+  if (!p) return;
+  const dict = t();
+  const name = prompt(dict.recPoiRename, p.name || "");
+  if (name === null) return;
+  const note = prompt(dict.recPoiNote, p.note || "");
+  const updated = poiNormalize({ ...p, name, note: note === null ? p.note : note });
+  if (!updated) return;
+  rec.pois[index] = updated;
+  recSave(true);
+  recDrawPois();
+  recRender();
+}
+
+function recDeletePoi(index) {
+  if (!rec || !rec.pois || !rec.pois[index]) return;
+  if (!confirm(t().poiConfirmDelete)) return;
+  rec.pois.splice(index, 1);
+  recSave(true);
+  recDrawPois();
+  recRender();
 }
 
 // Po zakończeniu nagrania: przebyta trasa (z punktami) do zakładki Trasy - np. żeby inni mogli nią pobiec.

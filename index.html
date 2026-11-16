@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "85";
+  window.PAU_PAGE_BUILD = "86";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -181,7 +181,8 @@
         </div>
         <button id="recPoiBtn" data-i18n="recPoiBtn">📍 PUNKT TUTAJ</button>
         <div id="recPoiPick" class="rec-poi-pick" hidden>
-          <p class="hint-text" data-i18n="recPoiPickHint">Co jest w tym miejscu? Nazwę i opis dopiszesz potem w zakładce Trasy.</p>
+          <input id="recPoiName" type="text" maxlength="60" placeholder="Nazwa / notatka (opcjonalnie), np. źródło przy kapliczce">
+          <p class="hint-text" data-i18n="recPoiPickHint">Wpisz albo podyktuj nazwę (mikrofon na klawiaturze) i dotknij rodzaju punktu. Bez nazwy też się zapisze.</p>
           <div class="rec-poi-grid">
             <button type="button" data-type="food">🍌<span data-i18n="poiFood">Żywienie</span></button>
             <button type="button" data-type="drop">🎒<span data-i18n="poiDrop">Przepak</span></button>
@@ -193,6 +194,7 @@
           </div>
         </div>
         <p class="hint-text" id="recPoiInfo" hidden></p>
+        <div id="recPoiList" class="poi-list"></div>
         <button class="link-btn" id="recDiscardBtn" data-i18n="recDiscardBtn">Odrzuć nagranie</button>
       </div>
     </div>
