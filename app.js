@@ -1218,7 +1218,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "83";
+const APP_BUILD = "84";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -1923,7 +1923,12 @@ async function syncChallengeProgress() {
   const key = JSON.stringify(payload);
   if (localStorage.getItem(CHALLENGE_SYNCED_KEY) === key) return;
   try {
-    await rpc("save_challenge_progress", { p_token: getChallengeProgressToken(), ...payload });
+    // Serwer przyjmuje postęp tylko od zaproszonych (przypisany kod) albo superadmina - inaczej zwraca false.
+    const inviteToken = localStorage.getItem(CHALLENGE_INVITE_KEY) ? localStorage.getItem(CHALLENGE_INVITE_TOKEN_KEY) : null;
+    await rpc("save_challenge_progress_v2", {
+      p_token: getChallengeProgressToken(), ...payload,
+      p_invite_token: inviteToken, p_admin_key: getAdminKey() || null,
+    });
     localStorage.setItem(CHALLENGE_SYNCED_KEY, key);
   } catch (e) {
     /* offline - ponowimy */
