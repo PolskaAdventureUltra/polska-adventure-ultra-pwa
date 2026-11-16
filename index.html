@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "79";
+  window.PAU_PAGE_BUILD = "80";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -149,6 +149,10 @@
         </select>
         <label for="recWeight" data-i18n="recWeightLbl">Twoja waga (kg) — do liczenia kalorii</label>
         <input id="recWeight" type="number" step="0.1" min="20" max="300" inputmode="decimal" placeholder="np. 75 (opcjonalnie)">
+        <label for="recNavRoute" data-i18n="navRouteLbl">🧭 Prowadź po trasie (opcjonalnie)</label>
+        <select id="recNavRoute"></select>
+        <input type="file" id="navFile" style="display:none">
+        <p class="hint-text" id="recNavInfo" data-i18n="navRouteHint">Trasa z zakładki Trasy albo z pliku GPX / TCX / FIT (np. z Garmin Connect, Komoot, Strava). Pokażę ją na mapie, policzę kilometry do końca i ostrzegę, gdy zboczysz.</p>
         <button class="primary rec-start" id="recStartBtn" data-i18n="recStartBtn">▶ START</button>
       </div>
       <div id="recActive" hidden>
@@ -163,6 +167,10 @@
         <button type="button" class="primary" id="recSettingsBtn" hidden>⚙ Otwórz ustawienia</button>
         <p class="hint-text rec-diag" id="recDiag" hidden></p>
         <p class="hint-text"><span data-i18n="recGpsLbl">Dokładność GPS</span>: <b id="recGps">–</b></p>
+        <div class="rec-nav" id="recNav" hidden>
+          <div class="rec-nav-head"><span id="recNavName"></span><b id="recNavLeft"></b></div>
+          <p class="rec-nav-status" id="recNavStatus" role="status" aria-live="polite"></p>
+        </div>
         <div id="recMap" class="rec-map"></div>
         <div class="plan-actions">
           <button id="recPauseBtn">⏸ PAUZA</button>
@@ -385,6 +393,9 @@
     <div class="card">
       <h2 data-i18n="savedRoutesTitle">Zapisane trasy</h2>
       <div id="savedRoutesList"></div>
+      <button id="routeImportBtn" data-i18n="routeImportBtn">📂 WCZYTAJ TRASĘ Z PLIKU (GPX / TCX / FIT)</button>
+      <input type="file" id="routeImportFile" style="display:none">
+      <p class="hint-text" data-i18n="routeImportHint">Trasę z Garmin Connect, Komoot, Strava czy od znajomych wczytasz tutaj. Przyciskiem 🧭 przy trasie uruchomisz prowadzenie w nagrywaniu telefonem.</p>
     </div>
   </div>
 
