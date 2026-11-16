@@ -137,6 +137,28 @@ const TRANSLATIONS = {
     addTrainingTitle: "Dodaj trening",
     noHistory: "Brak zapisanych treningów.",
     deleteTitle: "Usuń wpis",
+    navRouteLbl: "🧭 Prowadź po trasie (opcjonalnie)",
+    navRouteHint: "Trasa z zakładki Trasy albo z pliku GPX / TCX / FIT (np. z Garmin Connect, Komoot, Strava). Pokażę ją na mapie, policzę kilometry do końca i ostrzegę, gdy zboczysz.",
+    navNone: "— bez prowadzenia —",
+    navLoadFile: "📂 Wczytaj z pliku (GPX / TCX / FIT)…",
+    navFileOpt: (name, km) => `📄 ${name} — ${km} km`,
+    navNoPoints: "W pliku nie ma trasy (punktów GPS).",
+    navLoadError: (msg) => `Nie udało się wczytać trasy: ${msg}`,
+    navSaveToRoutes: (name) => `Zapisać trasę „${name}” w zakładce Trasy, żeby była dostępna także następnym razem?`,
+    navLeft: (km) => `do końca ${km} km`,
+    navWaiting: "Czekam na sygnał GPS…",
+    navOn: "✅ Na trasie",
+    navOff: (m) => `⚠️ Zboczyłeś z trasy o ${m} m — wróć na linię na mapie`,
+    navBack: "✅ Wróciłeś na trasę",
+    navNoGps: "📡 Słaby lub brak sygnału GPS — ostrzeganie o zboczeniu wstrzymane",
+    navPaused: "⏸ Pauza — prowadzenie wstrzymane",
+    navFinished: "🏁 Koniec trasy!",
+    navBusy: "Trwa nagrywanie — prowadzenie wybierasz przed START.",
+    navRouteTitle: "Prowadź po tej trasie (nagrywanie telefonem)",
+    routeImportBtn: "📂 WCZYTAJ TRASĘ Z PLIKU (GPX / TCX / FIT)",
+    routeImportHint: "Trasę z Garmin Connect, Komoot, Strava czy od znajomych wczytasz tutaj. Przyciskiem 🧭 przy trasie uruchomisz prowadzenie w nagrywaniu telefonem.",
+    routeImported: (name, km) => `Wczytano trasę „${name}” (${km} km). Przycisk 🧭 przy trasie uruchamia prowadzenie.`,
+    navNotifTitle: "Polska Adventure Ultra — trasa",
     editEntryTitle: "Popraw trening (dystans, czas, notatki…)",
     editTitle: "✏️ Popraw trening",
     editSaveBtn: "ZAPISZ ZMIANY",
@@ -440,6 +462,7 @@ const TRANSLATIONS = {
           <li>„Cofnij punkt” usuwa ostatni punkt, „Wyczyść” — całą trasę. „ZAPISZ TRASĘ” zapisuje ją na liście poniżej mapy.</li>
           <li>„EKSPORTUJ DO GPX” (lub przycisk GPX przy zapisanej trasie) tworzy plik do zegarka. Na telefonie otworzy się menu „Udostępnij”.</li>
           <li><b>Garmin</b>: Garmin Connect (www) → Trening → Trasy → Importuj → wyślij na zegarek. <b>Suunto</b>: otwórz plik GPX w Suunto app i zsynchronizuj zegarek. <b>Polar</b>: Polar Flow (www) → Ulubione → Trasy → Importuj → synchronizuj.</li>
+          <li><b>🧭 Prowadzenie po trasie w telefonie</b>: „📂 WCZYTAJ TRASĘ Z PLIKU” (GPX / TCX / FIT, np. z Garmin Connect, Komoot, Strava) dodaje trasę do listy. Przycisk 🧭 przy trasie — albo pole „Prowadź po trasie” przed START w nagrywaniu telefonem — włącza prowadzenie: trasa jest na mapie, widać kilometry do końca, a gdy zboczysz o ok. 50 m (rower 60 m, kajak i pływanie 100 m), telefon zawibruje i pokaże czerwony komunikat; w aplikacji ze Sklepu Play przy zgaszonym ekranie dostaniesz powiadomienie. Przy słabym GPS ostrzeżenia są wstrzymane, żeby nie było fałszywych alarmów — trasa zostaje na mapie.</li>
           <li>Wyznaczanie trasy po drogach wymaga internetu (darmowy serwis BRouter — wysyłane są wyłącznie współrzędne klikniętych punktów). Bez internetu odcinki będą liniami prostymi.</li>
         </ul>
       </details>
@@ -670,6 +693,28 @@ const TRANSLATIONS = {
     addTrainingTitle: "Add training",
     noHistory: "No saved trainings yet.",
     deleteTitle: "Delete entry",
+    navRouteLbl: "🧭 Follow a route (optional)",
+    navRouteHint: "A route from the Routes tab or a GPX / TCX / FIT file (e.g. from Garmin Connect, Komoot, Strava). It is shown on the map with the distance left, and you get a warning when you go off route.",
+    navNone: "— no route —",
+    navLoadFile: "📂 Load from file (GPX / TCX / FIT)…",
+    navFileOpt: (name, km) => `📄 ${name} — ${km} km`,
+    navNoPoints: "The file contains no route (GPS points).",
+    navLoadError: (msg) => `Could not load the route: ${msg}`,
+    navSaveToRoutes: (name) => `Save the route “${name}” in the Routes tab so it is available next time too?`,
+    navLeft: (km) => `${km} km to go`,
+    navWaiting: "Waiting for GPS signal…",
+    navOn: "✅ On route",
+    navOff: (m) => `⚠️ ${m} m off route — get back to the line on the map`,
+    navBack: "✅ Back on route",
+    navNoGps: "📡 Weak or no GPS signal — off-route warnings paused",
+    navPaused: "⏸ Paused — route guidance on hold",
+    navFinished: "🏁 End of the route!",
+    navBusy: "Recording in progress — choose a route before START.",
+    navRouteTitle: "Follow this route (phone recording)",
+    routeImportBtn: "📂 LOAD ROUTE FROM FILE (GPX / TCX / FIT)",
+    routeImportHint: "Load a route from Garmin Connect, Komoot, Strava or a friend here. The 🧭 button next to a route starts guidance in phone recording.",
+    routeImported: (name, km) => `Loaded route “${name}” (${km} km). The 🧭 button next to the route starts guidance.`,
+    navNotifTitle: "Polska Adventure Ultra — route",
     editEntryTitle: "Edit training (distance, time, notes…)",
     editTitle: "✏️ Edit training",
     editSaveBtn: "SAVE CHANGES",
@@ -973,6 +1018,7 @@ const TRANSLATIONS = {
           <li>“Undo point” removes the last point, “Clear” the whole route. “SAVE ROUTE” adds it to the list below the map.</li>
           <li>“EXPORT TO GPX” (or the GPX button next to a saved route) creates a file for your watch. On a phone the Share menu opens.</li>
           <li><b>Garmin</b>: Garmin Connect (web) → Training → Courses → Import → send to device. <b>Suunto</b>: open the GPX file in the Suunto app and sync the watch. <b>Polar</b>: Polar Flow (web) → Favorites → Routes → Import → sync.</li>
+          <li><b>🧭 Route guidance on the phone</b>: “📂 LOAD ROUTE FROM FILE” (GPX / TCX / FIT, e.g. from Garmin Connect, Komoot, Strava) adds a route to the list. The 🧭 button next to a route — or the “Follow a route” field before START in phone recording — turns on guidance: the route is on the map, you see the distance left, and when you go about 50 m off route (cycling 60 m, kayak and swimming 100 m) the phone vibrates and shows a red message; in the Play Store app you get a notification while the screen is off. With weak GPS, warnings are paused to avoid false alarms — the route stays on the map.</li>
           <li>Road routing needs internet (free BRouter service — only the coordinates of tapped points are sent). Offline, sections are straight lines.</li>
         </ul>
       </details>
@@ -1152,7 +1198,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "79";
+const APP_BUILD = "80";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -2991,6 +3037,8 @@ function deletePlannedRoute(index) {
   const routes = getPlannedRoutes();
   routes.splice(index, 1);
   savePlannedRoutes(routes);
+  if (navSelected === "r:" + index) navSelected = "";
+  else if (navSelected.startsWith("r:") && parseInt(navSelected.slice(2), 10) > index) navSelected = "r:" + (parseInt(navSelected.slice(2), 10) - 1);
   if (planEditingIndex === index) planEditingIndex = null;
   else if (planEditingIndex != null && planEditingIndex > index) planEditingIndex--;
   refreshSavedRoutesList();
@@ -3092,6 +3140,7 @@ function exportPlannedRoute(index) {
 }
 
 function refreshSavedRoutesList() {
+  navRefreshSelect();
   const list = document.getElementById("savedRoutesList");
   const routes = getPlannedRoutes();
   const dict = t();
@@ -3104,6 +3153,7 @@ function refreshSavedRoutesList() {
       `<div class="history-item">` +
       `<span>${escapeXml(r.name)} — ${r.distKm} km (${r.created})</span>` +
       `<div class="history-actions">` +
+      `<button class="nav-btn" data-index="${index}" title="${dict.navRouteTitle}">🧭</button>` +
       `<button class="route-btn" data-index="${index}" title="${dict.editRouteTitle}">🗺</button>` +
       `<button class="gpx-btn" data-index="${index}" title="${dict.exportRouteTitle}">GPX</button>` +
       (isCommunityConfigured()
@@ -3118,6 +3168,9 @@ function refreshSavedRoutesList() {
   });
   list.querySelectorAll(".gpx-btn").forEach((btn) => {
     btn.addEventListener("click", () => exportPlannedRoute(parseInt(btn.dataset.index, 10)));
+  });
+  list.querySelectorAll(".nav-btn").forEach((btn) => {
+    btn.addEventListener("click", () => navStartFromRoute(parseInt(btn.dataset.index, 10)));
   });
   list.querySelectorAll(".share-btn").forEach((btn) => {
     btn.addEventListener("click", () => toggleShareRoute(parseInt(btn.dataset.index, 10)));
@@ -4637,6 +4690,7 @@ function parseFit(buf) {
     // W pływaniu i na rowerze „cykle” to ruchy ramion / obroty korby - nie kroki.
     steps: STEP_DISCIPLINES.includes(disc || "Bieg") ? normalizeSteps(cycles, timeS / 60, true) : 0,
     route: route.length >= 2 ? downsampleRoute(route, 200) : undefined,
+    routeFull: route.length >= 2 ? route : undefined, // pełna trasa - do prowadzenia (nawigacji)
   };
 }
 
@@ -4901,6 +4955,7 @@ function recRender() {
   document.getElementById("recDiscLbl").textContent = `📍 ${dict.discNames[rec.disc] || rec.disc}`;
   document.getElementById("recPauseBtn").textContent = rec.pausedAt ? dict.recResumeBtn : dict.recPauseBtn;
   document.getElementById("recCard").classList.toggle("rec-paused", Boolean(rec.pausedAt));
+  navRender();
 }
 
 function recInitMap() {
@@ -4911,11 +4966,15 @@ function recInitMap() {
       maxZoom: 19,
       attribution: "&copy; OpenStreetMap contributors",
     }).addTo(recMap);
+    navLine = L.polyline([], { color: "#2F6FD0", weight: 7, opacity: 0.55 }).addTo(recMap);
+    navStartMarker = L.circleMarker([0, 0], { radius: 6, color: "#fff", weight: 2, fillColor: "#3D7A22", fillOpacity: 1 });
+    navEndMarker = L.circleMarker([0, 0], { radius: 6, color: "#fff", weight: 2, fillColor: "#C62828", fillOpacity: 1 });
     recLine = L.polyline([], { color: "#3D7A22", weight: 5 }).addTo(recMap);
     recDot = L.circleMarker([52.07, 19.48], { radius: 8, color: "#fff", weight: 3, fillColor: "#D86C28", fillOpacity: 1 });
     recMap.setView([52.07, 19.48], 6);
   }
   requestAnimationFrame(() => recMap.invalidateSize());
+  navDraw();
   recUpdateMap(true);
 }
 
@@ -4923,6 +4982,11 @@ function recUpdateMap(fit) {
   if (!recMap || !rec) return;
   const latlngs = rec.points.map((p) => [p[0], p[1]]);
   recLine.setLatLngs(latlngs);
+  if (fit && rec.nav && latlngs.length < 2 && navLine.getLatLngs().length > 1) {
+    recMap.fitBounds(navLine.getBounds(), { padding: [20, 20], maxZoom: 16 });
+    if (latlngs.length) { recDot.setLatLng(latlngs[0]); if (!recMap.hasLayer(recDot)) recDot.addTo(recMap); }
+    return;
+  }
   if (!latlngs.length) return;
   const last = latlngs[latlngs.length - 1];
   recDot.setLatLng(last);
@@ -4944,6 +5008,7 @@ function recOnPosition(pos) {
     recRender();
     return;
   }
+  if (rec.nav) navOnFix(c.latitude, c.longitude, c.accuracy);
   const ts = pos.timestamp || Date.now();
   const ele = Number.isFinite(c.altitude) ? Math.round(c.altitude) : null;
   const point = [+c.latitude.toFixed(6), +c.longitude.toFixed(6), ele, ts];
@@ -5328,6 +5393,351 @@ function recStopWatching() {
   recTimer = null;
 }
 
+// --- Prowadzenie po trasie (nawigacja) podczas nagrywania telefonem ---
+// Trasa (zapisana w Trasach albo z pliku GPX/TCX/FIT) jest na mapie; liczymy km do końca
+// i ostrzegamy wibracją (+ powiadomieniem w apce natywnej przy zgaszonym ekranie), gdy zboczysz.
+// Przy słabym GPS ostrzeżenia są wstrzymane - żeby nie było fałszywych alarmów.
+// Komunikaty idą przez navAlert() - tam można później dodać głos (z wyłącznikiem).
+const NAV_MAX_POINTS = 2000;
+const NAV_OFF_M = { Rower: 60, Kajak: 100, WodyOtwarte: 100 }; // pozostałe: NAV_OFF_DEFAULT_M
+const NAV_OFF_DEFAULT_M = 50;
+const NAV_GOOD_ACC_M = 25;     // tylko przy takiej dokładności oceniamy zboczenie
+const NAV_NO_FIX_MS = 15000;   // tyle bez dobrego odczytu = „brak sygnału GPS”
+const NAV_REPEAT_MS = 60000;   // przypomnienie, gdy nadal poza trasą
+const NAV_NOTIF_ID = 7301;
+let navSelected = "";          // "" | "r:<indeks zapisanej trasy>" | "file"
+let navFileRoute = null;       // { name, track } - trasa wczytana z pliku przed START (bez zapisu w Trasach)
+let navLine = null;
+let navStartMarker = null;
+let navEndMarker = null;
+let navCum = null;             // skumulowane km dla rec.nav.pts
+let navCumFor = null;
+let navRt = {};                // stan bieżący (nie zapisywany - po wznowieniu liczony od nowa)
+
+function navReset() {
+  navRt = { idx: 0, progressKm: null, offM: null, off: false, offCount: 0, lastAlertAt: 0, lastGoodFixAt: 0, since: Date.now(), finished: false };
+  navCum = null;
+  navCumFor = null;
+}
+navReset();
+
+function navOffLimit() {
+  return (rec && NAV_OFF_M[rec.disc]) || NAV_OFF_DEFAULT_M;
+}
+
+// Upraszcza trasę do NAV_MAX_POINTS punktów (Douglas-Peucker z rosnącą tolerancją).
+function navSimplify(track) {
+  let out = track;
+  let tol = 0.00001; // ok. 1 m
+  while (out.length > NAV_MAX_POINTS && tol < 0.01) {
+    out = simplifyTrack(track, tol);
+    tol *= 2;
+  }
+  return out.length > NAV_MAX_POINTS ? downsampleRoute(out, NAV_MAX_POINTS) : out;
+}
+
+function plannedRouteTrack(route) {
+  const track = [];
+  (route.segments || []).forEach((seg, i) => track.push(...(i === 0 ? seg : seg.slice(1))));
+  if (track.length < 2 && route.waypoints && route.waypoints.length >= 2) return route.waypoints.slice();
+  return track;
+}
+
+function navMake(name, track) {
+  if (!track || track.length < 2) return null;
+  const pts = navSimplify(track).map((p) => [+p.lat.toFixed(6), +p.lon.toFixed(6)]);
+  return { name: String(name || "").slice(0, 60), pts, totalKm: trackDistanceKm(pts.map(([lat, lon]) => ({ lat, lon }))) };
+}
+
+function navBuildSelected() {
+  if (navSelected === "file" && navFileRoute) return navMake(navFileRoute.name, navFileRoute.track);
+  if (navSelected.startsWith("r:")) {
+    const route = getPlannedRoutes()[parseInt(navSelected.slice(2), 10)];
+    if (route) return navMake(route.name, plannedRouteTrack(route));
+  }
+  return null;
+}
+
+function navRefreshSelect() {
+  const select = document.getElementById("recNavRoute");
+  if (!select) return;
+  const dict = t();
+  const routes = getPlannedRoutes();
+  if (navSelected.startsWith("r:") && !routes[parseInt(navSelected.slice(2), 10)]) navSelected = "";
+  if (navSelected === "file" && !navFileRoute) navSelected = "";
+  const opts = [`<option value="">${escapeXml(dict.navNone)}</option>`];
+  routes.forEach((r, i) => opts.push(`<option value="r:${i}">🗺 ${escapeXml(r.name)} — ${escapeXml(r.distKm)} km</option>`));
+  if (navFileRoute) opts.push(`<option value="file">${escapeXml(dict.navFileOpt(navFileRoute.name, trackDistanceKm(navFileRoute.track).toFixed(2)))}</option>`);
+  opts.push(`<option value="load">${escapeXml(dict.navLoadFile)}</option>`);
+  select.innerHTML = opts.join("");
+  select.value = navSelected;
+}
+
+// Odczyt pliku z trasą: GPX (trkpt albo rtept - trasy z planerów), TCX (Trackpoint), FIT (rekordy).
+function navParseFile(buf, fileName) {
+  const fallbackName = String(fileName || "").replace(/\.[^.]+$/, "") || t().defaultRouteName;
+  let track = [];
+  let name = "";
+  if (isFitFile(buf)) {
+    const parsed = parseFit(buf);
+    track = parsed.routeFull || parsed.route || [];
+  } else {
+    const text = new TextDecoder("utf-8").decode(buf);
+    const xml = new DOMParser().parseFromString(text, "application/xml");
+    if (xml.getElementsByTagName("parsererror").length > 0) throw new Error(t().errBadXml);
+    const fromPts = (tag) => Array.from(xml.getElementsByTagName(tag)).map((pt) => {
+      const lat = parseFloat(pt.getAttribute("lat"));
+      const lon = parseFloat(pt.getAttribute("lon"));
+      const eleEl = pt.getElementsByTagName("ele")[0];
+      const ele = eleEl ? parseFloat(eleEl.textContent) : NaN;
+      return Number.isFinite(ele) ? { lat, lon, ele } : { lat, lon };
+    });
+    track = fromPts("trkpt");
+    if (track.length < 2) track = fromPts("rtept");
+    if (track.length < 2) {
+      track = Array.from(xml.getElementsByTagName("Trackpoint")).map((tp) => {
+        const lat = tp.getElementsByTagName("LatitudeDegrees")[0];
+        const lon = tp.getElementsByTagName("LongitudeDegrees")[0];
+        if (!lat || !lon) return null;
+        const altEl = tp.getElementsByTagName("AltitudeMeters")[0];
+        const ele = altEl ? parseFloat(altEl.textContent) : NaN;
+        const p = { lat: parseFloat(lat.textContent), lon: parseFloat(lon.textContent) };
+        if (Number.isFinite(ele)) p.ele = ele;
+        return p;
+      }).filter(Boolean);
+    }
+    const nameEl = ["trk", "rte", "metadata"].map((tag) => {
+      const parent = xml.getElementsByTagName(tag)[0];
+      return parent ? Array.from(parent.children).find((el) => el.localName === "name") : null;
+    }).find(Boolean) || (xml.getElementsByTagName("Course")[0] ? Array.from(xml.getElementsByTagName("Course")[0].children).find((el) => el.localName === "Name") : null);
+    name = nameEl ? nameEl.textContent.trim() : "";
+  }
+  track = track.filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lon) && Math.abs(p.lat) <= 90 && Math.abs(p.lon) <= 180);
+  if (track.length < 2) throw new Error(t().navNoPoints);
+  return { name: (name || fallbackName).slice(0, 60), track };
+}
+
+function readFileBuffer(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error || new Error("read"));
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+// Trasa z pliku zapisana jako zwykła zapisana trasa (Trasy): GPX do zegarka, udostępnianie i 🧭 działają tak samo.
+function saveImportedRoute(name, track) {
+  const pts = navSimplify(track).map((p) => (Number.isFinite(p.ele)
+    ? { lat: +p.lat.toFixed(6), lon: +p.lon.toFixed(6), ele: Math.round(p.ele) }
+    : { lat: +p.lat.toFixed(6), lon: +p.lon.toFixed(6) }));
+  const routes = getPlannedRoutes();
+  routes.push({
+    name: name || t().defaultRouteName,
+    created: toYmd(new Date()),
+    mode: "straight",
+    distKm: trackDistanceKm(pts).toFixed(2),
+    waypoints: [pts[0], pts[pts.length - 1]],
+    segments: [pts],
+    imported: true,
+  });
+  savePlannedRoutes(routes);
+  return routes.length - 1;
+}
+
+async function importRouteFile(file) {
+  const dict = t();
+  try {
+    const parsed = navParseFile(await readFileBuffer(file), file.name);
+    const name = prompt(dict.promptRouteName, parsed.name);
+    if (name === null) return;
+    const index = saveImportedRoute(name.trim() || parsed.name, parsed.track);
+    refreshSavedRoutesList();
+    try { loadPlannedRoute(index); } catch (e) { console.warn("Podgląd trasy", e); } // trasa jest już zapisana
+    const route = getPlannedRoutes()[index];
+    alert(dict.routeImported(route.name, route.distKm));
+  } catch (e) {
+    alert(dict.navLoadError(e.message));
+  }
+}
+
+// Wczytanie pliku z pola „Prowadź po trasie” przed START.
+async function navLoadFileForRecording(file) {
+  const dict = t();
+  try {
+    const parsed = navParseFile(await readFileBuffer(file), file.name);
+    if (confirm(dict.navSaveToRoutes(parsed.name))) {
+      const index = saveImportedRoute(parsed.name, parsed.track);
+      navSelected = "r:" + index;
+      refreshSavedRoutesList();
+    } else {
+      navFileRoute = parsed;
+      navSelected = "file";
+      navRefreshSelect();
+    }
+  } catch (e) {
+    alert(dict.navLoadError(e.message));
+    navRefreshSelect();
+  }
+}
+
+function navStartFromRoute(index) {
+  if (rec) { alert(t().navBusy); return; }
+  navSelected = "r:" + index;
+  navRefreshSelect();
+  showTab("train");
+  if (trainMode !== "phone") setTrainMode("phone");
+  const card = document.getElementById("recCard");
+  if (card && card.scrollIntoView) card.scrollIntoView({ block: "start", behavior: "smooth" });
+}
+
+function navCumulative() {
+  if (navCumFor === rec.nav && navCum) return navCum;
+  const pts = rec.nav.pts;
+  navCum = [0];
+  for (let i = 1; i < pts.length; i++) navCum.push(navCum[i - 1] + haversineKm(pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1]));
+  navCumFor = rec.nav;
+  return navCum;
+}
+
+// Najbliższy punkt trasy: najpierw okno wokół ostatniej pozycji (trasy tam i z powrotem / pętle),
+// a gdy w oknie nic blisko - cała trasa. Zwraca { i, d (m), km (przebyte wzdłuż trasy) }.
+function navLocate(lat, lon) {
+  const pts = rec.nav.pts;
+  const cum = navCumulative();
+  const kx = 111320 * Math.cos(lat * Math.PI / 180);
+  const ky = 110540;
+  const scan = (from, to) => {
+    let best = { i: from, d: Infinity, km: 0 };
+    for (let i = from; i <= to && i < pts.length - 1; i++) {
+      const ax = (pts[i][1] - lon) * kx, ay = (pts[i][0] - lat) * ky;
+      const bx = (pts[i + 1][1] - lon) * kx, by = (pts[i + 1][0] - lat) * ky;
+      const dx = bx - ax, dy = by - ay;
+      const len2 = dx * dx + dy * dy;
+      let u = len2 ? -(ax * dx + ay * dy) / len2 : 0;
+      u = Math.max(0, Math.min(1, u));
+      const ex = ax + u * dx, ey = ay + u * dy;
+      const d = Math.sqrt(ex * ex + ey * ey);
+      if (d < best.d) best = { i, d, km: cum[i] + u * (cum[i + 1] - cum[i]) };
+    }
+    return best;
+  };
+  let best = scan(Math.max(0, navRt.idx - 30), navRt.idx + 300);
+  if (best.d > 150) {
+    const all = scan(0, pts.length - 2);
+    if (all.d < best.d - 20) best = all;
+  }
+  return best;
+}
+
+function navOnFix(lat, lon, accuracy) {
+  if (!rec || !rec.nav || rec.pausedAt) return;
+  const now = Date.now();
+  const loc = navLocate(lat, lon);
+  navRt.idx = loc.i;
+  navRt.progressKm = loc.km;
+  navRt.offM = loc.d;
+  if (accuracy > NAV_GOOD_ACC_M) return; // za słaby GPS, żeby oceniać zboczenie
+  navRt.lastGoodFixAt = now;
+  const limit = navOffLimit();
+  navRt.offCount = loc.d > limit ? navRt.offCount + 1 : 0;
+  if (!navRt.off && navRt.offCount >= 2) {
+    navRt.off = true;
+    navAlert("off", loc.d);
+  } else if (navRt.off && loc.d < limit * 0.6) {
+    navRt.off = false;
+    navAlert("back");
+  } else if (navRt.off && now - navRt.lastAlertAt > NAV_REPEAT_MS) {
+    navAlert("off", loc.d);
+  }
+  const total = rec.nav.totalKm;
+  if (!navRt.finished && !navRt.off && total - loc.km < 0.1 && rec.distKm >= total * 0.5) {
+    navRt.finished = true;
+    navAlert("finish");
+  }
+}
+
+function navAlert(kind, meters) {
+  const dict = t();
+  navRt.lastAlertAt = Date.now();
+  const text = kind === "off" ? dict.navOff(Math.round(meters)) : kind === "back" ? dict.navBack : dict.navFinished;
+  const pattern = kind === "off" ? [400, 200, 400, 200, 400] : kind === "back" ? [150] : [200, 100, 200, 100, 600];
+  try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) { /* brak wibracji */ }
+  if (isNativeApp() && document.visibilityState === "hidden" && kind !== "back") navNotify(text);
+  // Tu w przyszłości: komunikat głosowy (z wyłącznikiem w ustawieniach).
+}
+
+function navNotify(text) {
+  try {
+    capPlugin("LocalNotifications").schedule({
+      notifications: [{ id: NAV_NOTIF_ID, title: t().navNotifTitle, body: text }],
+    }).catch(() => {});
+  } catch (e) { /* brak wtyczki */ }
+}
+
+function navDraw() {
+  if (!navLine) return;
+  const pts = rec && rec.nav ? rec.nav.pts : [];
+  navLine.setLatLngs(pts);
+  [navStartMarker, navEndMarker].forEach((m) => { if (recMap.hasLayer(m)) m.remove(); });
+  if (pts.length >= 2) {
+    navStartMarker.setLatLng(pts[0]).addTo(recMap);
+    navEndMarker.setLatLng(pts[pts.length - 1]).addTo(recMap);
+  }
+}
+
+function navRender() {
+  const box = document.getElementById("recNav");
+  if (!box) return;
+  if (!rec || !rec.nav) { box.hidden = true; return; }
+  const dict = t();
+  box.hidden = false;
+  document.getElementById("recNavName").textContent = `🧭 ${rec.nav.name}`;
+  const left = navRt.progressKm == null ? rec.nav.totalKm : Math.max(0, rec.nav.totalKm - navRt.progressKm);
+  document.getElementById("recNavLeft").textContent = dict.navLeft(formatKm(left));
+  let status;
+  let cls = "";
+  const now = Date.now();
+  const noFix = now - (navRt.lastGoodFixAt || navRt.since) > NAV_NO_FIX_MS;
+  if (rec.pausedAt) status = dict.navPaused;
+  else if (navRt.finished) status = dict.navFinished;
+  else if (noFix) {
+    status = !navRt.lastGoodFixAt && now - navRt.since < NAV_NO_FIX_MS * 2 ? dict.navWaiting : dict.navNoGps;
+    cls = "nav-gps";
+  } else if (navRt.off) { status = dict.navOff(Math.round(navRt.offM)); cls = "nav-off"; }
+  else if (navRt.progressKm != null) status = dict.navOn;
+  else status = dict.navWaiting;
+  document.getElementById("recNavStatus").textContent = status;
+  box.classList.toggle("nav-off", cls === "nav-off");
+  box.classList.toggle("nav-gps", cls === "nav-gps");
+}
+
+function initNavigation() {
+  const select = document.getElementById("recNavRoute");
+  const fileInput = document.getElementById("navFile");
+  select.addEventListener("change", () => {
+    if (select.value === "load") {
+      select.value = navSelected;
+      fileInput.value = "";
+      fileInput.click();
+      return;
+    }
+    navSelected = select.value;
+  });
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (file) navLoadFileForRecording(file);
+  });
+  const importInput = document.getElementById("routeImportFile");
+  document.getElementById("routeImportBtn").addEventListener("click", () => { importInput.value = ""; importInput.click(); });
+  importInput.addEventListener("change", () => {
+    const file = importInput.files && importInput.files[0];
+    if (file) importRouteFile(file);
+  });
+  navRefreshSelect();
+}
+
+
 function startRecording() {
   if (!("geolocation" in navigator)) {
     alert(t().recNoGeo);
@@ -5345,6 +5755,9 @@ function startRecording() {
     weightKg: parseBodyWeight(document.getElementById("recWeight").value),
     kcal: 0,
   };
+  const nav = navBuildSelected();
+  if (nav) rec.nav = nav;
+  navReset();
   if (rec.weightKg) {
     try { localStorage.setItem(BODY_WEIGHT_KEY, String(rec.weightKg)); } catch (e) { /* brak dostępu */ }
   }
@@ -5365,6 +5778,7 @@ function toggleRecordingPause() {
     rec.pausedMs += Date.now() - rec.pausedAt;
     rec.pausedAt = null;
     rec.resumed = true;
+    navRt.since = Date.now();
     recStartWatching();
     recRequestWakeLock();
     recSetStatus(t().recWaitingGps);
@@ -5460,6 +5874,7 @@ function restoreRecording() {
   rec = saved;
   if (!rec.pausedAt) rec.pausedAt = saved.savedAt || Date.now();
   delete rec.savedAt;
+  navReset();
   recSave(true);
   recRender();
   recSetStatus(t().recRestored, true);
@@ -5472,6 +5887,7 @@ function initRecorder() {
   const savedWeight = getBodyWeight();
   if (savedWeight) document.getElementById("recWeight").value = String(savedWeight);
   document.getElementById("recStartBtn").addEventListener("click", startRecording);
+  initNavigation();
   document.getElementById("recPauseBtn").addEventListener("click", toggleRecordingPause);
   document.getElementById("recFinishBtn").addEventListener("click", finishRecording);
   document.getElementById("recDiscardBtn").addEventListener("click", () => discardRecording(false));

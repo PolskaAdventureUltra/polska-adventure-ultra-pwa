@@ -177,6 +177,7 @@ body:not(.dark) .hero { border-color: transparent; }
 .history-actions { display: flex; gap: 6px; flex-shrink: 0; max-width: 45%; }
 .history-item .delete-btn,
 .history-item .edit-btn,
+.history-item .nav-btn,
 .history-item .route-btn,
 .history-item .gpx-btn,
 .history-item .share-btn,
@@ -490,3 +491,14 @@ body.dark .mode-tile.active { box-shadow: 0 6px 16px rgba(255, 106, 43, 0.25); }
 .boot-info { margin-top: 18px; max-width: 320px; font-size: 11px; line-height: 1.4; color: var(--subtle-fg); word-break: break-word; }
 .noscript-box { margin-top: 16px; max-width: 340px; padding: 12px 14px; border-radius: 12px; border-left: 4px solid var(--hl); background: var(--card); font-size: 13px; line-height: 1.45; text-align: left; }
 .noscript-box hr { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
+
+/* Nawigacja po trasie podczas nagrywania */
+.history-item .nav-btn { color: var(--accent); }
+.rec-nav { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: var(--subtle-bg); border-left: 4px solid var(--accent); }
+.rec-nav-head { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; }
+.rec-nav-head span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rec-nav-head b { font-family: var(--display); white-space: nowrap; }
+.rec-nav-status { margin: 4px 0 0; font-size: 14px; font-weight: 600; }
+.rec-nav.nav-off { border-left-color: var(--danger); }
+.rec-nav.nav-off .rec-nav-status { color: var(--danger); }
+.rec-nav.nav-gps .rec-nav-status { color: var(--subtle-fg); }
