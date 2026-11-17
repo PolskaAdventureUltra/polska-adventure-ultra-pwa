@@ -56,8 +56,8 @@ const TRANSLATIONS = {
     labelHr: "Śr. tętno (bpm)",
     labelSteps: "Kroki",
     importNoSteps: "\n👣 Ten plik nie zawiera kroków. Wyeksportuj trening jako FIT albo wpisz kroki ręcznie.",
-    updateText: "🆕 Jest nowa wersja aplikacji w Sklepie Play.",
-    updateNowBtn: "AKTUALIZUJ",
+    updateText: "🆕 W Sklepie Google Play jest nowa wersja aplikacji PAU. To zwykła aktualizacja ze Sklepu Play, jak w każdej innej aplikacji — sprawdza ją sam telefon. Nikt nie ma dostępu do Twojej aplikacji, a Twoje treningi zostają na tym telefonie.",
+    updateNowBtn: "AKTUALIZUJ ZE SKLEPU PLAY",
     labelVo2max: "Pułap tlenowy VO2max",
     labelWeight: "Waga (kg)",
     labelNotes: "Notatki / Samopoczucie",
@@ -243,6 +243,15 @@ const TRANSLATIONS = {
     editReshareFailed: "Zmiany zapisane na telefonie, ale nie udało się poprawić udostępnionego treningu w Aktywności (brak internetu?). Spróbuj ponownie: popraw i zapisz trening jeszcze raz.",
     confirmDelete: "Usunąć ten wpis z historii?",
     alertDistRequired: "Podaj dystans większy od 0.",
+    implausibleField: "Dane niepoprawne lub nierealne — sprawdź dystans, czas i kroki.",
+    implausibleAlert: (lines, contact) => `⚠️ Dane niepoprawne lub nierealne:\n\n${lines.map((l) => "• " + l).join("\n")}\n\nJeżeli wprowadzone dane są poprawne, skontaktuj się z administratorem: ${contact}`,
+    implSpeed: (disc, v, max) => `średnia prędkość ${v} km/h — za duża jak na: ${disc} (maks. ${max} km/h)`,
+    implDist: (disc, km, max) => `dystans ${km} km — za duży na jeden trening (${disc}: maks. ${max} km)`,
+    implStride: (steps, km, m) => `${steps} kroków na ${km} km to ${m} m na jeden krok — niemożliwe (realnie 0,3–2,5 m)`,
+    implCadence: (spm) => `${spm} kroków na minutę — niemożliwe (maks. 300)`,
+    implHr: (hr) => `średnie tętno ${hr} bpm — poza zakresem 25–250`,
+    implTime: "czas dłuższy niż 7 dni",
+    implFuture: "data treningu jest w przyszłości",
     alertSaved: "Zapisano trening!",
     alertTimeRequired: "Podaj czas większy od 0.",
     paceResult: (min, sec) => `Tempo: ${min}:${sec} min/km`,
@@ -687,8 +696,8 @@ const TRANSLATIONS = {
     labelHr: "Avg. heart rate (bpm)",
     labelSteps: "Steps",
     importNoSteps: "\n👣 This file has no steps. Export the training as FIT or enter the steps manually.",
-    updateText: "🆕 A new version of the app is available on Google Play.",
-    updateNowBtn: "UPDATE",
+    updateText: "🆕 A new version of the PAU app is available on Google Play. This is a regular Google Play update, like in any other app — your phone checks for it itself. Nobody has access to your app, and your trainings stay on this phone.",
+    updateNowBtn: "UPDATE FROM GOOGLE PLAY",
     labelVo2max: "VO2max",
     labelWeight: "Weight (kg)",
     labelNotes: "Notes / How you felt",
@@ -874,6 +883,15 @@ const TRANSLATIONS = {
     editReshareFailed: "Changes saved on this phone, but the shared training in Activity could not be updated (no internet?). Try again: open and save the training once more.",
     confirmDelete: "Delete this entry from history?",
     alertDistRequired: "Enter a distance greater than 0.",
+    implausibleField: "Incorrect or unrealistic data — check distance, time and steps.",
+    implausibleAlert: (lines, contact) => `⚠️ Incorrect or unrealistic data:\n\n${lines.map((l) => "• " + l).join("\n")}\n\nIf the data you entered is correct, please contact the administrator: ${contact}`,
+    implSpeed: (disc, v, max) => `average speed ${v} km/h — too high for: ${disc} (max ${max} km/h)`,
+    implDist: (disc, km, max) => `distance ${km} km — too long for one training (${disc}: max ${max} km)`,
+    implStride: (steps, km, m) => `${steps} steps over ${km} km means ${m} m per step — impossible (realistic: 0.3–2.5 m)`,
+    implCadence: (spm) => `${spm} steps per minute — impossible (max 300)`,
+    implHr: (hr) => `average heart rate ${hr} bpm — outside 25–250`,
+    implTime: "duration longer than 7 days",
+    implFuture: "training date is in the future",
     alertSaved: "Training saved!",
     alertTimeRequired: "Enter a time greater than 0.",
     paceResult: (min, sec) => `Pace: ${min}:${sec} min/km`,
@@ -1350,7 +1368,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "89";
+const APP_BUILD = "92";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -1520,6 +1538,55 @@ const SWIM_DISCIPLINES = ["Basen", "WodyOtwarte"];
 // Kroki mają sens tylko w dyscyplinach pieszych.
 const STEP_DISCIPLINES = ["Bieg", "Trekking"];
 const MAX_STEPS = 300000;
+
+// --- Wiarygodność danych treningu ---
+// Granice celowo z zapasem (rekordy świata + margines), żeby nie blokować prawdziwych treningów.
+// Te same limity sprawdza serwer w share_activity (supabase/wiarygodnosc-danych.sql) - zmieniać razem.
+const PLAUSIBLE_LIMITS = {
+  Bieg:        { maxKmh: 25, maxKm: 400 },
+  Trekking:    { maxKmh: 15, maxKm: 200 },
+  Rower:       { maxKmh: 70, maxKm: 1200 },
+  Kajak:       { maxKmh: 25, maxKm: 300 },
+  Basen:       { maxKmh: 8,  maxKm: 30 },
+  WodyOtwarte: { maxKmh: 8,  maxKm: 100 },
+};
+const MAX_TIME_MIN = 7 * 24 * 60;
+
+// Zwraca listę problemów (teksty do pokazania); pusta = dane realne.
+function implausibleReasons(entry) {
+  const dict = t();
+  const out = [];
+  const lim = PLAUSIBLE_LIMITS[entry.disc];
+  const disc = dict.discNames[entry.disc] || entry.disc;
+  const km = parseFloat(entry.dist) || 0;
+  const min = parseFloat(entry.time) || 0;
+  const hr = parseFloat(entry.hr) || 0;
+  const steps = STEP_DISCIPLINES.includes(entry.disc) ? Math.round(Number(entry.steps) || 0) : 0;
+  const fmt = (n) => String(Math.round(n * 10) / 10).replace(".", getLang() === "pl" ? "," : ".");
+  if (lim && km > lim.maxKm) out.push(dict.implDist(disc, fmt(km), lim.maxKm));
+  if (lim && km > 0 && min > 0 && km / (min / 60) > lim.maxKmh) out.push(dict.implSpeed(disc, fmt(km / (min / 60)), lim.maxKmh));
+  if (min > MAX_TIME_MIN) out.push(dict.implTime);
+  if (steps > 0 && km > 0) {
+    const stride = (km * 1000) / steps;
+    if (stride > 2.5 || stride < 0.3) out.push(dict.implStride(steps, fmt(km), fmt(stride)));
+  }
+  if (steps > 0 && min > 0 && steps / min > 300) out.push(dict.implCadence(Math.round(steps / min)));
+  if (hr > 0 && (hr < 25 || hr > 250)) out.push(dict.implHr(Math.round(hr)));
+  if (entry.date) {
+    const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+    if (entry.date > tomorrow) out.push(dict.implFuture);
+  }
+  return out;
+}
+
+// Pokazuje komunikat i zwraca false, gdy dane są nierealne. fieldId - pole, pod którym ma się pojawić błąd.
+function confirmPlausible(entry, fieldId) {
+  const reasons = implausibleReasons(entry);
+  if (!reasons.length) return true;
+  if (fieldId) { setFieldError(fieldId, t().implausibleField); focusField(fieldId); }
+  alert(t().implausibleAlert(reasons, ADMIN_CONTACT));
+  return false;
+}
 
 // Liczba kroków z pola / wpisu; 0 = brak.
 function parseSteps(value) {
@@ -2655,8 +2722,11 @@ function toggleChallengeFlag(index) {
   const entry = history[index];
   if (!entry) return;
   if (entry.challenge) delete entry.challenge;
-  else if (isChallengeDisc(entry.disc)) entry.challenge = true;
-  else return;
+  else if (isChallengeDisc(entry.disc)) {
+    // Stary wpis sprzed sprawdzania - nierealne km nie mogą trafić do postępu wyzwania.
+    if (!confirmPlausible(entry, null)) return;
+    entry.challenge = true;
+  } else return;
   saveHistory(history);
   refreshHistoryList();
 }
@@ -2717,6 +2787,15 @@ async function saveEditTraining() {
     return;
   }
   clearFieldState("editDist");
+  const draft = {
+    disc: document.getElementById("editDisc").value,
+    date: document.getElementById("editDate").value || entry.date,
+    dist: dist,
+    time: document.getElementById("editTime").value,
+    hr: document.getElementById("editHr").value,
+    steps: parseSteps(document.getElementById("editSteps").value),
+  };
+  if (!confirmPlausible(draft, "editDist")) return;
   const index = editIndex;
   entry.disc = document.getElementById("editDisc").value;
   entry.date = document.getElementById("editDate").value || entry.date;
@@ -2847,6 +2926,7 @@ function saveTraining() {
   };
   const steps = parseSteps(document.getElementById("steps").value);
   if (steps && STEP_DISCIPLINES.includes(entry.disc)) entry.steps = steps;
+  if (!confirmPlausible(entry, "dist")) return;
   if (pendingRoute) entry.route = pendingRoute;
   const saveRouteToo = pendingRoute && pendingRouteImported && document.getElementById("trainSaveRoute").checked;
   if (pendingEventDone && entry.date === pendingEventDone.ymd) entry.event = pendingEventDone.id;
@@ -4157,6 +4237,7 @@ async function toggleShareTraining(index) {
     return;
   }
 
+  if (!confirmPlausible(entry, null)) return;
   const route = trimRouteEnds(entry.route);
   if (!confirm(t().shareConfirm(Boolean(route)))) return;
   const nick = prompt(t().promptNick, localStorage.getItem(NICK_KEY) || "");
