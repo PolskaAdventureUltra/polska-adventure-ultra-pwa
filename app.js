@@ -56,8 +56,8 @@ const TRANSLATIONS = {
     labelHr: "Śr. tętno (bpm)",
     labelSteps: "Kroki",
     importNoSteps: "\n👣 Ten plik nie zawiera kroków. Wyeksportuj trening jako FIT albo wpisz kroki ręcznie.",
-    updateText: "🆕 W Sklepie Google Play jest nowa wersja aplikacji PAU. To zwykła aktualizacja ze Sklepu Play, jak w każdej innej aplikacji — sprawdza ją sam telefon. Nikt nie ma dostępu do Twojej aplikacji, a Twoje treningi zostają na tym telefonie.",
-    updateNowBtn: "AKTUALIZUJ ZE SKLEPU PLAY",
+    updateText: "🆕 Nowa wersja PAU w Sklepie Google Play. Twoje treningi zostają na telefonie.",
+    updateNowBtn: "AKTUALIZUJ",
     labelVo2max: "Pułap tlenowy VO2max",
     labelWeight: "Waga (kg)",
     labelNotes: "Notatki / Samopoczucie",
@@ -696,8 +696,8 @@ const TRANSLATIONS = {
     labelHr: "Avg. heart rate (bpm)",
     labelSteps: "Steps",
     importNoSteps: "\n👣 This file has no steps. Export the training as FIT or enter the steps manually.",
-    updateText: "🆕 A new version of the PAU app is available on Google Play. This is a regular Google Play update, like in any other app — your phone checks for it itself. Nobody has access to your app, and your trainings stay on this phone.",
-    updateNowBtn: "UPDATE FROM GOOGLE PLAY",
+    updateText: "🆕 New PAU version on Google Play. Your trainings stay on your phone.",
+    updateNowBtn: "UPDATE",
     labelVo2max: "VO2max",
     labelWeight: "Weight (kg)",
     labelNotes: "Notes / How you felt",
@@ -1368,7 +1368,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "92";
+const APP_BUILD = "94";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
