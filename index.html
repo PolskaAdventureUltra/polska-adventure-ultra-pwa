@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "87";
+  window.PAU_PAGE_BUILD = "88";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -170,6 +170,7 @@
         <label for="recNavRoute" data-i18n="navRouteLbl">🧭 Prowadź po trasie (opcjonalnie)</label>
         <select id="recNavRoute"></select>
         <input type="file" id="navFile" style="display:none">
+        <label class="checkbox-row challenge-flag-row" id="recChallengeRow" style="display:none"><input type="checkbox" id="recChallenge"> <span data-i18n="recChallengeLbl">🏁 Odcinek wyzwania 4000 km — kilometry dopisują się do wyzwania na żywo w trakcie</span></label>
         <label class="checkbox-row"><input type="checkbox" id="recSaveRoute"> <span data-i18n="recSaveRouteLbl">🗺 Zapisz przebytą trasę w zakładce Trasy (np. żeby inni mogli nią potem pobiec)</span></label>
         <p class="hint-text" id="recNavInfo" data-i18n="navRouteHint">Trasa z zakładki Trasy albo z pliku GPX / TCX / FIT (np. z Garmin Connect, Komoot, Strava). Pokażę ją na mapie, policzę kilometry do końca i ostrzegę, gdy zboczysz.</p>
         <label class="checkbox-row"><input type="checkbox" id="navVoice"> <span data-i18n="navVoiceLbl">🔊 Komunikaty głosowe przy prowadzeniu</span></label>
@@ -277,6 +278,7 @@
       <textarea id="notes" rows="2"></textarea>
 
       <label class="checkbox-row challenge-flag-row" id="challengeFlagRow" style="display:none"><input type="checkbox" id="challengeFlag"> <span data-i18n="challengeFlagLabel">🏁 Odcinek wyzwania 4000 km (liczy się do postępu w wyzwaniu)</span></label>
+      <label class="checkbox-row" id="trainSaveRouteRow" style="display:none"><input type="checkbox" id="trainSaveRoute"> <span data-i18n="trainSaveRouteLbl">🗺 Zapisz też trasę w zakładce Trasy (prowadzenie 🧭 i udostępnienie innym 📤)</span></label>
       <button class="primary" id="saveBtn" data-i18n="saveBtn">ZAPISZ TRENING</button>
       <button id="paceBtn" data-i18n="paceBtn">OBLICZ TEMPO</button>
       <button id="chartBtn" data-i18n="chartBtn">POKAŻ WYKRES PROGRESU</button>

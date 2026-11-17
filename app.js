@@ -189,6 +189,12 @@ const TRANSLATIONS = {
     recPoiAdded: (label) => `📍 Dodano punkt: ${label}`,
     recPoiCount: (n) => `📍 Dodane punkty: ${n} — po zakończeniu zapiszesz je razem z trasą w zakładce Trasy.`,
     recSaveRouteLbl: "🗺 Zapisz przebytą trasę w zakładce Trasy (np. żeby inni mogli nią potem pobiec)",
+    recChallengeLbl: "🏁 Odcinek wyzwania 4000 km — kilometry dopisują się do wyzwania na żywo w trakcie",
+    trainSaveRouteLbl: "🗺 Zapisz też trasę w zakładce Trasy (prowadzenie 🧭 i udostępnienie innym 📤)",
+    toRoutesTitle: "Zapisz trasę w zakładce Trasy (prowadzenie 🧭, udostępnienie 📤)",
+    toRoutesAgain: "Ta trasa jest już zapisana w zakładce Trasy. Zapisać ją jeszcze raz?",
+    toRoutesSaved: (name) => `Zapisano „${name}” w zakładce Trasy. Tam: 🧭 prowadź po trasie, 📤 udostępnij innym, GPX do zegarka.`,
+    navCommunityTitle: "Prowadź po tej trasie (zapisze ją w Twoich trasach)",
     recSaveRouteAsk: (n) => `Na trasie dodałeś punkty (${n}). Zapisać przebytą trasę razem z punktami w zakładce Trasy?`,
     recRouteSaved: (name, n) => `Trasa „${name}” zapisana w zakładce Trasy${n ? ` (punkty: ${n})` : ""}. Tam dopiszesz nazwy i opisy punktów (🗺), wyeksportujesz GPX albo udostępnisz trasę.`,
     navNextPoi: (title, km) => `Następny punkt: ${title} — za ${km} km`,
@@ -469,7 +475,7 @@ const TRANSLATIONS = {
           <li>Zakładka <b>Wyzwanie</b> jest dostępna dla wszystkich: pokazuje trasę 4000 km (start i meta: Lublin) i zasady. Licznik na mapie jest poglądowy — prawdziwy postęp widzą tylko uczestnicy.</li>
           <li>Zapisy ruszają we wrześniu 2027. Po dołączeniu ekran pokazuje Twój postęp: kilometry w każdej dyscyplinie, miejsce na trasie i prognozę mety.</li>
           <li>Masz kod zaproszenia od organizatora? Kliknij „Masz kod zaproszenia?” pod przyciskiem zapisów — po wpisaniu kodu możesz dołączyć wcześniej. Kod działa tylko na jednym telefonie (przy zmianie telefonu przywróć kopię zapasową albo poproś organizatora o zwolnienie kodu). Jeśli organizator wycofa kod, udział w wyzwaniu zostanie zakończony (treningi zostają w Historii).</li>
-          <li>Do postępu liczą się <b>tylko odcinki wyzwania</b>: przy zapisie treningu zaznacz „🏁 Odcinek wyzwania 4000 km”, a w Historii możesz oznaczyć lub odznaczyć trening przyciskiem 🏁. Codzienne treningi gdzie indziej trafiają tylko do Historii. Wyzwanie to bieg, rower i kajak — pływanie i trekking się do niego nie liczą (nie mają pola 🏁).</li>
+          <li>Do postępu liczą się <b>tylko odcinki wyzwania</b>: przy zapisie treningu zaznacz „🏁 Odcinek wyzwania 4000 km”, przy nagrywaniu telefonem — zaznacz 🏁 przed START, wtedy kilometry dopisują się do wyzwania na żywo w trakcie; a w Historii możesz oznaczyć lub odznaczyć trening przyciskiem 🏁. Codzienne treningi gdzie indziej trafiają tylko do Historii. Wyzwanie to bieg, rower i kajak — pływanie i trekking się do niego nie liczą (nie mają pola 🏁).</li>
           <li><b>📢 Komunikaty organizatora</b>: w zakładce Wyzwanie uczestnicy widzą ogłoszenia organizatora (np. zmiany trasy, niebezpieczne miejsca, posiłki). Nowe są oznaczone czerwoną kropką na zakładce. W trakcie nagrywania telefon daje znać od razu (wibracja, a przy zgaszonym ekranie powiadomienie), a ważne komunikaty czyta na głos (wyłącznik 🔊 jak przy prowadzeniu po trasie). Gdy aplikacja jest zamknięta, nowe komunikaty zobaczysz przy jej otwarciu.</li>
           <li>Po rezygnacji ekran wraca do widoku dla obserwatorów; treningi zostają w Historii.</li>
         </ul>
@@ -813,6 +819,12 @@ const TRANSLATIONS = {
     recPoiAdded: (label) => `📍 Point added: ${label}`,
     recPoiCount: (n) => `📍 Points added: ${n} — after finishing you can save them with the route in the Routes tab.`,
     recSaveRouteLbl: "🗺 Save the recorded route in the Routes tab (e.g. so others can follow it later)",
+    recChallengeLbl: "🏁 4000 km challenge stage — kilometres are added to the challenge live as you go",
+    trainSaveRouteLbl: "🗺 Also save the route in the Routes tab (follow it 🧭 and share it with others 📤)",
+    toRoutesTitle: "Save the route in the Routes tab (follow 🧭, share 📤)",
+    toRoutesAgain: "This route is already saved in the Routes tab. Save it again?",
+    toRoutesSaved: (name) => `Saved “${name}” in the Routes tab. There: 🧭 follow the route, 📤 share it with others, GPX for your watch.`,
+    navCommunityTitle: "Follow this route (saves it to your routes)",
     recSaveRouteAsk: (n) => `You added points on the way (${n}). Save the recorded route with the points in the Routes tab?`,
     recRouteSaved: (name, n) => `Route “${name}” saved in the Routes tab${n ? ` (points: ${n})` : ""}. There you can add names and descriptions of the points (🗺), export GPX or share the route.`,
     navNextPoi: (title, km) => `Next point: ${title} — in ${km} km`,
@@ -1093,7 +1105,7 @@ const TRANSLATIONS = {
           <li>The <b>Challenge</b> tab is open to everyone: it shows the 4000 km route (start and finish: Lublin) and the rules. The counter on the map is just an illustration — real progress is visible only to participants.</li>
           <li>Sign-ups open in September 2027. After joining, the screen shows your progress: kilometres per discipline, your place on the route and a finish forecast.</li>
           <li>Got an invitation code from the organiser? Tap “Have an invitation code?” below the sign-up button — after entering it you can join early. The code works on one phone only (when changing phones, restore your backup or ask the organiser to release the code). If the organiser withdraws the code, your participation ends (your trainings stay in History).</li>
-          <li>Only <b>challenge stages</b> count towards progress: when saving a training tick “🏁 4000 km challenge stage”, and in History you can mark or unmark a training with the 🏁 button. Everyday trainings elsewhere go only to History. The challenge is running, cycling and kayaking — swimming and hiking don't count towards it (they have no 🏁 option).</li>
+          <li>Only <b>challenge stages</b> count towards progress: when saving a training tick “🏁 4000 km challenge stage”, when recording with the phone tick 🏁 before START and the kilometres are added to the challenge live as you go; and in History you can mark or unmark a training with the 🏁 button. Everyday trainings elsewhere go only to History. The challenge is running, cycling and kayaking — swimming and hiking don't count towards it (they have no 🏁 option).</li>
           <li><b>📢 Organizer messages</b>: in the Challenge tab participants see announcements from the organizer (e.g. route changes, dangerous spots, meals). New ones are marked with a red dot on the tab. While recording, the phone lets you know right away (vibration, and a notification with the screen off), and reads important messages out loud (🔊 switch as in route guidance). When the app is closed, you see new messages the next time you open it.</li>
           <li>After leaving, the screen returns to the observer view; your trainings stay in History.</li>
         </ul>
@@ -1336,7 +1348,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "87";
+const APP_BUILD = "88";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -2177,6 +2189,10 @@ function challengeStats() {
   // Do postępu liczą się wyłącznie treningi oznaczone jako odcinek wyzwania (🏁).
   const items = getHistory().filter((item) => item.challenge === true && isChallengeDisc(item.disc) &&
     /^\d{4}-\d{2}-\d{2}$/.test(item.date));
+  // Trwające nagranie oznaczone 🏁 liczy się na żywo (po ZAKOŃCZ zastąpi je zapisany trening).
+  if (rec && rec.challenge && isChallengeDisc(rec.disc) && rec.distKm > 0) {
+    items.push({ disc: rec.disc, dist: String(rec.distKm), time: "0", date: rec.challengeDate || toYmd(new Date()), challenge: true, live: true });
+  }
   const byDisc = {};
   CHALLENGE_DISCIPLINES.forEach((disc) => {
     byDisc[disc] = summarize(items.filter((item) => item.disc === disc)).km;
@@ -2329,6 +2345,7 @@ function renderChallenge() {
   const challenge = getChallenge();
   document.getElementById("challengeSettings").style.display = challenge ? "block" : "none";
   updateDisciplineUi();
+  updateRecChallengeRow();
   el.innerHTML = challenge ? challengeParticipantHtml() : challengeObserverHtml();
   bindChallengeTicker(el);
   renderChallengeShare();
@@ -2552,7 +2569,8 @@ function refreshHistoryList() {
       const discName = dict.discNames[item.disc] || item.disc;
       const notes = item.notes ? `, ${l.notes}: ${escapeXml(item.notes)}` : "";
       const routeBtn = item.route && item.route.length >= 2
-        ? `<button class="route-btn" data-index="${index}" title="${dict.showRouteTitle}">🗺</button>`
+        ? `<button class="route-btn" data-index="${index}" title="${dict.showRouteTitle}">🗺</button>` +
+          `<button class="to-routes-btn${item.routeSaved ? " on" : ""}" data-index="${index}" title="${dict.toRoutesTitle}">🧭</button>`
         : "";
       const flagBtn = getChallenge() && (isChallengeDisc(item.disc) || item.challenge)
         ? `<button class="flag-btn${item.challenge ? " on" : ""}" data-index="${index}" title="${item.challenge ? dict.flagOnTitle : dict.flagOffTitle}" aria-pressed="${item.challenge ? "true" : "false"}">🏁</button>`
@@ -2598,6 +2616,9 @@ function refreshHistoryList() {
   });
   list.querySelectorAll(".flag-btn").forEach((btn) => {
     btn.addEventListener("click", () => toggleChallengeFlag(parseInt(btn.dataset.index, 10)));
+  });
+  list.querySelectorAll(".to-routes-btn").forEach((btn) => {
+    btn.addEventListener("click", () => historyRouteToRoutes(parseInt(btn.dataset.index, 10)));
   });
 }
 
@@ -2824,8 +2845,15 @@ function saveTraining() {
   const steps = parseSteps(document.getElementById("steps").value);
   if (steps && STEP_DISCIPLINES.includes(entry.disc)) entry.steps = steps;
   if (pendingRoute) entry.route = pendingRoute;
+  const saveRouteToo = pendingRoute && pendingRouteImported && document.getElementById("trainSaveRoute").checked;
   if (pendingEventDone && entry.date === pendingEventDone.ymd) entry.event = pendingEventDone.id;
   if (getChallenge() && isChallengeDisc(entry.disc) && document.getElementById("challengeFlag").checked) entry.challenge = true;
+
+  let savedRouteName = null;
+  if (saveRouteToo) {
+    savedRouteName = saveEntryRouteToRoutes(entry);
+    if (savedRouteName) entry.routeSaved = true;
+  }
 
   const history = getHistory();
   const reachedBefore = reachedGoals(history);
@@ -2838,6 +2866,9 @@ function saveTraining() {
   document.getElementById("notes").value = "";
   document.getElementById("challengeFlag").checked = false;
   pendingRoute = null;
+  pendingRouteImported = false;
+  updateTrainSaveRouteRow();
+  if (savedRouteName) alert(t().toRoutesSaved(savedRouteName));
   pendingEventDone = null;
   trainFormOpen = false;
   trainMode = null; // po zapisie wracamy do kafelków
@@ -3123,6 +3154,14 @@ function drawProfile(canvas, statsEl, points) {
 
 // --- Trasa (z importu GPX/TCX) ---
 let pendingRoute = null;
+// Trasa z pliku z zegarka - w formularzu pokazujemy wtedy „Zapisz też trasę w zakładce Trasy”.
+let pendingRouteImported = false;
+
+function updateTrainSaveRouteRow() {
+  const show = Boolean(pendingRoute) && pendingRouteImported;
+  document.getElementById("trainSaveRouteRow").style.display = show ? "flex" : "none";
+  if (!show) document.getElementById("trainSaveRoute").checked = false;
+}
 // Wydarzenie, z którego otwarto formularz („Zrobione”) - zapisany trening dostaje jego id.
 let pendingEventDone = null;
 let routeMapInstance = null;
@@ -5033,6 +5072,7 @@ function renderCommunityRoutesList() {
         `<span><b>${escapeXml(r.name)}</b> — ${Number(r.dist_km).toFixed(1)} km, ${mode} · ` +
         `<span class="activity-nick">${escapeXml(r.nick)}</span>${mine ? " " + dict.mineLabel : ""}</span>` +
         `<div class="history-actions">` +
+        `<button class="nav-btn" data-index="${index}" title="${dict.navCommunityTitle}">🧭</button>` +
         `<button class="route-btn" data-index="${index}" title="${dict.showRouteTitle}">🗺</button>` +
         `<button class="gpx-btn" data-index="${index}" title="${dict.exportRouteTitle}">GPX</button>` +
         `<button class="copy-btn" data-index="${index}" title="${dict.copyRouteTitle}">➕</button>` +
@@ -5047,6 +5087,7 @@ function renderCommunityRoutesList() {
   on(".route-btn", showCommunityRoute);
   on(".gpx-btn", downloadCommunityRoute);
   on(".copy-btn", copyCommunityRoute);
+  on(".nav-btn", navCommunityRoute);
   on(".delete-btn", async (r) => {
     if (!confirm(t().confirmUnshareRoute)) return;
     if (await deleteSharedRoute(r.id)) {
@@ -5077,9 +5118,9 @@ async function downloadCommunityRoute(r) {
   if (track) downloadGpx(r.name, track);
 }
 
-async function copyCommunityRoute(r) {
+async function copyCommunityRoute(r, quiet) {
   const track = await fetchCommunityTrack(r);
-  if (!track) return;
+  if (!track) return -1;
   const routes = getPlannedRoutes();
   routes.push({
     name: r.name,
@@ -5089,10 +5130,20 @@ async function copyCommunityRoute(r) {
     // Start i meta jako punkty edycji, cała trasa jako jeden odcinek - można ją dalej wydłużać.
     waypoints: [track[0], track[track.length - 1]],
     segments: [track],
+    communityId: r.id,
   });
   savePlannedRoutes(routes);
   refreshSavedRoutesList();
-  alert(t().routeCopied(r.name));
+  if (!quiet) alert(t().routeCopied(r.name));
+  return routes.length - 1;
+}
+
+// 🧭 przy trasie społeczności: kopia w Twoich trasach (raz) i od razu prowadzenie w nagrywaniu telefonem.
+async function navCommunityRoute(r) {
+  if (rec) { alert(t().navBusy); return; }
+  let index = getPlannedRoutes().findIndex((x) => x.communityId === r.id);
+  if (index < 0) index = await copyCommunityRoute(r, true);
+  if (index >= 0) navStartFromRoute(index);
 }
 
 // --- Import treningów z Garmin/Suunto/Polar (pliki GPX/TCX, parsowane lokalnie) ---
@@ -5491,7 +5542,9 @@ function importTrainingFile(file) {
       document.getElementById("discipline").value = parsed.disc;
       updateDisciplineUi();
       pendingRoute = parsed.route && parsed.route.length >= 2 ? parsed.route : null;
+      pendingRouteImported = true;
       openTrainForm();
+      updateTrainSaveRouteRow();
 
       const noSteps = STEP_DISCIPLINES.includes(parsed.disc) && !parsed.steps;
       alert(t().importSuccess(parsed) + (noSteps ? t().importNoSteps : ""));
@@ -5697,6 +5750,18 @@ function recUpdateMap(fit) {
   else recMap.setView(last, Math.max(recMap.getZoom(), 16));
 }
 
+// Postęp w wyzwaniu na żywo: najwyżej co 0,5 km albo co 5 min, tylko gdy kilometry się zmieniły.
+const REC_LIVE_SYNC_KM = 0.5;
+const REC_LIVE_SYNC_MS = 5 * 60 * 1000;
+let recLiveSync = { km: 0, at: 0 };
+function recChallengeLiveSync() {
+  const now = Date.now();
+  if (rec.distKm - recLiveSync.km < REC_LIVE_SYNC_KM && now - recLiveSync.at < REC_LIVE_SYNC_MS) return;
+  if (rec.distKm - recLiveSync.km < 0.1) return;
+  recLiveSync = { km: rec.distKm, at: now };
+  syncChallengeProgress();
+}
+
 function recOnPosition(pos) {
   if (!rec) return;
   const now = Date.now();
@@ -5711,6 +5776,7 @@ function recOnPosition(pos) {
     return;
   }
   if (rec.nav) navOnFix(c.latitude, c.longitude, c.accuracy);
+  if (rec.challenge) recChallengeLiveSync();
   chMsgMaybePoll(); // komunikaty organizatora - działa też przy zgaszonym ekranie (odczyty GPS budzą JS)
   const ts = pos.timestamp || Date.now();
   const ele = Number.isFinite(c.altitude) ? Math.round(c.altitude) : null;
@@ -6234,6 +6300,34 @@ function readFileBuffer(file) {
   });
 }
 
+// Trasa treningu (z zegarka albo nagrana) zapisana w zakładce Trasy - wtedy 🧭 prowadzenie i 📤 udostępnianie.
+function entryRouteName(entry) {
+  return `${t().discNames[entry.disc] || entry.disc} ${entry.date} (${entry.dist} km)`;
+}
+
+function saveEntryRouteToRoutes(entry) {
+  if (!entry.route || entry.route.length < 2) return null;
+  const def = entryRouteName(entry);
+  const name = prompt(t().promptRouteName, def);
+  if (name === null) return null;
+  const index = saveImportedRoute(name.trim() || def, entry.route);
+  refreshSavedRoutesList();
+  return getPlannedRoutes()[index].name;
+}
+
+function historyRouteToRoutes(index) {
+  const history = getHistory();
+  const entry = history[index];
+  if (!entry || !entry.route) return;
+  if (entry.routeSaved && !confirm(t().toRoutesAgain)) return;
+  const name = saveEntryRouteToRoutes(entry);
+  if (!name) return;
+  entry.routeSaved = true;
+  saveHistory(history);
+  refreshHistoryList();
+  alert(t().toRoutesSaved(name));
+}
+
 // Trasa z pliku zapisana jako zwykła zapisana trasa (Trasy): GPX do zegarka, udostępnianie i 🧭 działają tak samo.
 function saveImportedRoute(name, track, pois) {
   const pts = navSimplify(track).map((p) => (Number.isFinite(p.ele)
@@ -6587,6 +6681,11 @@ function startRecording() {
   const nav = navBuildSelected();
   if (nav) rec.nav = nav;
   if (document.getElementById("recSaveRoute").checked) rec.saveRoute = true;
+  if (getChallenge() && isChallengeDisc(rec.disc) && document.getElementById("recChallenge").checked) {
+    rec.challenge = true;
+    rec.challengeDate = toYmd(new Date(rec.startedAt));
+  }
+  recLiveSync = { km: 0, at: Date.now() };
   document.getElementById("recSaveRoute").checked = false;
   navReset();
   if (nav) navSpeak(t().navSayStart(navSayKm(nav.totalKm)));
@@ -6655,10 +6754,13 @@ function finishRecording() {
   if (!notes.value.trim()) notes.value = dict.recNote;
   if (kcal) notes.value += ` · ${dict.recKcalNote(kcal)}`;
   pendingRoute = recTrackForHistory();
+  pendingRouteImported = false; // nagranie ma własny wybór „Zapisz przebytą trasę” przed START
+  if (finished.challenge && getChallenge() && isChallengeDisc(finished.disc)) document.getElementById("challengeFlag").checked = true;
   recOfferSaveRoute(finished);
   clearFieldState("dist");
   clearFieldState("time");
 
+  rec.challenge = false; // km na żywo zastąpi zapisany trening z 🏁 - bez cofania postępu w międzyczasie
   discardRecording(true);
   openTrainForm();
   showTrainHint(dict.recFinishedHint(finished.distKm.toFixed(2), formatClock(moving), kcal));
@@ -6668,12 +6770,14 @@ function finishRecording() {
 function discardRecording(skipConfirm) {
   if (!rec) return;
   if (!skipConfirm && !confirm(t().recConfirmDiscard)) return;
+  const wasLive = Boolean(rec.challenge);
   recStopWatching();
   recReleaseWakeLock();
   rec = null;
   recLastAccuracy = null;
   localStorage.removeItem(RECORDING_KEY);
   recRender();
+  if (wasLive) scheduleChallengeSync(); // odrzucone nagranie - zdejmujemy km dopisane na żywo
 }
 
 // Aplikacja w tle -> przeglądarka zwykle wstrzymuje GPS. Po powrocie mówimy o tym wprost.
@@ -6714,10 +6818,27 @@ function restoreRecording() {
   recSetStatus(t().recRestored, true);
 }
 
+// „🏁 Odcinek wyzwania” przed START - tylko uczestnik wyzwania i bieg/rower/kajak; pamiętamy ostatni wybór.
+const REC_CHALLENGE_KEY = "pau_rec_challenge";
+function updateRecChallengeRow() {
+  const row = document.getElementById("recChallengeRow");
+  if (!row) return;
+  const show = Boolean(getChallenge()) && isChallengeDisc(document.getElementById("recDisc").value);
+  row.style.display = show ? "flex" : "none";
+  let pref = false;
+  try { pref = localStorage.getItem(REC_CHALLENGE_KEY) === "1"; } catch (e) { /* brak dostępu */ }
+  document.getElementById("recChallenge").checked = show && pref;
+}
+
 function initRecorder() {
   const select = document.getElementById("recDisc");
   const current = document.getElementById("discipline").value;
   if (REC_DISCIPLINES.includes(current)) select.value = current;
+  select.addEventListener("change", updateRecChallengeRow);
+  document.getElementById("recChallenge").addEventListener("change", (e) => {
+    try { localStorage.setItem(REC_CHALLENGE_KEY, e.target.checked ? "1" : "0"); } catch (err) { /* brak dostępu */ }
+  });
+  updateRecChallengeRow();
   const savedWeight = getBodyWeight();
   if (savedWeight) document.getElementById("recWeight").value = String(savedWeight);
   document.getElementById("recStartBtn").addEventListener("click", startRecording);
