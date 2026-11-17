@@ -618,7 +618,7 @@ body.v2 #logoutBtn { color: var(--danger); }
 .h2-track i { display: block; height: 100%; background: linear-gradient(90deg, var(--v2-hot1), #FFB21F); box-shadow: 0 0 10px rgba(255, 90, 31, 0.7); }
 .h2-pct span { font-family: var(--v2-display); font-style: italic; font-weight: 900; font-size: 15px; padding: 1px 9px; background: var(--v2-pos); color: var(--v2-on-pos); transform: skewX(-10deg); }
 .h2-streak { margin: 10px 0; font-size: 13px; font-weight: 600; color: var(--subtle-fg); }
-.h2-streak b { font-family: var(--v2-display); font-style: italic; font-weight: 900; font-size: 19px; color: var(--accent); }
+.h2-streak b { font-family: var(--v2-display); font-style: italic; font-weight: 900; font-size: 19px; color: var(--accent); margin: 0 3px 0 1px; }
 
 /* Tydzień / trasa wyzwania */
 .h2-box { background: var(--card); border: 1px solid var(--border); box-shadow: var(--shadow); border-radius: 12px; padding: 10px 12px 8px; }
@@ -643,6 +643,7 @@ body.v2:not(.dark) .h2-box, body.v2:not(.dark) .h2-d, body.v2:not(.dark) .h2-las
 .h2-d b { display: block; font-family: var(--v2-display); font-style: italic; font-weight: 900; font-size: 26px; line-height: 1; }
 .h2-d span { font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--subtle-fg); }
 .h2-d-Bieg { --c: #FF5A1F; } .h2-d-Rower { --c: var(--v2-pos); } .h2-d-Kajak { --c: #2F8FE0; }
+body.v2:not(.dark) .h2-d { border-top-color: var(--c); }
 
 /* Kafelki: duży „Trening z telefonu”, pod nim zegarek i własny - pochylone */
 body.v2 .train-modes { grid-template-columns: 1fr 1fr; gap: 9px; }
