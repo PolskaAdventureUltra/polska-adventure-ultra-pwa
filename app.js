@@ -58,6 +58,23 @@ const TRANSLATIONS = {
     importNoSteps: "\n👣 Ten plik nie zawiera kroków. Wyeksportuj trening jako FIT albo wpisz kroki ręcznie.",
     updateText: "🆕 Nowa wersja PAU w Sklepie Google Play. Twoje treningi zostają na telefonie.",
     updateNowBtn: "AKTUALIZUJ",
+    lookNew: "✨ Nowy wygląd",
+    lookClassic: "↩ Klasyczny wygląd",
+    logoutBtn: "Wyloguj",
+    confirmLogout: "Wylogować? Treningi i ustawienia zostają na tym telefonie — po wpisaniu PIN-u wszystko będzie jak było.",
+    logoutRecording: "Trwa nagrywanie treningu — najpierw je zakończ.",
+    h2Week: "Ten tydzień",
+    h2Day: "Dzień wyzwania",
+    h2Streak: (n, best) => `🔥 <b>${n}</b> ${n === 1 ? "dzień" : "dni"} z rzędu z treningiem · rekord ${best}`,
+    h2StreakNone: (best) => (best > 0 ? `🔥 Zacznij nową serię — rekord: ${best} ${best === 1 ? "dzień" : "dni"} z rzędu` : "🔥 Pierwszy trening zaczyna serię"),
+    h2VsPrev: (p) => `${p >= 0 ? "▲" : "▼"} ${Math.abs(p)}% vs poprzedni`,
+    h2Days: ["PN", "WT", "ŚR", "CZ", "PT", "SO", "ND"],
+    h2RouteStart: "Lublin ▸ start",
+    h2RouteFinish: "meta ◂ Lublin",
+    h2ChKm: (km, pct) => `🏁 Wyzwanie: ${km} km · ${pct}%`,
+    h2Today: "Dziś",
+    h2Yesterday: "Wczoraj",
+    h2LastLbl: "Ostatni trening",
     labelVo2max: "Pułap tlenowy VO2max",
     labelWeight: "Waga (kg)",
     labelNotes: "Notatki / Samopoczucie",
@@ -698,6 +715,23 @@ const TRANSLATIONS = {
     importNoSteps: "\n👣 This file has no steps. Export the training as FIT or enter the steps manually.",
     updateText: "🆕 New PAU version on Google Play. Your trainings stay on your phone.",
     updateNowBtn: "UPDATE",
+    lookNew: "✨ New look",
+    lookClassic: "↩ Classic look",
+    logoutBtn: "Log out",
+    confirmLogout: "Log out? Your trainings and settings stay on this phone — enter your PIN and everything will be as before.",
+    logoutRecording: "A training is being recorded — finish it first.",
+    h2Week: "This week",
+    h2Day: "Challenge day",
+    h2Streak: (n, best) => `🔥 <b>${n}</b> ${n === 1 ? "day" : "days"} in a row with training · best ${best}`,
+    h2StreakNone: (best) => (best > 0 ? `🔥 Start a new streak — best: ${best} ${best === 1 ? "day" : "days"} in a row` : "🔥 Your first training starts a streak"),
+    h2VsPrev: (p) => `${p >= 0 ? "▲" : "▼"} ${Math.abs(p)}% vs last week`,
+    h2Days: ["MO", "TU", "WE", "TH", "FR", "SA", "SU"],
+    h2RouteStart: "Lublin ▸ start",
+    h2RouteFinish: "finish ◂ Lublin",
+    h2ChKm: (km, pct) => `🏁 Challenge: ${km} km · ${pct}%`,
+    h2Today: "Today",
+    h2Yesterday: "Yesterday",
+    h2LastLbl: "Last training",
     labelVo2max: "VO2max",
     labelWeight: "Weight (kg)",
     labelNotes: "Notes / How you felt",
@@ -1351,6 +1385,7 @@ function applyLanguage() {
 function toggleLanguage() {
   localStorage.setItem(LANG_KEY, getLang() === "pl" ? "en" : "pl");
   applyLanguage();
+  applyLook();
   refreshTotalLabel();
   refreshHistoryList();
   refreshSavedRoutesList();
@@ -1368,7 +1403,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "94";
+const APP_BUILD = "96";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -1458,7 +1493,8 @@ function applyTheme() {
   document.body.classList.toggle("dark", theme === "dark");
   // Pasek systemowy telefonu w kolorze tła aplikacji (--bg w style.css), żeby górny i dolny pasek się zgadzały.
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", theme === "dark" ? "#0B1422" : "#F3F5F8");
+  const v2 = document.body.classList.contains("v2");
+  if (meta) meta.setAttribute("content", theme === "dark" ? (v2 ? "#090C11" : "#0B1422") : (v2 ? "#F2F4F7" : "#F3F5F8"));
 }
 
 function toggleTheme() {
@@ -1528,6 +1564,150 @@ function refreshTotalLabel() {
   const week = getHistory().filter((item) => item.date >= monday);
   const weekKm = week.reduce((sum, item) => sum + (parseFloat(item.dist) || 0), 0);
   document.getElementById("weekKm").textContent = `${formatKm(weekKm)} km · ${week.length}×`;
+  renderHero2();
+}
+
+// --- Nowy wygląd (test) - body.v2 ---
+// Domyślnie wszyscy mają klasyczny wygląd; przycisk na dole strony przełącza (wybór zapamiętany w tej
+// przeglądarce / apce). Link ?wyglad=nowy / ?wyglad=stary ustawia wygląd od razu.
+const LOOK_KEY = "pau_look";            // "v2" = nowy wygląd
+// Uproszczony przebieg trasy wyzwania na pasku (bez nazw punktów - dokładna trasa jeszcze nieznana).
+const HERO2_ROUTE_D = "M4 40 L24 36 L44 39 L64 27 L84 32 L104 17 L119 24 L134 10 L154 27 L178 31 L202 36 L226 29 L250 38 L274 32 L298 39 L316 36";
+
+function lsGet(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+function lsSet(key, value) { try { if (value === null) localStorage.removeItem(key); else localStorage.setItem(key, value); } catch (e) { /* tryb prywatny */ } }
+
+function isLookV2() { return lsGet(LOOK_KEY) === "v2"; }
+
+function applyLook() {
+  const v2 = isLookV2();
+  document.body.classList.toggle("v2", v2);
+  const btn = document.getElementById("lookBtn");
+  if (btn) {
+    btn.hidden = false;
+    btn.textContent = v2 ? t().lookClassic : t().lookNew;
+  }
+  applyTheme();
+}
+
+function initLook() {
+  let param = null;
+  try { param = new URLSearchParams(window.location.search).get("wyglad"); } catch (e) { /* stara przeglądarka */ }
+  if (param === "nowy") lsSet(LOOK_KEY, "v2");
+  else if (param === "stary") lsSet(LOOK_KEY, null);
+  if (param && window.history && window.history.replaceState) {
+    window.history.replaceState(null, "", window.location.pathname + window.location.hash);
+  }
+  applyLook();
+  document.getElementById("lookBtn").addEventListener("click", () => {
+    lsSet(LOOK_KEY, isLookV2() ? null : "v2");
+    applyLook();
+    renderHero2();
+    window.scrollTo(0, 0);
+  });
+}
+
+function weekBarsHtml(history, dict) {
+  const today = new Date();
+  const monday = addDays(today, -((today.getDay() + 6) % 7));
+  const days = [0, 1, 2, 3, 4, 5, 6].map((i) => toYmd(addDays(monday, i)));
+  const kmOn = (ymd) => history.filter((item) => item.date === ymd).reduce((sum, item) => sum + (parseFloat(item.dist) || 0), 0);
+  const week = days.map(kmOn);
+  const weekKm = week.reduce((a, b) => a + b, 0);
+  const prevFrom = toYmd(addDays(monday, -7));
+  const prevKm = history.filter((item) => item.date >= prevFrom && item.date < days[0])
+    .reduce((sum, item) => sum + (parseFloat(item.dist) || 0), 0);
+  const max = Math.max(0, ...week);
+  const todayYmd = toYmd(today);
+  const bars = week.map((km, i) => {
+    const h = max > 0 ? Math.max(4, Math.round((km / max) * 100)) : 4;
+    const cls = [km > 0 && km === max ? "hl" : "", days[i] === todayYmd ? "today" : ""].join(" ").trim();
+    return `<div class="${days[i] === todayYmd ? "today" : ""}"><i class="${cls}" style="height:${h}%"></i>${dict.h2Days[i]}</div>`;
+  }).join("");
+  const vs = prevKm > 0
+    ? `<span class="${weekKm >= prevKm ? "h2-up" : "h2-down"}">${dict.h2VsPrev(Math.round(((weekKm - prevKm) / prevKm) * 100))}</span>` : "";
+  return { weekKm, html: `<div class="h2-lbl"><span>${dict.h2Week}</span>${vs}</div><div class="h2-bars">${bars}</div>` };
+}
+
+function renderHero2() {
+  const hero = document.getElementById("hero2");
+  if (!hero || !document.body.classList.contains("v2")) return;
+  const dict = t();
+  const history = getHistory();
+  document.getElementById("h2Km").textContent = formatKm(getTotalDistance());
+  const week = weekBarsHtml(history, dict);
+  let st = null;
+  if (getChallenge()) { try { st = challengeStats(); } catch (e) { st = null; } }
+
+  document.getElementById("h2SideLbl").textContent = st ? dict.h2Day : dict.h2Week;
+  document.getElementById("h2SideVal").textContent = st ? String(st.day) : `${formatKm(week.weekKm)} km`;
+  const pct = document.getElementById("h2Pct");
+  pct.hidden = !st;
+  if (st) {
+    document.getElementById("h2PctFill").style.width = `${(st.fraction * 100).toFixed(1)}%`;
+    document.getElementById("h2PctVal").textContent = `${st.pct}%`;
+  }
+  const sk = streaks(history);
+  document.getElementById("h2Streak").innerHTML = sk.current > 0 ? dict.h2Streak(sk.current, sk.best) : dict.h2StreakNone(sk.best);
+
+  const box = document.getElementById("h2Box");
+  if (st) {
+    box.className = "h2-box h2-route";
+    box.innerHTML = `<div class="h2-lbl"><span>${dict.h2RouteStart}</span><span>${dict.h2RouteFinish}</span></div>` +
+      `<svg viewBox="0 0 320 50" aria-hidden="true"><path class="h2-r-base" d="${HERO2_ROUTE_D}"></path>` +
+      `<path class="h2-r-prog" d="${HERO2_ROUTE_D}" pathLength="100" stroke-dasharray="${(st.fraction * 100).toFixed(2)} 100"></path>` +
+      `<circle class="h2-r-start" cx="4" cy="40" r="4"></circle><circle class="h2-r-end" cx="316" cy="36" r="4"></circle>` +
+      `<circle class="h2-r-dot" r="6" cx="4" cy="40"></circle></svg>` +
+      `<div class="h2-lbl h2-chkm"><span>${dict.h2ChKm(formatKm(st.km), st.pct)}</span></div>`;
+    const path = box.querySelector(".h2-r-prog");
+    const dot = box.querySelector(".h2-r-dot");
+    if (path && dot && typeof path.getTotalLength === "function" && typeof path.getPointAtLength === "function") {
+      try {
+        const pt = path.getPointAtLength(path.getTotalLength() * st.fraction);
+        dot.setAttribute("cx", pt.x.toFixed(1));
+        dot.setAttribute("cy", pt.y.toFixed(1));
+      } catch (e) { /* zostaje na starcie */ }
+    }
+  } else {
+    box.className = "h2-box h2-week";
+    box.innerHTML = week.html;
+  }
+
+  document.getElementById("h2Split").innerHTML = CHALLENGE_DISCIPLINES.map((disc) => {
+    const km = st ? st.byDisc[disc] : summarize(history.filter((item) => item.disc === disc)).km;
+    return `<div class="h2-d h2-d-${disc}"><b>${Math.round(km).toLocaleString(getLang() === "pl" ? "pl-PL" : "en-GB")}</b><span>${escapeXml(dict.discNames[disc])}</span></div>`;
+  }).join("");
+
+  const lastEl = document.getElementById("h2Last");
+  let last = null;
+  history.forEach((item) => { if (!last || (item.date || "") >= (last.date || "")) last = item; });
+  lastEl.hidden = !last;
+  if (last) {
+    const today = new Date();
+    const when = last.date === toYmd(today) ? dict.h2Today
+      : last.date === toYmd(addDays(today, -1)) ? dict.h2Yesterday
+      : (last.date || "").split("-").reverse().slice(0, 2).join(".");
+    const parts = [when];
+    const min = parseFloat(last.time) || 0;
+    if (min > 0) parts.push(formatDuration(min));
+    const pace = entryPaceText(last);
+    if (pace) parts.push(pace);
+    lastEl.innerHTML = `<span class="h2-ic disc-${escapeXml(last.disc)}">${discIcon(last.disc)}</span>` +
+      `<div class="h2-lt"><small class="h2-lt-lbl">${dict.h2LastLbl}</small>` +
+      `<b>${formatKm(parseFloat(last.dist) || 0)} km · ${escapeXml(dict.discNames[last.disc] || last.disc)}</b>` +
+      `<small>${escapeXml(parts.join(" · "))}</small></div>`;
+  }
+}
+
+// Wyloguj = zablokuj apkę (powrót do PIN-u). Dane zostają na telefonie.
+function logout() {
+  if (rec) { alert(t().logoutRecording); return; }
+  if (!confirm(t().confirmLogout)) return;
+  try { sessionStorage.removeItem("pau_authed"); } catch (e) { /* brak sessionStorage */ }
+  const pin = document.getElementById("pinInput");
+  if (pin) pin.value = "";
+  showLogin();
+  window.scrollTo(0, 0);
 }
 
 // --- Podsumowanie, passa i rekordy (liczone na bieżąco z historii) ---
@@ -7062,6 +7242,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("headerThemeBtn").addEventListener("click", toggleTheme);
   document.getElementById("pinChangeBtn").addEventListener("click", changePin);
   document.getElementById("langBtn").addEventListener("click", toggleLanguage);
+  document.getElementById("logoutBtn").addEventListener("click", logout);
+  initLook();
   initRecorder();
   initChallengeMessages();
   initTrainModes();
