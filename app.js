@@ -1368,7 +1368,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "90";
+const APP_BUILD = "91";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -2722,8 +2722,11 @@ function toggleChallengeFlag(index) {
   const entry = history[index];
   if (!entry) return;
   if (entry.challenge) delete entry.challenge;
-  else if (isChallengeDisc(entry.disc)) entry.challenge = true;
-  else return;
+  else if (isChallengeDisc(entry.disc)) {
+    // Stary wpis sprzed sprawdzania - nierealne km nie mogą trafić do postępu wyzwania.
+    if (!confirmPlausible(entry, null)) return;
+    entry.challenge = true;
+  } else return;
   saveHistory(history);
   refreshHistoryList();
 }
