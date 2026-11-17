@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "88";
+  window.PAU_PAGE_BUILD = "89";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -116,7 +116,7 @@
       <div id="chMsgAdmin" class="ch-msg-admin" hidden>
         <label for="chMsgBody" data-i18n="chMsgBodyLbl">Nowy komunikat dla uczestników</label>
         <textarea id="chMsgBody" rows="3" maxlength="1000"></textarea>
-        <label class="checkbox-row"><input type="checkbox" id="chMsgImportant"> <span data-i18n="chMsgImportantLbl">⚠️ Ważny — telefon zawibruje mocniej i przeczyta go na głos</span></label>
+        <label class="checkbox-row"><input type="checkbox" id="chMsgImportant"> <span data-i18n="chMsgImportantLbl">⚠️ Ważny — telefon zawibruje mocniej i pokaże okienko (każdy komunikat jest czytany na głos)</span></label>
         <label for="chMsgExpiry" data-i18n="chMsgExpiryLbl">Pokazuj przez</label>
         <select id="chMsgExpiry">
           <option value="0" data-i18n="chMsgExpiry0">bez terminu (do usunięcia)</option>

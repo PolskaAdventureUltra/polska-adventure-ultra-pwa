@@ -204,7 +204,7 @@ const TRANSLATIONS = {
     chMsgNew: "nowy",
     chMsgUntil: (d) => `aktualny do ${d}`,
     chMsgBodyLbl: "Nowy komunikat dla uczestników",
-    chMsgImportantLbl: "⚠️ Ważny — telefon zawibruje mocniej i przeczyta go na głos",
+    chMsgImportantLbl: "⚠️ Ważny — telefon zawibruje mocniej i pokaże okienko (każdy komunikat jest czytany na głos)",
     chMsgExpiryLbl: "Pokazuj przez",
     chMsgExpiry0: "bez terminu (do usunięcia)",
     chMsgExpiry1: "1 dzień",
@@ -213,13 +213,14 @@ const TRANSLATIONS = {
     chMsgSendBtn: "📢 WYŚLIJ KOMUNIKAT",
     chMsgAdminHint: "Komunikat zobaczą uczestnicy z kodem zaproszenia: od razu, jeśli mają otwartą aplikację albo nagrywają trening, a pozostali — przy najbliższym otwarciu aplikacji.",
     chMsgEmptyBody: "Wpisz treść komunikatu.",
-    chMsgConfirmSend: (important) => important ? "Wysłać WAŻNY komunikat do wszystkich uczestników? Telefony przeczytają go na głos." : "Wysłać komunikat do wszystkich uczestników?",
+    chMsgConfirmSend: (important) => important ? "Wysłać WAŻNY komunikat do wszystkich uczestników? Telefony mocniej zawibrują, pokażą okienko i przeczytają go na głos." : "Wysłać komunikat do wszystkich uczestników? Telefony przeczytają go na głos.",
     chMsgSent: "Komunikat wysłany ✅",
     chMsgSendError: "Nie udało się — sprawdź internet i spróbuj ponownie.",
     chMsgConfirmDelete: "Usunąć ten komunikat? Zniknie u wszystkich uczestników.",
     chMsgNotifTitle: "📢 Komunikat organizatora",
     chMsgNotifTitleImportant: "⚠️ Ważny komunikat organizatora",
     chMsgSay: (body) => `Ważny komunikat organizatora: ${body}`,
+    chMsgSayNormal: (body) => `Komunikat organizatora: ${body}`,
     chMsgStatus: (body) => `📢 Komunikat organizatora: ${body} (zakładka Wyzwanie)`,
     navVoiceLbl: "🔊 Komunikaty głosowe przy prowadzeniu",
     navChannelName: "Ostrzeżenia trasy",
@@ -834,7 +835,7 @@ const TRANSLATIONS = {
     chMsgNew: "new",
     chMsgUntil: (d) => `valid until ${d}`,
     chMsgBodyLbl: "New message for participants",
-    chMsgImportantLbl: "⚠️ Important — the phone vibrates harder and reads it out loud",
+    chMsgImportantLbl: "⚠️ Important — the phone vibrates harder and shows a pop-up (every message is read out loud)",
     chMsgExpiryLbl: "Show for",
     chMsgExpiry0: "no end date (until deleted)",
     chMsgExpiry1: "1 day",
@@ -843,13 +844,14 @@ const TRANSLATIONS = {
     chMsgSendBtn: "📢 SEND MESSAGE",
     chMsgAdminHint: "Participants with an invitation code see the message right away if the app is open or they are recording, others the next time they open the app.",
     chMsgEmptyBody: "Type the message.",
-    chMsgConfirmSend: (important) => important ? "Send an IMPORTANT message to all participants? Phones will read it out loud." : "Send the message to all participants?",
+    chMsgConfirmSend: (important) => important ? "Send an IMPORTANT message to all participants? Phones vibrate harder, show a pop-up and read it out loud." : "Send the message to all participants? Phones will read it out loud.",
     chMsgSent: "Message sent ✅",
     chMsgSendError: "That did not work — check the internet connection and try again.",
     chMsgConfirmDelete: "Delete this message? It disappears for all participants.",
     chMsgNotifTitle: "📢 Organizer message",
     chMsgNotifTitleImportant: "⚠️ Important organizer message",
     chMsgSay: (body) => `Important message from the organizer: ${body}`,
+    chMsgSayNormal: (body) => `Message from the organizer: ${body}`,
     chMsgStatus: (body) => `📢 Organizer message: ${body} (Challenge tab)`,
     navVoiceLbl: "🔊 Voice prompts during guidance",
     navChannelName: "Route warnings",
@@ -1348,7 +1350,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "88";
+const APP_BUILD = "89";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -2439,7 +2441,8 @@ function chMsgCheckNew() {
       })).catch(() => {});
     } catch (e) { /* brak wtyczki */ }
   }
-  important.slice(-2).forEach((m) => navSpeak(dict.chMsgSay(String(m.body).slice(0, 400))));
+  // Każdy nowy komunikat głosem (najwyżej 2 ostatnie w kolejce; wyłącznik 🔊/🔇 z nawigacji obowiązuje).
+  navSpeakQueue(fresh.slice(-2).map((m) => (m.important ? dict.chMsgSay : dict.chMsgSayNormal)(String(m.body).slice(0, 400))));
   if (rec) recSetStatus(dict.chMsgStatus(String(fresh[fresh.length - 1].body).slice(0, 120)), false, 30000);
   else if (document.visibilityState === "visible" && important.length) {
     alert(`${dict.chMsgNotifTitleImportant}\n\n${important[important.length - 1].body}`);
@@ -6545,6 +6548,15 @@ function navSpeak(text) {
   }
   navWebSpeak(text);
 }
+// Kilka komunikatów po kolei: navSpeak przerywa poprzedni, więc kolejny dopiero po przybliżonym czasie czytania.
+function navSpeakQueue(texts) {
+  let delay = 0;
+  texts.forEach((text) => {
+    if (delay) setTimeout(() => navSpeak(text), delay); else navSpeak(text);
+    delay += 1500 + text.length * 70;
+  });
+}
+
 function navStopSpeech() {
   if (isNativeApp()) {
     try { capPlugin("TextToSpeech").stop().catch(() => {}); } catch (e) { /* brak wtyczki */ }
