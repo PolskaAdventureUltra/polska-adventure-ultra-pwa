@@ -58,7 +58,7 @@ const TRANSLATIONS = {
     importNoSteps: "\n👣 Ten plik nie zawiera kroków. Wyeksportuj trening jako FIT albo wpisz kroki ręcznie.",
     updateText: "🆕 Nowa wersja PAU w Sklepie Google Play. Twoje treningi zostają na telefonie.",
     updateNowBtn: "AKTUALIZUJ",
-    lookNew: "✨ Nowy wygląd (test)",
+    lookNew: "✨ Nowy wygląd",
     lookClassic: "↩ Klasyczny wygląd",
     logoutBtn: "Wyloguj",
     confirmLogout: "Wylogować? Treningi i ustawienia zostają na tym telefonie — po wpisaniu PIN-u wszystko będzie jak było.",
@@ -715,7 +715,7 @@ const TRANSLATIONS = {
     importNoSteps: "\n👣 This file has no steps. Export the training as FIT or enter the steps manually.",
     updateText: "🆕 New PAU version on Google Play. Your trainings stay on your phone.",
     updateNowBtn: "UPDATE",
-    lookNew: "✨ New look (test)",
+    lookNew: "✨ New look",
     lookClassic: "↩ Classic look",
     logoutBtn: "Log out",
     confirmLogout: "Log out? Your trainings and settings stay on this phone — enter your PIN and everything will be as before.",
@@ -1403,7 +1403,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "95";
+const APP_BUILD = "96";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -1568,10 +1568,9 @@ function refreshTotalLabel() {
 }
 
 // --- Nowy wygląd (test) - body.v2 ---
-// Domyślnie wszyscy mają klasyczny wygląd. Link ?wyglad=nowy włącza nowy i pokazuje przycisk przełączania
-// na dole strony (?wyglad=stary wraca). Zapamiętane w localStorage tej przeglądarki / apki.
+// Domyślnie wszyscy mają klasyczny wygląd; przycisk na dole strony przełącza (wybór zapamiętany w tej
+// przeglądarce / apce). Link ?wyglad=nowy / ?wyglad=stary ustawia wygląd od razu.
 const LOOK_KEY = "pau_look";            // "v2" = nowy wygląd
-const LOOK_BETA_KEY = "pau_look_beta";  // "1" = pokazuj przycisk przełączania
 // Uproszczony przebieg trasy wyzwania na pasku (bez nazw punktów - dokładna trasa jeszcze nieznana).
 const HERO2_ROUTE_D = "M4 40 L24 36 L44 39 L64 27 L84 32 L104 17 L119 24 L134 10 L154 27 L178 31 L202 36 L226 29 L250 38 L274 32 L298 39 L316 36";
 
@@ -1585,7 +1584,7 @@ function applyLook() {
   document.body.classList.toggle("v2", v2);
   const btn = document.getElementById("lookBtn");
   if (btn) {
-    btn.hidden = lsGet(LOOK_BETA_KEY) !== "1";
+    btn.hidden = false;
     btn.textContent = v2 ? t().lookClassic : t().lookNew;
   }
   applyTheme();
@@ -1594,7 +1593,7 @@ function applyLook() {
 function initLook() {
   let param = null;
   try { param = new URLSearchParams(window.location.search).get("wyglad"); } catch (e) { /* stara przeglądarka */ }
-  if (param === "nowy") { lsSet(LOOK_KEY, "v2"); lsSet(LOOK_BETA_KEY, "1"); }
+  if (param === "nowy") lsSet(LOOK_KEY, "v2");
   else if (param === "stary") lsSet(LOOK_KEY, null);
   if (param && window.history && window.history.replaceState) {
     window.history.replaceState(null, "", window.location.pathname + window.location.hash);
