@@ -669,3 +669,9 @@ body.v2 .h2-last { align-items: center; gap: 12px; margin: 12px 0 4px; padding: 
 .h2-lt small { display: block; font-size: 12px; color: var(--subtle-fg); }
 .h2-lt .h2-lt-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
 @media (max-width: 360px) { .h2-km { font-size: 48px; } #modePhoneBtn { font-size: 21px; } }
+/* Komputer / tablet: nowy wygląd w szerokości telefonu, wyśrodkowany (pasek trasy i kafelki nie rozciągają się). */
+.h2-route svg { max-height: 80px; }
+@media (min-width: 700px) {
+  body.v2 #mainApp > *:not(.modal-overlay) { max-width: 640px; margin-left: auto; margin-right: auto; }
+  body.v2 .tabs { max-width: 640px; margin: 0 auto; border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
+}
