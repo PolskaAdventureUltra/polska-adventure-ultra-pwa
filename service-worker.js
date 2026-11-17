@@ -3,7 +3,7 @@
 // Polska Adventure Ultra - PWA Service Worker
 // Cache'uje wszystkie pliki apki, żeby działała w 100% offline po pierwszym wczytaniu.
 
-const CACHE_NAME = "pau-cache-v94";
+const CACHE_NAME = "pau-cache-v95";
 const ASSETS = [
   "./",
   "./index.html",
@@ -23,6 +23,10 @@ const ASSETS = [
   "./partners/mosir.png",
   "./vendor/fonts/space-grotesk/space-grotesk-latin-wght-normal.woff2",
   "./vendor/fonts/space-grotesk/space-grotesk-latin-ext-wght-normal.woff2",
+  "./vendor/fonts/barlow-condensed/barlow-condensed-latin-800-italic.woff2",
+  "./vendor/fonts/barlow-condensed/barlow-condensed-latin-ext-800-italic.woff2",
+  "./vendor/fonts/barlow-condensed/barlow-condensed-latin-900-italic.woff2",
+  "./vendor/fonts/barlow-condensed/barlow-condensed-latin-ext-900-italic.woff2",
   "./vendor/leaflet/leaflet.js",
   "./vendor/leaflet/leaflet.css",
   "./vendor/leaflet/images/marker-icon.png",

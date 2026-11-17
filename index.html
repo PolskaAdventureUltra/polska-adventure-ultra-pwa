@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "94";
+  window.PAU_PAGE_BUILD = "95";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -146,12 +146,24 @@
       </div>
       <div class="hero-week"><span data-i18n="heroWeek">ten tydzień</span><b id="weekKm">0 km</b></div>
     </section>
+    <!-- Nowy wygląd (test, body.v2): licznik, seria, tydzień / trasa wyzwania, km dyscyplin. Wypełnia renderHero2() w app.js. -->
+    <section class="hero2" id="hero2" aria-live="polite">
+      <div class="h2-top">
+        <div class="h2-km"><span id="h2Km">0</span><em>km</em></div>
+        <div class="h2-side"><span id="h2SideLbl"></span><b id="h2SideVal"></b></div>
+      </div>
+      <div class="h2-pct" id="h2Pct" hidden><div class="h2-track"><i id="h2PctFill"></i></div><span id="h2PctVal"></span></div>
+      <div class="h2-streak" id="h2Streak"></div>
+      <div class="h2-box" id="h2Box"></div>
+      <div class="h2-split" id="h2Split"></div>
+    </section>
     <h2 class="section-title" data-i18n="addTrainingTitle">Dodaj trening</h2>
     <div class="train-modes train-modes-top" role="group">
       <button type="button" class="mode-tile" id="modePhoneBtn" aria-pressed="false" aria-controls="recCard"><span class="mode-ico ico-green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"></rect><path d="M11 18h2"></path></svg></span><span class="mode-lbl" data-i18n="modePhone">Trening z telefonu</span></button>
       <button type="button" class="mode-tile" id="modeWatchBtn" aria-pressed="false" aria-controls="watchCard"><span class="mode-ico ico-orange"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="6"></circle><path d="M12 9.5V12l1.5 1.5M9 6l1-4h4l1 4M9 18l1 4h4l1-4"></path></svg></span><span class="mode-lbl" data-i18n="modeWatch">Trening z zegarka</span></button>
       <button type="button" class="mode-tile" id="modeManualBtn" aria-pressed="false" aria-controls="trainFormCard"><span class="mode-ico ico-blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"></path></svg></span><span class="mode-lbl" data-i18n="modeManual">Stwórz własny trening</span></button>
     </div>
+    <div class="h2-last" id="h2Last" hidden></div>
 
     <div class="card rec-card" id="recCard" hidden>
       <h2 data-i18n="recTitle">📍 Nagraj trening telefonem</h2>
@@ -552,6 +564,8 @@
     <button id="helpBtn" data-i18n="helpBtn">Pomoc</button>
     <button id="privacyBtn" data-i18n="privacyBtn">Prywatność</button>
     <button id="langBtn">EN</button>
+    <button id="logoutBtn" data-i18n="logoutBtn">Wyloguj</button>
+    <button id="lookBtn" hidden></button>
   </div>
   <p class="copyright" data-i18n="copyrightLine">© 2026 Polska Adventure Ultra · Wszelkie prawa zastrzeżone</p>
 </div>
