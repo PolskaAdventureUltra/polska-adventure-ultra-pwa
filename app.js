@@ -1403,7 +1403,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "99";
+const APP_BUILD = "100";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -1494,7 +1494,7 @@ function applyTheme() {
   // Pasek systemowy telefonu w kolorze tła aplikacji (--bg w style.css), żeby górny i dolny pasek się zgadzały.
   const meta = document.querySelector('meta[name="theme-color"]');
   const v2 = document.body.classList.contains("v2");
-  if (meta) meta.setAttribute("content", theme === "dark" ? (v2 ? "#111A27" : "#0B1422") : (v2 ? "#F2F4F7" : "#F3F5F8"));
+  if (meta) meta.setAttribute("content", theme === "dark" ? (v2 ? "#090C11" : "#0B1422") : (v2 ? "#F2F4F7" : "#F3F5F8"));
 }
 
 function toggleTheme() {
