@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: macos-15
+    runs-on: macos-15-intel  # arm64 (macos-15) bywa bez wolnych maszyn
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
