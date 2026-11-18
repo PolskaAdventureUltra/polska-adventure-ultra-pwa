@@ -260,7 +260,7 @@ const TRANSLATIONS = {
     editReshareFailed: "Zmiany zapisane na telefonie, ale nie udało się poprawić udostępnionego treningu w Aktywności (brak internetu?). Spróbuj ponownie: popraw i zapisz trening jeszcze raz.",
     confirmDelete: "Usunąć ten wpis z historii?",
     alertDistRequired: "Podaj dystans większy od 0.",
-    implausibleField: "Dane niepoprawne lub nierealne — sprawdź dystans, czas i kroki.",
+    implausibleField: "Dane niepoprawne lub nierealne — sprawdź wpisane wartości.",
     implausibleAlert: (lines, contact) => `⚠️ Dane niepoprawne lub nierealne:\n\n${lines.map((l) => "• " + l).join("\n")}\n\nJeżeli wprowadzone dane są poprawne, skontaktuj się z administratorem: ${contact}`,
     implSpeed: (disc, v, max) => `średnia prędkość ${v} km/h — za duża jak na: ${disc} (maks. ${max} km/h)`,
     implDist: (disc, km, max) => `dystans ${km} km — za duży na jeden trening (${disc}: maks. ${max} km)`,
@@ -269,6 +269,9 @@ const TRANSLATIONS = {
     implHr: (hr) => `średnie tętno ${hr} bpm — poza zakresem 25–250`,
     implTime: "czas dłuższy niż 7 dni",
     implFuture: "data treningu jest w przyszłości",
+    implWeight: (kg) => `waga ${kg} kg — poza zakresem 20–300 kg`,
+    implVo2: (v) => `VO2max ${v} — poza zakresem 10–100`,
+    implNegative: "wartości nie mogą być ujemne",
     alertSaved: "Zapisano trening!",
     alertTimeRequired: "Podaj czas większy od 0.",
     paceResult: (min, sec) => `Tempo: ${min}:${sec} min/km`,
@@ -917,7 +920,7 @@ const TRANSLATIONS = {
     editReshareFailed: "Changes saved on this phone, but the shared training in Activity could not be updated (no internet?). Try again: open and save the training once more.",
     confirmDelete: "Delete this entry from history?",
     alertDistRequired: "Enter a distance greater than 0.",
-    implausibleField: "Incorrect or unrealistic data — check distance, time and steps.",
+    implausibleField: "Incorrect or unrealistic data — check the values you entered.",
     implausibleAlert: (lines, contact) => `⚠️ Incorrect or unrealistic data:\n\n${lines.map((l) => "• " + l).join("\n")}\n\nIf the data you entered is correct, please contact the administrator: ${contact}`,
     implSpeed: (disc, v, max) => `average speed ${v} km/h — too high for: ${disc} (max ${max} km/h)`,
     implDist: (disc, km, max) => `distance ${km} km — too long for one training (${disc}: max ${max} km)`,
@@ -926,6 +929,9 @@ const TRANSLATIONS = {
     implHr: (hr) => `average heart rate ${hr} bpm — outside 25–250`,
     implTime: "duration longer than 7 days",
     implFuture: "training date is in the future",
+    implWeight: (kg) => `weight ${kg} kg — outside 20–300 kg`,
+    implVo2: (v) => `VO2max ${v} — outside 10–100`,
+    implNegative: "values cannot be negative",
     alertSaved: "Training saved!",
     alertTimeRequired: "Enter a time greater than 0.",
     paceResult: (min, sec) => `Pace: ${min}:${sec} min/km`,
@@ -1403,7 +1409,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "100";
+const APP_BUILD = "101";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -1495,6 +1501,16 @@ function applyTheme() {
   const meta = document.querySelector('meta[name="theme-color"]');
   const v2 = document.body.classList.contains("v2");
   if (meta) meta.setAttribute("content", theme === "dark" ? (v2 ? "#090C11" : "#0B1422") : (v2 ? "#F2F4F7" : "#F3F5F8"));
+  // Apka natywna (od 0.1.23): strona rysuje się pod paskami systemowymi (viewport-fit=cover), więc tło paska
+  // = tło apki; tu tylko kolor ikon (zegar, bateria): jasne w ciemnym motywie, ciemne w jasnym.
+  try {
+    const bars = (window.capacitorExports && window.capacitorExports.SystemBars) ||
+      (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SystemBars);
+    if (bars && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
+      const p = bars.setStyle({ style: theme === "dark" ? "DARK" : "LIGHT" });
+      if (p && p.catch) p.catch(() => {});
+    }
+  } catch (e) { /* starsza apka bez SystemBars */ }
 }
 
 function toggleTheme() {
@@ -1752,6 +1768,11 @@ function implausibleReasons(entry) {
   }
   if (steps > 0 && min > 0 && steps / min > 300) out.push(dict.implCadence(Math.round(steps / min)));
   if (hr > 0 && (hr < 25 || hr > 250)) out.push(dict.implHr(Math.round(hr)));
+  const weight = parseFloat(String(entry.weight || "").replace(",", ".")) || 0;
+  if (weight > 0 && (weight < 20 || weight > 300)) out.push(dict.implWeight(fmt(weight)));
+  const vo2 = parseFloat(String(entry.vo2max || "").replace(",", ".")) || 0;
+  if (vo2 > 0 && (vo2 < 10 || vo2 > 100)) out.push(dict.implVo2(fmt(vo2)));
+  if ([entry.dist, entry.time, entry.hr, entry.steps, entry.weight, entry.vo2max].some((v) => parseFloat(String(v || "").replace(",", ".")) < 0)) out.push(dict.implNegative);
   if (entry.date) {
     const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
     if (entry.date > tomorrow) out.push(dict.implFuture);
@@ -2974,6 +2995,8 @@ async function saveEditTraining() {
     time: document.getElementById("editTime").value,
     hr: document.getElementById("editHr").value,
     steps: parseSteps(document.getElementById("editSteps").value),
+    vo2max: document.getElementById("editVo2max").value,
+    weight: document.getElementById("editWeight").value,
   };
   if (!confirmPlausible(draft, "editDist")) return;
   const index = editIndex;
