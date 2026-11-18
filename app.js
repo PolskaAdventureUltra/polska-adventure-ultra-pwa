@@ -269,8 +269,8 @@ const TRANSLATIONS = {
     implHr: (hr) => `średnie tętno ${hr} bpm — poza zakresem 25–250`,
     implTime: "czas dłuższy niż 7 dni",
     implFuture: "data treningu jest w przyszłości",
-    implWeight: (kg) => `waga ${kg} kg — poza zakresem 20–300 kg`,
-    implVo2: (v) => `VO2max ${v} — poza zakresem 10–100`,
+    implWeight: (kg) => `waga ${kg} kg — nierealna wartość`,
+    implVo2: (v) => `VO2max ${v} — nierealna wartość`,
     implNegative: "wartości nie mogą być ujemne",
     alertSaved: "Zapisano trening!",
     alertTimeRequired: "Podaj czas większy od 0.",
@@ -929,8 +929,8 @@ const TRANSLATIONS = {
     implHr: (hr) => `average heart rate ${hr} bpm — outside 25–250`,
     implTime: "duration longer than 7 days",
     implFuture: "training date is in the future",
-    implWeight: (kg) => `weight ${kg} kg — outside 20–300 kg`,
-    implVo2: (v) => `VO2max ${v} — outside 10–100`,
+    implWeight: (kg) => `weight ${kg} kg — unrealistic value`,
+    implVo2: (v) => `VO2max ${v} — unrealistic value`,
     implNegative: "values cannot be negative",
     alertSaved: "Training saved!",
     alertTimeRequired: "Enter a time greater than 0.",
@@ -1409,7 +1409,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "101";
+const APP_BUILD = "102";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
