@@ -262,12 +262,12 @@ const TRANSLATIONS = {
     alertDistRequired: "Podaj dystans większy od 0.",
     implausibleField: "Dane niepoprawne lub nierealne — sprawdź wpisane wartości.",
     implausibleAlert: (lines, contact) => `⚠️ Dane niepoprawne lub nierealne:\n\n${lines.map((l) => "• " + l).join("\n")}\n\nJeżeli wprowadzone dane są poprawne, skontaktuj się z administratorem: ${contact}`,
-    implSpeed: (disc, v, max) => `średnia prędkość ${v} km/h — za duża jak na: ${disc} (maks. ${max} km/h)`,
-    implDist: (disc, km, max) => `dystans ${km} km — za duży na jeden trening (${disc}: maks. ${max} km)`,
-    implStride: (steps, km, m) => `${steps} kroków na ${km} km to ${m} m na jeden krok — niemożliwe (realnie 0,3–2,5 m)`,
-    implCadence: (spm) => `${spm} kroków na minutę — niemożliwe (maks. 300)`,
-    implHr: (hr) => `średnie tętno ${hr} bpm — poza zakresem 25–250`,
-    implTime: "czas dłuższy niż 7 dni",
+    implSpeed: (disc, v) => `średnia prędkość ${v} km/h (${disc}) — nierealna wartość`,
+    implDist: (disc, km) => `dystans ${km} km (${disc}) — nierealna wartość`,
+    implStride: (steps, km) => `${steps} kroków na ${km} km — nierealna wartość`,
+    implCadence: (spm) => `${spm} kroków na minutę — nierealna wartość`,
+    implHr: (hr) => `średnie tętno ${hr} bpm — nierealna wartość`,
+    implTime: "czas treningu — nierealna wartość",
     implFuture: "data treningu jest w przyszłości",
     implWeight: (kg) => `waga ${kg} kg — nierealna wartość`,
     implVo2: (v) => `VO2max ${v} — nierealna wartość`,
@@ -922,12 +922,12 @@ const TRANSLATIONS = {
     alertDistRequired: "Enter a distance greater than 0.",
     implausibleField: "Incorrect or unrealistic data — check the values you entered.",
     implausibleAlert: (lines, contact) => `⚠️ Incorrect or unrealistic data:\n\n${lines.map((l) => "• " + l).join("\n")}\n\nIf the data you entered is correct, please contact the administrator: ${contact}`,
-    implSpeed: (disc, v, max) => `average speed ${v} km/h — too high for: ${disc} (max ${max} km/h)`,
-    implDist: (disc, km, max) => `distance ${km} km — too long for one training (${disc}: max ${max} km)`,
-    implStride: (steps, km, m) => `${steps} steps over ${km} km means ${m} m per step — impossible (realistic: 0.3–2.5 m)`,
-    implCadence: (spm) => `${spm} steps per minute — impossible (max 300)`,
-    implHr: (hr) => `average heart rate ${hr} bpm — outside 25–250`,
-    implTime: "duration longer than 7 days",
+    implSpeed: (disc, v) => `average speed ${v} km/h (${disc}) — unrealistic value`,
+    implDist: (disc, km) => `distance ${km} km (${disc}) — unrealistic value`,
+    implStride: (steps, km) => `${steps} steps over ${km} km — unrealistic value`,
+    implCadence: (spm) => `${spm} steps per minute — unrealistic value`,
+    implHr: (hr) => `average heart rate ${hr} bpm — unrealistic value`,
+    implTime: "training duration — unrealistic value",
     implFuture: "training date is in the future",
     implWeight: (kg) => `weight ${kg} kg — unrealistic value`,
     implVo2: (v) => `VO2max ${v} — unrealistic value`,
@@ -1409,7 +1409,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "102";
+const APP_BUILD = "103";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
