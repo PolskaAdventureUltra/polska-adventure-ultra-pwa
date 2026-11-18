@@ -28,6 +28,12 @@ const indexPath = join(out, "index.html");
 const html = readFileSync(indexPath, "utf8");
 const tag = '<script src="app.js"></script>';
 if (!html.includes(tag)) throw new Error("Nie znaleziono <script src=app.js> w index.html");
-writeFileSync(indexPath, html.replace(tag, '<script src="capacitor.js"></script>\n' + tag));
+// Od 0.1.23: strona pod paskami systemowymi (tło paska = tło apki, też w ciemnym motywie); odstępy daje
+// style.css przez --safe-area-inset-* wstrzykiwane przez Capacitor SystemBars. Tylko w apce, web bez zmian.
+const vpOld = 'content="width=device-width, initial-scale=1, maximum-scale=1"';
+if (!html.includes(vpOld)) throw new Error("Nie znaleziono meta viewport w index.html");
+writeFileSync(indexPath, html
+  .replace(vpOld, 'content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"')
+  .replace(tag, '<script src="capacitor.js"></script>\n' + tag));
 
 console.log(`Skopiowano ${assets.length} plików do ${out} (+ capacitor.js)`);
