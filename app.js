@@ -1363,8 +1363,34 @@ function getLang() {
   return localStorage.getItem(LANG_KEY) || "pl";
 }
 
+// Teksty inne na iPhonie (apka natywna iOS): ustawienia, sklep. Nadpisują klucze z TRANSLATIONS.
+const IOS_TEXTS = {
+  pl: {
+    updateText: "🆕 Nowa wersja PAU w App Store. Twoje treningi zostają na telefonie.",
+    recNoLocationPerm: "🔴 Aplikacja nie ma zgody na lokalizację. Kliknij „Otwórz ustawienia” → Lokalizacja → „Podczas używania aplikacji” i włącz „Dokładna lokalizacja”. Potem wróć tutaj — nagrywanie ruszy samo.",
+    recApproxOnly: "🟠 Aplikacja ma tylko przybliżoną lokalizację (±kilka km) — tak nie da się nagrać trasy. Kliknij „Otwórz ustawienia” → Lokalizacja i włącz „Dokładna lokalizacja”. Potem wróć tutaj.",
+    recLocationOff: "🔴 Lokalizacja w telefonie jest wyłączona. Włącz ją: Ustawienia → Prywatność i ochrona → Usługi lokalizacji. Potem wróć tutaj — nagrywanie ruszy samo.",
+    recLocationOffManual: "🔴 Lokalizacja w telefonie jest wyłączona. Włącz ją: Ustawienia → Prywatność i ochrona → Usługi lokalizacji. Potem wróć tutaj — nagrywanie ruszy samo.",
+  },
+  en: {
+    updateText: "🆕 New PAU version on the App Store. Your trainings stay on your phone.",
+    recNoLocationPerm: "🔴 The app has no location permission. Tap “Open settings” → Location → “While Using the App” and turn on “Precise Location”. Then come back — recording starts by itself.",
+    recApproxOnly: "🟠 The app only has approximate location (±a few km) — a route can't be recorded that way. Tap “Open settings” → Location and turn on “Precise Location”. Then come back.",
+    recLocationOff: "🔴 Location is turned off on your phone. Turn it on: Settings → Privacy & Security → Location Services. Then come back — recording starts by itself.",
+    recLocationOffManual: "🔴 Location is turned off on your phone. Turn it on: Settings → Privacy & Security → Location Services. Then come back — recording starts by itself.",
+  },
+};
+const iosDicts = {};
+
+function isIOSApp() {
+  return isNativeApp() && typeof window.Capacitor.getPlatform === "function" && window.Capacitor.getPlatform() === "ios";
+}
+
 function t() {
-  return TRANSLATIONS[getLang()];
+  const lang = getLang();
+  if (!isIOSApp()) return TRANSLATIONS[lang];
+  if (!iosDicts[lang]) iosDicts[lang] = Object.assign({}, TRANSLATIONS[lang], IOS_TEXTS[lang]);
+  return iosDicts[lang];
 }
 
 function applyLanguage() {
@@ -1409,7 +1435,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "103";
+const APP_BUILD = "104";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -6232,6 +6258,7 @@ async function recEnsureNotificationPermission() {
 // Klikalny jest przycisk pod komunikatem i sam czerwony komunikat.
 let recPermAction = null;
 function recShowPermProblem(text, action) {
+  if (action === "location" && isIOSApp()) action = null; // iOS: brak okienka „Włączyć lokalizację?” - tylko instrukcja
   recSetStatus(text, true);
   recPermAction = action || null;
   const btn = document.getElementById("recSettingsBtn");

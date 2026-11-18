@@ -1,0 +1,41 @@
+# Budowanie apki na iPhone'a na maszynie macOS GitHuba (bez Maca w domu).
+# Na razie BEZ podpisu: build na symulator - sprawdza, czy projekt iOS się kompiluje.
+# Podpis + wysyłka do TestFlight dojdą, gdy będzie konto Apple Developer.
+name: iOS build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, "feature/ios*"]
+    paths: ["native/**", "app.js", "index.html", "style.css", "service-worker.js", ".github/workflows/ios-build.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: native/package-lock.json
+      - name: Instalacja zależności
+        working-directory: native
+        run: npm ci
+      - name: Kopiowanie strony do projektu iOS
+        working-directory: native
+        run: npm run sync:ios
+      - name: Build na symulator (bez podpisu)
+        working-directory: native/ios/App
+        run: |
+          xcodebuild -project App.xcodeproj -scheme App -configuration Debug \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO build | tail -50
+          test -d build/Build/Products/Debug-iphonesimulator/App.app
