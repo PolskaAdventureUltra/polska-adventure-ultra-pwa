@@ -39,3 +39,22 @@ jobs:
             -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build CODE_SIGNING_ALLOWED=NO build | tail -50
           test -d build/Build/Products/Debug-iphonesimulator/App.app
+      # Plik .ipa na prawdziwego iPhone'a, BEZ podpisu - podpisuje go Sideloadly (darmowe Apple ID,
+      # apka działa 7 dni) albo Xcode. Do pobrania w Actions → ten przebieg → Artifacts → PAU-iphone-ipa.
+      - name: Build na iPhone'a (bez podpisu) + .ipa
+        working-directory: native/ios/App
+        run: |
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release \
+            -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build-device \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build | tail -30
+          APP=build-device/Build/Products/Release-iphoneos/App.app
+          test -d "$APP"
+          mkdir -p ipa/Payload && cp -R "$APP" ipa/Payload/
+          VER=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$APP/Info.plist")
+          (cd ipa && zip -qry "../PAU-${VER}-iphone-niepodpisana.ipa" Payload)
+          ls -la *.ipa
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PAU-iphone-ipa
+          path: native/ios/App/*.ipa
+          retention-days: 30
