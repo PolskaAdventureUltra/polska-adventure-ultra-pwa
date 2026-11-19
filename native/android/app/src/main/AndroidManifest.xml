@@ -44,4 +44,6 @@
 
     <!-- Niepotrzebne (dodawane przez wtyczkę powiadomień) - usuwamy, żeby Google Play nie wymagał deklaracji. -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />
+    <!-- Wtyczka background-geolocation deklaruje GPS jako wymagany; Play blokuje wtedy urządzenia bez GPS. Apka działa też z lokalizacją sieciową. -->
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" tools:replace="android:required" />
 </manifest>
