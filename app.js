@@ -1409,7 +1409,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "105";
+const APP_BUILD = "108";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -2155,7 +2155,7 @@ const CHALLENGE_PARTNERS = [
   { name: "TVP3 Lublin", url: "https://lublin.tvp.pl/", logo: "partners/tvplublin.png", ratio: 199 / 49 },
   { name: "Agnieszka Danieluk", url: "https://agnieszkadanieluk.pl/", logo: "partners/agnieszkadanieluk.png", ratio: 196 / 200 },
   { name: "4evolve", url: "https://4evolve.com/pl/", logo: "partners/4evolve.png", ratio: 226 / 84 },
-  { name: "Gospodarstwo rolne Szymon Gorzałczany", logo: "partners/szymong.png", ratio: 360 / 96 },
+  { name: "Gospodarstwo rolne Szymon Gorzałczany", url: "https://gospodarstwo-gorzalczany.pl/", logo: "partners/szymong.png", ratio: 360 / 96 },
   { name: "Stokrotka", url: "https://stokrotka.pl/", logo: "partners/stokrotka.png", ratio: 254 / 200 },
   { name: "MOSiR Lublin", url: "https://mosir.lublin.pl/", logo: "partners/mosir.png", ratio: 360 / 157 },
 ];
