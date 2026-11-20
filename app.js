@@ -1435,7 +1435,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "104";
+const APP_BUILD = "106";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -2175,14 +2175,15 @@ const DISC_ICONS = {
 };
 // Partnerzy jak na polskaadventureultra.pl (#partners); logotypy lokalnie w partners/ (działają offline).
 // ratio = szerokość / wysokość pliku; służy do wyrównania wielkości logotypów.
+// url (opcjonalny) = strona partnera; logo bez url nie jest klikalne.
 const CHALLENGE_PARTNERS = [
-  { name: "Cedrus", logo: "partners/cedrus.png", ratio: 360 / 56 },
-  { name: "TVP3 Lublin", logo: "partners/tvplublin.png", ratio: 199 / 49 },
-  { name: "Agnieszka Danieluk", logo: "partners/agnieszkadanieluk.png", ratio: 196 / 200 },
-  { name: "4evolve", logo: "partners/4evolve.png", ratio: 226 / 84 },
+  { name: "Cedrus", url: "https://cedrus.com.pl/", logo: "partners/cedrus.png", ratio: 360 / 56 },
+  { name: "TVP3 Lublin", url: "https://lublin.tvp.pl/", logo: "partners/tvplublin.png", ratio: 199 / 49 },
+  { name: "Agnieszka Danieluk", url: "https://agnieszkadanieluk.pl/", logo: "partners/agnieszkadanieluk.png", ratio: 196 / 200 },
+  { name: "4evolve", url: "https://4evolve.com/pl/", logo: "partners/4evolve.png", ratio: 226 / 84 },
   { name: "Gospodarstwo rolne Szymon Gorzałczany", logo: "partners/szymong.png", ratio: 360 / 96 },
-  { name: "Stokrotka", logo: "partners/stokrotka.png", ratio: 254 / 200 },
-  { name: "MOSiR Lublin", logo: "partners/mosir.png", ratio: 360 / 157 },
+  { name: "Stokrotka", url: "https://stokrotka.pl/", logo: "partners/stokrotka.png", ratio: 254 / 200 },
+  { name: "MOSiR Lublin", url: "https://mosir.lublin.pl/", logo: "partners/mosir.png", ratio: 360 / 157 },
 ];
 const PARTNER_LOGO_AREA = 750; // px² - każde logo zajmuje mniej więcej tyle samo miejsca
 const PARTNER_LOGO_MAX_W = 62;
@@ -2555,7 +2556,8 @@ function challengePartnersHtml() {
     CHALLENGE_PARTNERS.map((p) => {
       const w = Math.min(PARTNER_LOGO_MAX_W, Math.sqrt(PARTNER_LOGO_AREA * p.ratio));
       const h = w / p.ratio;
-      return `<img class="ch-partner" src="${p.logo}" alt="${escapeXml(p.name)}" width="${Math.round(w)}" height="${Math.round(h)}" loading="lazy">`;
+      const img = `<img class="ch-partner" src="${p.logo}" alt="${escapeXml(p.name)}" width="${Math.round(w)}" height="${Math.round(h)}" loading="lazy">`;
+      return p.url ? `<a class="ch-partner-link" href="${p.url}" target="_blank" rel="noopener" title="${escapeXml(p.name)}">${img}</a>` : img;
     }).join("") +
     `</div><a class="ch-partner-cta" href="${PARTNERS_PAGE_URL}" target="_blank" rel="noopener">${dict.chPartnerCta}</a></div>`;
 }
