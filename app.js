@@ -485,6 +485,9 @@ const TRANSLATIONS = {
     confirmRestore: (date, trainings, routes) =>
       `Przywrócić kopię z ${date}?\n\nZawiera: ${trainings} treningów i ${routes} tras.\n\nUWAGA: obecne treningi i trasy na tym telefonie zostaną zastąpione danymi z kopii.`,
     restoreDone: "Kopia przywrócona.",
+    backupAskText: (last) => `💾 Zrobić kopię zapasową treningów? ${last ? `Ostatnia kopia: ${last}.` : "Nie masz jeszcze żadnej kopii."} Zapisz plik w iCloud Drive („Zapisz w Plikach”) albo na Dysku Google — przy zmianie lub zgubieniu telefonu przywrócisz z niego wszystko.`,
+    backupAskYes: "TAK, ZRÓB KOPIĘ",
+    backupAskNo: "NIE TERAZ",
     recommendTitle: "📱 Poleć aplikację",
     recommendText: "Pokaż ten kod znajomemu — zeskanuje go aparatem telefonu i od razu otworzy aplikację.",
     shareAppBtn: "WYŚLIJ LINK DO APLIKACJI",
@@ -592,6 +595,7 @@ const TRANSLATIONS = {
       <details><summary>💾 Twoje dane, kopia zapasowa i zmiana telefonu</summary>
         <ul>
           <li>Treningi i trasy są zapisane <b>tylko na tym telefonie</b>. Wyczyszczenie danych przeglądarki, odinstalowanie aplikacji albo zgubienie telefonu oznacza ich utratę — dlatego rób kopię regularnie, np. raz w tygodniu.</li>
+          <li>Aplikacja sama przypomni o kopii: jeśli przez 7 dni masz nowe treningi bez kopii, zapyta „Zrobić kopię zapasową?”. <b>TAK</b> otwiera menu Udostępnij — wybierz „Zapisz w Plikach” → iCloud Drive (iPhone) albo Dysk Google. <b>NIE TERAZ</b> — zapyta znowu za 3 dni.</li>
           <li>W zakładce <b>Historia</b> kliknij „ZRÓB KOPIĘ ZAPASOWĄ”. Na telefonie otworzy się menu „Udostępnij” — zapisz plik na Dysku Google / iCloud albo wyślij go sobie mailem. Na komputerze plik trafi do folderu Pobrane.</li>
           <li>Kopia zawiera treningi (z trasami), zaplanowane trasy, cele, motyw, język i nick${community ? " oraz klucze pozwalające usuwać Twoje udostępnienia" : ""}. <b>PIN nie jest zapisywany</b> w kopii.</li>
           <li><b>Nowy telefon:</b> otwórz aplikację, zaloguj się, w zakładce <b>Historia</b> kliknij „PRZYWRÓĆ Z KOPII” i wybierz plik <code>pau-kopia-….json</code>. Aplikacja pokaże datę kopii i liczbę treningów — po potwierdzeniu dane z kopii <b>zastąpią</b> obecne dane na telefonie.</li>
@@ -1145,6 +1149,9 @@ const TRANSLATIONS = {
     confirmRestore: (date, trainings, routes) =>
       `Restore the backup from ${date}?\n\nIt contains: ${trainings} trainings and ${routes} routes.\n\nWARNING: the current trainings and routes on this phone will be replaced with the backup data.`,
     restoreDone: "Backup restored.",
+    backupAskText: (last) => `💾 Make a backup of your trainings? ${last ? `Last backup: ${last}.` : "You don't have a backup yet."} Save the file to iCloud Drive (“Save to Files”) or Google Drive — if you change or lose your phone you can restore everything from it.`,
+    backupAskYes: "YES, BACK UP",
+    backupAskNo: "NOT NOW",
     recommendTitle: "📱 Recommend the app",
     recommendText: "Show this code to a friend — they scan it with the phone camera and the app opens right away.",
     shareAppBtn: "SEND A LINK TO THE APP",
@@ -1252,6 +1259,7 @@ const TRANSLATIONS = {
       <details><summary>💾 Your data, backup and changing phones</summary>
         <ul>
           <li>Trainings and routes are stored <b>only on this phone</b>. Clearing browser data, uninstalling the app or losing the phone means losing them — so make a backup regularly, e.g. once a week.</li>
+          <li>The app reminds you itself: if you have had new trainings without a backup for 7 days, it asks “Make a backup?”. <b>YES</b> opens the Share menu — choose “Save to Files” → iCloud Drive (iPhone) or Google Drive. <b>NOT NOW</b> — it asks again in 3 days.</li>
           <li>In the <b>History</b> tab tap "MAKE A BACKUP". On a phone the Share menu opens — save the file to Google Drive / iCloud or email it to yourself. On a computer the file goes to the Downloads folder.</li>
           <li>The backup contains trainings (with routes), planned routes, goals, theme, language and nickname${community ? ", plus the keys that let you delete your shared items" : ""}. <b>The PIN is not stored</b> in the backup.</li>
           <li><b>New phone:</b> open the app, log in, in the <b>History</b> tab tap "RESTORE FROM BACKUP" and choose the <code>pau-kopia-….json</code> file. The app shows the backup date and number of trainings — after confirming, the backup data <b>replaces</b> the current data on the phone.</li>
@@ -1409,7 +1417,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "105";
+const APP_BUILD = "107";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -1487,6 +1495,7 @@ function getHistory() {
 
 function saveHistory(history) {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  markBackupDirty();
 }
 
 function getTotalDistance() {
@@ -1535,6 +1544,7 @@ function showMainApp() {
   document.getElementById("date").valueAsDate = new Date();
   initCommunity();
   if (rec) recInitMap();
+  checkBackupReminder();
 }
 
 function tryLogin() {
@@ -3290,7 +3300,72 @@ async function createBackup() {
   });
   const backup = { format: BACKUP_FORMAT, version: 1, created: new Date().toISOString(), data };
   const fileName = `pau-kopia-${backup.created.slice(0, 10)}.json`;
-  await saveFile(new File([JSON.stringify(backup)], fileName, { type: "application/json" }), fileName);
+  const saved = await saveFile(new File([JSON.stringify(backup)], fileName, { type: "application/json" }), fileName);
+  if (saved) markBackupDone();
+  return saved;
+}
+
+// --- Przypomnienie o kopii zapasowej ---
+// Liczymy czas od pierwszej NIEZAPISANEJ zmiany w treningach. Po 7 dniach pytamy „Zrobić kopię?”.
+// TAK = menu Udostępnij (iCloud Drive / Dysk Google), NIE = zapytamy znowu za 3 dni.
+// Pliku nie da się zapisać w chmurze bez udziału użytkownika (brak dostępu do jego kont).
+const BACKUP_LAST_KEY = "pau_backup_last";          // data ostatniej kopii albo przywrócenia (ISO)
+const BACKUP_DIRTY_KEY = "pau_backup_dirty_since";  // od kiedy są zmiany bez kopii (ms)
+const BACKUP_ASK_AFTER_KEY = "pau_backup_ask_after"; // „NIE TERAZ” - nie pytaj przed tą chwilą (ms)
+const BACKUP_ASK_AFTER_MS = 7 * 86400000;
+const BACKUP_SNOOZE_MS = 3 * 86400000;
+
+function markBackupDirty() {
+  try {
+    if (!localStorage.getItem(BACKUP_DIRTY_KEY)) localStorage.setItem(BACKUP_DIRTY_KEY, String(Date.now()));
+  } catch (e) { /* brak dostępu */ }
+}
+
+function markBackupDone() {
+  try {
+    localStorage.setItem(BACKUP_LAST_KEY, new Date().toISOString());
+    localStorage.removeItem(BACKUP_DIRTY_KEY);
+    localStorage.removeItem(BACKUP_ASK_AFTER_KEY);
+  } catch (e) { /* brak dostępu */ }
+  const banner = document.getElementById("backupBanner");
+  if (banner) banner.hidden = true;
+}
+
+function shouldAskBackup(now) {
+  if (rec || getHistory().length === 0) return false;
+  // Starsi użytkownicy z treningami, ale bez żadnej kopii: zaczynamy liczyć od teraz.
+  if (!localStorage.getItem(BACKUP_DIRTY_KEY) && !localStorage.getItem(BACKUP_LAST_KEY)) markBackupDirty();
+  const dirtySince = Number(localStorage.getItem(BACKUP_DIRTY_KEY)) || 0;
+  if (!dirtySince || now - dirtySince < BACKUP_ASK_AFTER_MS) return false;
+  return now >= (Number(localStorage.getItem(BACKUP_ASK_AFTER_KEY)) || 0);
+}
+
+function checkBackupReminder() {
+  const banner = document.getElementById("backupBanner");
+  if (!banner || document.getElementById("mainApp").style.display === "none") return;
+  let ask = false;
+  try { ask = shouldAskBackup(Date.now()); } catch (e) { ask = false; }
+  if (!ask) { banner.hidden = true; return; }
+  const last = localStorage.getItem(BACKUP_LAST_KEY);
+  document.getElementById("backupAskText").textContent =
+    t().backupAskText(last ? new Date(last).toLocaleDateString(getLang() === "en" ? "en-GB" : "pl-PL") : "");
+  banner.hidden = false;
+}
+
+function snoozeBackupReminder(ms) {
+  try { localStorage.setItem(BACKUP_ASK_AFTER_KEY, String(Date.now() + ms)); } catch (e) { /* brak dostępu */ }
+  document.getElementById("backupBanner").hidden = true;
+}
+
+function initBackupReminder() {
+  document.getElementById("backupAskYesBtn").addEventListener("click", async () => {
+    // Anulowanie menu Udostępnij = brak kopii; zapytamy jutro.
+    if (!(await createBackup())) snoozeBackupReminder(86400000);
+  });
+  document.getElementById("backupAskNoBtn").addEventListener("click", () => snoozeBackupReminder(BACKUP_SNOOZE_MS));
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") checkBackupReminder();
+  });
 }
 
 // Zwraca dane kopii albo null, jeśli plik nie jest poprawną kopią.
@@ -3333,6 +3408,7 @@ function restoreBackupFile(file) {
       if (key in backup.data) localStorage.setItem(key, backup.data[key]);
       else localStorage.removeItem(key);
     });
+    markBackupDone();
     alert(t().restoreDone);
     // Sesja (sessionStorage) zostaje, więc po przeładowaniu nie trzeba ponownie podawać PIN-u.
     location.reload();
@@ -4119,9 +4195,11 @@ async function nativeSaveFile(file, title) {
     const data = await blobToBase64(file);
     const res = await capPlugin("Filesystem").writeFile({ path: file.name, data, directory: "CACHE" });
     await capPlugin("Share").share({ title: title || file.name, dialogTitle: title || file.name, files: [res.uri] });
+    return true;
   } catch (e) {
-    if (/cancel/i.test(String((e && e.message) || e))) return;
+    if (/cancel/i.test(String((e && e.message) || e))) return false;
     alert(t().fileSaveError + "\n" + ((e && e.message) || e));
+    return false;
   }
 }
 
@@ -4132,9 +4210,9 @@ async function saveFile(file, title) {
   if (isTouch && navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
       await navigator.share({ files: [file], title });
-      return;
+      return true;
     } catch (e) {
-      if (e.name === "AbortError") return;
+      if (e.name === "AbortError") return false;
     }
   }
   const url = URL.createObjectURL(file);
@@ -4143,6 +4221,7 @@ async function saveFile(file, title) {
   a.download = file.name;
   a.click();
   URL.revokeObjectURL(url);
+  return true;
 }
 
 function exportCurrentPlan() {
@@ -7274,6 +7353,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initTrainModes();
   initSamsungHint();
   initNativeUpdates();
+  initBackupReminder();
 
   // Sesja logowania trwa do zamknięcia karty przeglądarki (sessionStorage).
   // Dzięki temu nie trzeba podawać PIN-u za każdym odświeżeniem, ale po
