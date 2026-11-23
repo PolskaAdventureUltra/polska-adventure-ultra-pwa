@@ -158,7 +158,7 @@ const TRANSLATIONS = {
     navRouteLbl: "🧭 Prowadź po trasie (opcjonalnie)",
     navRouteHint: "Trasa z zakładki Trasy albo z pliku GPX / TCX / FIT (np. z Garmin Connect, Komoot, Strava). Pokażę ją na mapie, policzę kilometry do końca i ostrzegę, gdy zboczysz.",
     navNone: "— bez prowadzenia —",
-    navLoadFile: "📂 Wczytaj z pliku (GPX / TCX / FIT)…",
+    navLoadFile: "📂 Wczytaj trasę z pliku (GPX / TCX / FIT)",
     navFileOpt: (name, km) => `📄 ${name} — ${km} km`,
     navNoPoints: "W pliku nie ma trasy (punktów GPS).",
     navLoadError: (msg) => `Nie udało się wczytać trasy: ${msg}`,
@@ -829,7 +829,7 @@ const TRANSLATIONS = {
     navRouteLbl: "🧭 Follow a route (optional)",
     navRouteHint: "A route from the Routes tab or a GPX / TCX / FIT file (e.g. from Garmin Connect, Komoot, Strava). It is shown on the map with the distance left, and you get a warning when you go off route.",
     navNone: "— no route —",
-    navLoadFile: "📂 Load from file (GPX / TCX / FIT)…",
+    navLoadFile: "📂 Load route from file (GPX / TCX / FIT)",
     navFileOpt: (name, km) => `📄 ${name} — ${km} km`,
     navNoPoints: "The file contains no route (GPS points).",
     navLoadError: (msg) => `Could not load the route: ${msg}`,
@@ -1457,7 +1457,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "112";
+const APP_BUILD = "113";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -6688,7 +6688,6 @@ function navRefreshSelect() {
   const opts = [`<option value="">${escapeXml(dict.navNone)}</option>`];
   routes.forEach((r, i) => opts.push(`<option value="r:${i}">🗺 ${escapeXml(r.name)} — ${escapeXml(r.distKm)} km</option>`));
   if (navFileRoute) opts.push(`<option value="file">${escapeXml(dict.navFileOpt(navFileRoute.name, trackDistanceKm(navFileRoute.track).toFixed(2)))}</option>`);
-  opts.push(`<option value="load">${escapeXml(dict.navLoadFile)}</option>`);
   select.innerHTML = opts.join("");
   select.value = navSelected;
 }
@@ -7090,14 +7089,12 @@ function navRender() {
 function initNavigation() {
   const select = document.getElementById("recNavRoute");
   const fileInput = document.getElementById("navFile");
-  select.addEventListener("change", () => {
-    if (select.value === "load") {
-      select.value = navSelected;
-      fileInput.value = "";
-      fileInput.click();
-      return;
-    }
-    navSelected = select.value;
+  // Osobny przycisk zamiast pozycji „Wczytaj z pliku…” w liście: na iPhonie wybór z <select> nie liczy się
+  // jako stuknięcie, więc iOS nie otwierał okna wyboru pliku. Klik w przycisk otwiera je wszędzie.
+  select.addEventListener("change", () => { navSelected = select.value; });
+  document.getElementById("navFileBtn").addEventListener("click", () => {
+    fileInput.value = "";
+    fileInput.click();
   });
   fileInput.addEventListener("change", () => {
     const file = fileInput.files && fileInput.files[0];
