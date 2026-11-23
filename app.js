@@ -305,8 +305,8 @@ const TRANSLATIONS = {
     planUndoBtn: "Cofnij punkt",
     planClearBtn: "Wyczyść",
     planSaveBtn: "ZAPISZ TRASĘ",
-    planExportBtn: "EKSPORTUJ DO GPX (ZEGAREK)",
-    planExportHint: "Garmin: Garmin Connect (www) → Trening → Trasy → Importuj. Suunto: otwórz plik GPX w Suunto app. Polar: Polar Flow (www) → Ulubione → Trasy → Importuj.",
+    planExportBtn: "EKSPORTUJ / OTWÓRZ (GPX, KML)",
+    planExportHint: "Garmin: Garmin Connect (www) → Trening → Trasy → Importuj. Suunto: otwórz plik GPX w Suunto app. Polar: Polar Flow (www) → Ulubione → Trasy → Importuj. Nawigacja po trasie: OsmAnd (GPX) albo MAPS.ME (KML).",
     savedRoutesTitle: "Zapisane trasy",
     noSavedRoutes: "Brak zapisanych tras.",
     planStats: (km, n) => `Dystans: ${km} km · punkty: ${n}`,
@@ -319,7 +319,16 @@ const TRANSLATIONS = {
     routeSaved: "Trasa zapisana!",
     confirmDeleteRoute: "Usunąć tę trasę?",
     editRouteTitle: "Edytuj trasę",
-    exportRouteTitle: "Eksportuj do GPX",
+    exportRouteTitle: "Eksportuj / otwórz w innej aplikacji",
+    exportMenuTitle: "Eksportuj / otwórz trasę",
+    exportMenuGpx: "⌚ Plik GPX",
+    exportMenuGpxHint: "zegarek (Garmin, Suunto, Polar), zapis na Dysk, wysłanie mailem",
+    exportMenuOpenGpx: "🧭 Otwórz w nawigacji (GPX)",
+    exportMenuOpenGpxHint: "OsmAnd, Locus Map i inne aplikacje, które otwierają GPX",
+    exportMenuKml: "🗺 MAPS.ME (KML)",
+    exportMenuKmlHint: "MAPS.ME czyta trasy tylko w formacie KML",
+    exportMenuClose: "Zamknij",
+    openInNoApp: (app) => `Na telefonie nie ma aplikacji, która otworzy ten plik. Zainstaluj np. ${app} i spróbuj ponownie.`,
     helpBtn: "Pomoc",
     helpTitle: "Pomoc i instrukcja",
     helpPrivacyBtn: "PEŁNA INFORMACJA O PRYWATNOŚCI (RODO)",
@@ -967,8 +976,8 @@ const TRANSLATIONS = {
     planUndoBtn: "Undo point",
     planClearBtn: "Clear",
     planSaveBtn: "SAVE ROUTE",
-    planExportBtn: "EXPORT TO GPX (WATCH)",
-    planExportHint: "Garmin: Garmin Connect (web) → Training → Courses → Import. Suunto: open the GPX file in the Suunto app. Polar: Polar Flow (web) → Favorites → Routes → Import.",
+    planExportBtn: "EXPORT / OPEN (GPX, KML)",
+    planExportHint: "Garmin: Garmin Connect (web) → Training → Courses → Import. Suunto: open the GPX file in the Suunto app. Polar: Polar Flow (web) → Favorites → Routes → Import. Turn-by-turn along the route: OsmAnd (GPX) or MAPS.ME (KML).",
     savedRoutesTitle: "Saved routes",
     noSavedRoutes: "No saved routes yet.",
     planStats: (km, n) => `Distance: ${km} km · points: ${n}`,
@@ -981,7 +990,16 @@ const TRANSLATIONS = {
     routeSaved: "Route saved!",
     confirmDeleteRoute: "Delete this route?",
     editRouteTitle: "Edit route",
-    exportRouteTitle: "Export to GPX",
+    exportRouteTitle: "Export / open in another app",
+    exportMenuTitle: "Export / open route",
+    exportMenuGpx: "⌚ GPX file",
+    exportMenuGpxHint: "watch (Garmin, Suunto, Polar), save to Drive, send by e-mail",
+    exportMenuOpenGpx: "🧭 Open in navigation (GPX)",
+    exportMenuOpenGpxHint: "OsmAnd, Locus Map and other apps that open GPX",
+    exportMenuKml: "🗺 MAPS.ME (KML)",
+    exportMenuKmlHint: "MAPS.ME reads routes only as KML",
+    exportMenuClose: "Close",
+    openInNoApp: (app) => `No app on this phone can open this file. Install e.g. ${app} and try again.`,
     helpBtn: "Help",
     helpTitle: "Help and guide",
     helpPrivacyBtn: "FULL PRIVACY INFORMATION (GDPR)",
@@ -1439,7 +1457,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "110";
+const APP_BUILD = "112";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -4143,10 +4161,101 @@ ${pts}
 `;
 }
 
+function routeFileName(name, ext) {
+  return (String(name || "").replace(/[^\p{L}\p{N}_-]+/gu, "_") || "trasa") + "." + ext;
+}
+
 async function downloadGpx(name, track, pois) {
-  const fileName = (name.replace(/[^\p{L}\p{N}_-]+/gu, "_") || "trasa") + ".gpx";
   // Na telefonie systemowe "Udostępnij" pozwala od razu otworzyć plik np. w Suunto app.
-  await saveFile(new File([buildGpx(name, track, pois)], fileName, { type: "application/gpx+xml" }), name);
+  await saveFile(new File([buildGpx(name, track, pois)], routeFileName(name, "gpx"), { type: "application/gpx+xml" }), name);
+}
+
+// KML (Google Earth) - MAPS.ME importuje trasy tylko w tym formacie (GPX nie czyta).
+// Linia trasy = LineString, punkty 📍 = osobne Placemarki (w MAPS.ME stają się zakładkami).
+function buildKml(name, track, pois) {
+  const coords = track
+    .map((p) => `${p.lon.toFixed(6)},${p.lat.toFixed(6)}${p.ele != null ? "," + p.ele : ""}`)
+    .join(" ");
+  const marks = (pois || []).map((p) =>
+    `    <Placemark><name>${escapeXml(p.name || poiLabel(p.type))}</name>` +
+    (p.note ? `<description>${escapeXml(p.note)}</description>` : "") +
+    `<Point><coordinates>${p.lon.toFixed(6)},${p.lat.toFixed(6)}</coordinates></Point></Placemark>\n`).join("");
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>${escapeXml(name)}</name>
+    <Style id="pau-line"><LineStyle><color>ff2b6aff</color><width>5</width></LineStyle></Style>
+    <Placemark>
+      <name>${escapeXml(name)}</name>
+      <styleUrl>#pau-line</styleUrl>
+      <LineString><tessellate>1</tessellate><coordinates>${coords}</coordinates></LineString>
+    </Placemark>
+${marks}  </Document>
+</kml>
+`;
+}
+
+const ROUTE_FILE_TYPES = {
+  gpx: { mime: "application/gpx+xml", build: buildGpx },
+  kml: { mime: "application/vnd.google-earth.kml+xml", build: buildKml },
+};
+
+// Natywna apka: zapis do pamięci podręcznej + systemowe "Otwórz w..." (Android ACTION_VIEW z wyborem
+// aplikacji, iPhone "Otwórz w"). W przeciwieństwie do "Udostępnij" lista pokazuje aplikacje, które
+// umieją OTWORZYĆ plik danego typu (OsmAnd, Locus, MAPS.ME...), a nie tylko wysłać go dalej.
+async function openRouteInApp(name, track, pois, ext) {
+  const type = ROUTE_FILE_TYPES[ext];
+  const file = new File([type.build(name, track, pois)], routeFileName(name, ext), { type: type.mime });
+  if (!isNativeApp()) return saveFile(file, name);
+  try {
+    const data = await blobToBase64(file);
+    const res = await capPlugin("Filesystem").writeFile({ path: file.name, data, directory: "CACHE" });
+    await capPlugin("FileOpener").open({ filePath: res.uri, contentType: type.mime, openWithDefault: false });
+  } catch (e) {
+    const msg = String((e && e.message) || e);
+    if (/cancel/i.test(msg)) return;
+    if (String((e && e.code) || "") === "8" || /activity not found|no app/i.test(msg)) {
+      alert(t().openInNoApp(ext === "kml" ? "MAPS.ME" : "OsmAnd"));
+      return;
+    }
+    alert(t().fileSaveError + "\n" + msg);
+  }
+}
+
+// Okienko przy przycisku GPX: zegarek / inna nawigacja / MAPS.ME.
+function openRouteExportMenu(name, track, pois) {
+  if (!track || track.length < 2) return;
+  const dict = t();
+  const native = isNativeApp();
+  const opts = [
+    { act: "gpx", label: dict.exportMenuGpx, hint: dict.exportMenuGpxHint },
+    native ? { act: "open-gpx", label: dict.exportMenuOpenGpx, hint: dict.exportMenuOpenGpxHint } : null,
+    { act: native ? "open-kml" : "kml", label: dict.exportMenuKml, hint: dict.exportMenuKmlHint },
+  ].filter(Boolean);
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+  overlay.innerHTML =
+    `<div class="card modal-card export-menu" role="dialog" aria-modal="true" aria-labelledby="exportMenuTitle">` +
+    `<h3 id="exportMenuTitle">${escapeXml(dict.exportMenuTitle)}</h3>` +
+    `<p class="export-menu-route">${escapeXml(name)}</p>` +
+    opts.map((o) => `<button class="export-opt" data-act="${o.act}">${o.label}<small>${o.hint}</small></button>`).join("") +
+    `<button class="link-btn export-close">${dict.exportMenuClose}</button></div>`;
+  const close = () => { document.removeEventListener("keydown", onKey); overlay.remove(); };
+  const onKey = (e) => { if (e.key === "Escape") close(); };
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay || e.target.closest(".export-close")) { close(); return; }
+    const btn = e.target.closest(".export-opt");
+    if (!btn) return;
+    close();
+    const act = btn.dataset.act;
+    if (act === "gpx") downloadGpx(name, track, pois);
+    else if (act === "kml") openRouteInApp(name, track, pois, "kml"); // w przeglądarce = zapis pliku
+    else if (act === "open-gpx") openRouteInApp(name, track, pois, "gpx");
+    else if (act === "open-kml") openRouteInApp(name, track, pois, "kml");
+  });
+  document.addEventListener("keydown", onKey);
+  document.body.appendChild(overlay);
+  overlay.querySelector(".export-opt").focus();
 }
 
 // Natywna aplikacja: plik trafia do pamięci podręcznej apki, a systemowe "Udostępnij" pozwala zapisać go
@@ -4198,7 +4307,7 @@ function exportCurrentPlan() {
   }
   const routes = getPlannedRoutes();
   const name = planEditingIndex != null && routes[planEditingIndex] ? routes[planEditingIndex].name : t().defaultRouteName;
-  downloadGpx(name, getPlanTrack(), planPois);
+  openRouteExportMenu(name, getPlanTrack(), planPois);
 }
 
 function plannedRouteTrack(route) {
@@ -4210,7 +4319,7 @@ function plannedRouteTrack(route) {
 function exportPlannedRoute(index) {
   const route = getPlannedRoutes()[index];
   if (!route) return;
-  downloadGpx(route.name, plannedRouteTrack(route), route.pois);
+  openRouteExportMenu(route.name, plannedRouteTrack(route), route.pois);
 }
 
 function refreshSavedRoutesList() {
@@ -4229,7 +4338,7 @@ function refreshSavedRoutesList() {
       `<div class="history-actions">` +
       `<button class="nav-btn" data-index="${index}" title="${dict.navRouteTitle}">🧭</button>` +
       `<button class="route-btn" data-index="${index}" title="${dict.editRouteTitle}">🗺</button>` +
-      `<button class="gpx-btn" data-index="${index}" title="${dict.exportRouteTitle}">GPX</button>` +
+      `<button class="gpx-btn" data-index="${index}" title="${dict.exportRouteTitle}">📲</button>` +
       (isCommunityConfigured()
         ? `<button class="share-btn" data-index="${index}" title="${r.sharedId ? dict.unshareRouteTitle : dict.shareRouteTitle}">${r.sharedId ? "🌍" : "📤"}</button>`
         : "") +
@@ -5410,7 +5519,7 @@ function renderCommunityRoutesList() {
         `<div class="history-actions">` +
         `<button class="nav-btn" data-index="${index}" title="${dict.navCommunityTitle}">🧭</button>` +
         `<button class="route-btn" data-index="${index}" title="${dict.showRouteTitle}">🗺</button>` +
-        `<button class="gpx-btn" data-index="${index}" title="${dict.exportRouteTitle}">GPX</button>` +
+        `<button class="gpx-btn" data-index="${index}" title="${dict.exportRouteTitle}">📲</button>` +
         `<button class="copy-btn" data-index="${index}" title="${dict.copyRouteTitle}">➕</button>` +
         (mine ? `<button class="delete-btn" data-index="${index}" title="${dict.deleteTitle}">🗑</button>` : "") +
         `</div></div>`;
@@ -5451,7 +5560,7 @@ async function showCommunityRoute(r) {
 
 async function downloadCommunityRoute(r) {
   const track = await fetchCommunityTrack(r);
-  if (track) downloadGpx(r.name, track);
+  if (track) openRouteExportMenu(r.name, track);
 }
 
 async function copyCommunityRoute(r, quiet) {
