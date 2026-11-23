@@ -11,7 +11,7 @@ declare
   v_max_km numeric;
 begin
   select l.kmh, l.km into v_max_kmh, v_max_km
-  from (values ('Bieg', 25, 400), ('Trekking', 15, 200), ('Rower', 70, 1200),
+  from (values ('Bieg', 25, 400), ('Trekking', 15, 200), ('NordicWalking', 15, 200), ('Rower', 70, 1200),
                ('Kajak', 25, 300), ('Basen', 8, 30), ('WodyOtwarte', 8, 100)) as l(disc, kmh, km)
   where l.disc = p_disc;
   if v_max_km is null or p_dist_km is null or p_dist_km <= 0 or p_dist_km > v_max_km then return false; end if;
