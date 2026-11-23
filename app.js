@@ -50,6 +50,7 @@ const TRANSLATIONS = {
     optWodyOtwarte: "Pływanie – wody otwarte",
     optTrekking: "Trekking",
     optAuto4x4: "Auto 4x4 (teren)",
+    optNordicWalking: "Nordic walking (z kijkami)",
     distSwimPlaceholder: "np. 1.5 = 1500 m",
     labelDate: "Data",
     labelDist: "Dystans (km)",
@@ -293,7 +294,7 @@ const TRANSLATIONS = {
     promptNewPin: "Podaj nowy PIN:",
     pinChanged: "PIN zmieniony.",
     historyLabels: { date: "Data", disc: "Dyscyplina", dist: "Dystans", weight: "Waga", hr: "Tętno", vo2max: "VO2max", notes: "Notatki" },
-    discNames: { Bieg: "Bieg", Rower: "Rower", Kajak: "Kajak", Basen: "Pływanie – basen", WodyOtwarte: "Pływanie – wody otwarte", Trekking: "Trekking", Auto4x4: "Auto 4x4 (teren)", Multi: "Multisport" },
+    discNames: { Bieg: "Bieg", Rower: "Rower", Kajak: "Kajak", Basen: "Pływanie – basen", WodyOtwarte: "Pływanie – wody otwarte", Trekking: "Trekking", NordicWalking: "Nordic walking", Auto4x4: "Auto 4x4 (teren)", Multi: "Multisport" },
     routeTitle: "Trasa",
     showRouteTitle: "Pokaż trasę",
     tabPlan: "Trasy",
@@ -525,8 +526,8 @@ const TRANSLATIONS = {
       <details><summary>🏃 Zapisywanie treningu</summary>
         <ul>
           <li>W zakładce <b>Trening</b> wybierz dyscyplinę, wpisz dystans (wymagany) i pozostałe dane, kliknij „ZAPISZ TRENING”.</li>
-          <li>Dyscypliny: bieg, rower, kajak, pływanie (basen albo wody otwarte: jezioro, rzeka, morze), trekking i auto 4x4 (przejazdy terenowe). Dystans pływania też wpisujesz w km (1500 m = 1.5). Przejazdy autem 4x4 zostają tylko w Twojej Historii — nie liczą się do wyzwania i nie udostępnia się ich w Aktywności.</li>
-          <li>„OBLICZ TEMPO” pokazuje tempo w min/km (bieg), tempo na 100 m (pływanie) albo prędkość w km/h (rower, kajak, trekking, auto 4x4); „POKAŻ WYKRES PROGRESU” rysuje wykres dystansów.</li>
+          <li>Dyscypliny: bieg, rower, kajak, pływanie (basen albo wody otwarte: jezioro, rzeka, morze), trekking, nordic walking (marsz z kijkami) i auto 4x4 (przejazdy terenowe). Dystans pływania też wpisujesz w km (1500 m = 1.5). Przejazdy autem 4x4 zostają tylko w Twojej Historii — nie liczą się do wyzwania i nie udostępnia się ich w Aktywności.</li>
+          <li>„OBLICZ TEMPO” pokazuje tempo w min/km (bieg), tempo na 100 m (pływanie) albo prędkość w km/h (rower, kajak, trekking, nordic walking, auto 4x4); „POKAŻ WYKRES PROGRESU” rysuje wykres dystansów.</li>
         </ul>
       </details>
       <details><summary>📍 Nagrywanie telefonem (bez zegarka)</summary>
@@ -722,6 +723,7 @@ const TRANSLATIONS = {
     optWodyOtwarte: "Swimming – open water",
     optTrekking: "Hiking",
     optAuto4x4: "4x4 off-road",
+    optNordicWalking: "Nordic walking",
     distSwimPlaceholder: "e.g. 1.5 = 1500 m",
     labelDate: "Date",
     labelDist: "Distance (km)",
@@ -965,7 +967,7 @@ const TRANSLATIONS = {
     promptNewPin: "Enter new PIN:",
     pinChanged: "PIN changed.",
     historyLabels: { date: "Date", disc: "Discipline", dist: "Distance", weight: "Weight", hr: "HR", vo2max: "VO2max", notes: "Notes" },
-    discNames: { Bieg: "Running", Rower: "Cycling", Kajak: "Kayaking", Basen: "Swimming – pool", WodyOtwarte: "Swimming – open water", Trekking: "Hiking", Auto4x4: "4x4 off-road", Multi: "Multisport" },
+    discNames: { Bieg: "Running", Rower: "Cycling", Kajak: "Kayaking", Basen: "Swimming – pool", WodyOtwarte: "Swimming – open water", Trekking: "Hiking", NordicWalking: "Nordic walking", Auto4x4: "4x4 off-road", Multi: "Multisport" },
     routeTitle: "Route",
     showRouteTitle: "Show route",
     tabPlan: "Routes",
@@ -1197,8 +1199,8 @@ const TRANSLATIONS = {
       <details><summary>🏃 Saving a training</summary>
         <ul>
           <li>In the <b>Training</b> tab choose a discipline, enter the distance (required) and other data, then tap “SAVE TRAINING”.</li>
-          <li>Disciplines: running, cycling, kayaking, swimming (pool or open water: lake, river, sea), hiking and 4x4 off-road driving. Swimming distance is also entered in km (1500 m = 1.5). 4x4 drives stay only in your History — they don't count towards the challenge and can't be shared in Activity.</li>
-          <li>“CALCULATE PACE” shows pace per km (running), pace per 100 m (swimming) or speed in km/h (cycling, kayaking, hiking, 4x4); “SHOW PROGRESS CHART” draws a distance chart.</li>
+          <li>Disciplines: running, cycling, kayaking, swimming (pool or open water: lake, river, sea), hiking, Nordic walking and 4x4 off-road driving. Swimming distance is also entered in km (1500 m = 1.5). 4x4 drives stay only in your History — they don't count towards the challenge and can't be shared in Activity.</li>
+          <li>“CALCULATE PACE” shows pace per km (running), pace per 100 m (swimming) or speed in km/h (cycling, kayaking, hiking, Nordic walking, 4x4); “SHOW PROGRESS CHART” draws a distance chart.</li>
         </ul>
       </details>
       <details><summary>📍 Recording with your phone (no watch)</summary>
@@ -1433,7 +1435,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "114";
+const APP_BUILD = "115";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -1751,7 +1753,7 @@ function logout() {
 }
 
 // --- Podsumowanie, passa i rekordy (liczone na bieżąco z historii) ---
-const DISCIPLINES = ["Bieg", "Rower", "Kajak", "Basen", "WodyOtwarte", "Trekking", "Auto4x4"];
+const DISCIPLINES = ["Bieg", "Rower", "Kajak", "Basen", "WodyOtwarte", "Trekking", "NordicWalking", "Auto4x4"];
 // Do wyzwania 4000 km liczą się tylko te dyscypliny (pływanie i trekking - tylko do Historii/statystyk).
 const CHALLENGE_DISCIPLINES = ["Bieg", "Rower", "Kajak"];
 const SWIM_DISCIPLINES = ["Basen", "WodyOtwarte"];
@@ -1761,7 +1763,7 @@ function isShareableDisc(disc) {
   return !NO_SHARE_DISCIPLINES.includes(disc);
 }
 // Kroki mają sens tylko w dyscyplinach pieszych.
-const STEP_DISCIPLINES = ["Bieg", "Trekking"];
+const STEP_DISCIPLINES = ["Bieg", "Trekking", "NordicWalking"];
 const MAX_STEPS = 300000;
 
 // --- Wiarygodność danych treningu ---
@@ -1770,6 +1772,7 @@ const MAX_STEPS = 300000;
 const PLAUSIBLE_LIMITS = {
   Bieg:        { maxKmh: 25, maxKm: 400 },
   Trekking:    { maxKmh: 15, maxKm: 200 },
+  NordicWalking: { maxKmh: 15, maxKm: 200 },
   Rower:       { maxKmh: 70, maxKm: 1200 },
   Kajak:       { maxKmh: 25, maxKm: 300 },
   Basen:       { maxKmh: 8,  maxKm: 30 },
@@ -2934,6 +2937,8 @@ const DISC_ICON_PATHS = {
   Trekking: '<path d="M3 20l6-10 4 6 3-4 5 8z"></path><path d="M12 5l2 2"></path>',
 };
 DISC_ICON_PATHS.WodyOtwarte = DISC_ICON_PATHS.Basen;
+// Nordic walking: idąca postać z dwoma kijkami.
+DISC_ICON_PATHS.NordicWalking = '<circle cx="12" cy="4" r="2"></circle><path d="M12 7l-1.5 6 2.5 3v5M10.5 13L8 16.5 7 21M12 8l3 3.5M9.5 9.5L7 12M15 11.5l3 9.5M7 12l-2 9"></path>';
 DISC_ICON_PATHS.Auto4x4 = '<path d="M3 15v-3l2-5h11l3 5h2v3z"></path><path d="M6 7v5M11 7v5"></path><circle cx="7" cy="17" r="2.5"></circle><circle cx="17" cy="17" r="2.5"></circle>';
 DISC_ICON_PATHS.Multi = '<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path>';
 
@@ -5597,6 +5602,7 @@ function activityTypeToDisc(type) {
   const s = String(type || "").toLowerCase();
   if (!s) return null;
   if (/swim/.test(s)) return /pool|lap|basen/.test(s) ? "Basen" : "WodyOtwarte";
+  if (/nordic/.test(s)) return "NordicWalking";
   if (/hik|walk|trek|mountaineer/.test(s)) return "Trekking";
   if (/kayak|paddl|canoe|row/.test(s)) return "Kajak";
   if (/driv|4x4|off.?road/.test(s)) return "Auto4x4";
@@ -5983,11 +5989,11 @@ function importTrainingFile(file) {
 // (Screen Wake Lock), bo przeglądarka wstrzymuje GPS, gdy aplikacja jest w tle.
 // Bieżące nagranie zapisywane w localStorage - zamknięcie aplikacji nie gubi trasy.
 const RECORDING_KEY = "pau_recording";
-const REC_DISCIPLINES = ["Bieg", "Rower", "Kajak", "WodyOtwarte", "Trekking", "Auto4x4"];
+const REC_DISCIPLINES = ["Bieg", "Rower", "Kajak", "WodyOtwarte", "Trekking", "NordicWalking", "Auto4x4"];
 const REC_MAX_ACCURACY_M = 35;   // gorsze odczyty pomijamy
 const REC_MIN_STEP_M = 5;        // drobniejsze ruchy to szum GPS
 const REC_GAP_S = 20;            // dłuższa przerwa = aplikacja była w tle / brak sygnału
-const REC_MAX_KMH = { Bieg: 30, Trekking: 15, Kajak: 20, WodyOtwarte: 10, Rower: 90, Auto4x4: 160 };
+const REC_MAX_KMH = { Bieg: 30, Trekking: 15, NordicWalking: 15, Kajak: 20, WodyOtwarte: 10, Rower: 90, Auto4x4: 160 };
 const REC_SAVE_MS = 10000;
 
 // Kalorie = MET × waga (kg) × czas (h). MET zależy od prędkości odcinka (km/h);
@@ -5999,6 +6005,8 @@ const MET_TABLES = {
   Kajak: [[0, 2.0], [4, 3.5], [6, 5.0], [8, 8.0], [10, 12.5]],
   WodyOtwarte: [[0, 2.0], [1.5, 5.8], [2.5, 8.3], [3.5, 10.0], [4.5, 11.0]],
   Auto4x4: [[0, 2.0]], // prowadzenie auta terenowego ~2 MET niezależnie od prędkości
+  // Nordic walking: kijki angażują ręce i tułów, więc wydatek ok. 10-20% wyższy niż przy zwykłym marszu (przybliżenie).
+  NordicWalking: [[0, 2.0], [3.2, 4.5], [4.8, 5.5], [5.6, 6.5], [6.4, 7.5], [8, 9.0]],
 };
 
 function metFor(disc, kmh) {
