@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "115";
+  window.PAU_PAGE_BUILD = "117";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -183,6 +183,7 @@
         <input id="recWeight" type="number" step="0.1" min="20" max="300" inputmode="decimal" placeholder="np. 75 (opcjonalnie)">
         <label for="recNavRoute" data-i18n="navRouteLbl">🧭 Prowadź po trasie (opcjonalnie)</label>
         <select id="recNavRoute"></select>
+        <button type="button" class="nav-file-btn" id="navFileBtn" data-i18n="navLoadFile">📂 Wczytaj trasę z pliku (GPX / TCX / FIT / KML)</button>
         <input type="file" id="navFile" style="display:none">
         <label class="checkbox-row challenge-flag-row" id="recChallengeRow" style="display:none"><input type="checkbox" id="recChallenge"> <span data-i18n="recChallengeLbl">🏁 Odcinek wyzwania 4000 km — kilometry dopisują się do wyzwania na żywo w trakcie</span></label>
         <label class="checkbox-row"><input type="checkbox" id="recSaveRoute"> <span data-i18n="recSaveRouteLbl">🗺 Zapisz przebytą trasę w zakładce Trasy (np. żeby inni mogli nią potem pobiec)</span></label>
