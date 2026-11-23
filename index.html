@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "113";
+  window.PAU_PAGE_BUILD = "116";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -176,17 +176,18 @@
           <option value="Kajak" data-i18n="optKajak">Kajak</option>
           <option value="WodyOtwarte" data-i18n="optWodyOtwarte">Pływanie – wody otwarte</option>
           <option value="Trekking" data-i18n="optTrekking">Trekking</option>
+          <option value="NordicWalking" data-i18n="optNordicWalking">Nordic walking (z kijkami)</option>
           <option value="Auto4x4" data-i18n="optAuto4x4">Auto 4x4 (teren)</option>
         </select>
         <label for="recWeight" data-i18n="recWeightLbl">Twoja waga (kg) — do liczenia kalorii</label>
         <input id="recWeight" type="number" step="0.1" min="20" max="300" inputmode="decimal" placeholder="np. 75 (opcjonalnie)">
         <label for="recNavRoute" data-i18n="navRouteLbl">🧭 Prowadź po trasie (opcjonalnie)</label>
         <select id="recNavRoute"></select>
-        <button type="button" class="nav-file-btn" id="navFileBtn" data-i18n="navLoadFile">📂 Wczytaj trasę z pliku (GPX / TCX / FIT)</button>
+        <button type="button" class="nav-file-btn" id="navFileBtn" data-i18n="navLoadFile">📂 Wczytaj trasę z pliku (GPX / TCX / FIT / KML)</button>
         <input type="file" id="navFile" style="display:none">
         <label class="checkbox-row challenge-flag-row" id="recChallengeRow" style="display:none"><input type="checkbox" id="recChallenge"> <span data-i18n="recChallengeLbl">🏁 Odcinek wyzwania 4000 km — kilometry dopisują się do wyzwania na żywo w trakcie</span></label>
         <label class="checkbox-row"><input type="checkbox" id="recSaveRoute"> <span data-i18n="recSaveRouteLbl">🗺 Zapisz przebytą trasę w zakładce Trasy (np. żeby inni mogli nią potem pobiec)</span></label>
-        <p class="hint-text" id="recNavInfo" data-i18n="navRouteHint">Trasa z zakładki Trasy albo z pliku GPX / TCX / FIT (np. z Garmin Connect, Komoot, Strava). Pokażę ją na mapie, policzę kilometry do końca i ostrzegę, gdy zboczysz.</p>
+        <p class="hint-text" id="recNavInfo" data-i18n="navRouteHint">Trasa z zakładki Trasy albo z pliku GPX / TCX / FIT / KML (np. z Garmin Connect, Komoot, Strava, MAPS.ME). Pokażę ją na mapie, policzę kilometry do końca i ostrzegę, gdy zboczysz.</p>
         <label class="checkbox-row"><input type="checkbox" id="navVoice"> <span data-i18n="navVoiceLbl">🔊 Komunikaty głosowe przy prowadzeniu</span></label>
         <button class="primary rec-start" id="recStartBtn" data-i18n="recStartBtn">▶ START</button>
       </div>
@@ -261,6 +262,7 @@
         <option value="Basen" data-i18n="optBasen">Pływanie – basen</option>
         <option value="WodyOtwarte" data-i18n="optWodyOtwarte">Pływanie – wody otwarte</option>
         <option value="Trekking" data-i18n="optTrekking">Trekking</option>
+        <option value="NordicWalking" data-i18n="optNordicWalking">Nordic walking (z kijkami)</option>
         <option value="Auto4x4" data-i18n="optAuto4x4">Auto 4x4 (teren)</option>
       </select>
 
@@ -325,6 +327,7 @@
           <option value="Basen" data-i18n="optBasen">Pływanie – basen</option>
           <option value="WodyOtwarte" data-i18n="optWodyOtwarte">Pływanie – wody otwarte</option>
           <option value="Trekking" data-i18n="optTrekking">Trekking</option>
+          <option value="NordicWalking" data-i18n="optNordicWalking">Nordic walking (z kijkami)</option>
           <option value="Auto4x4" data-i18n="optAuto4x4">Auto 4x4 (teren)</option>
         </select>
         <label data-i18n="goalKmLabel">Dystans (km)</label>
@@ -372,6 +375,7 @@
         <option value="Basen" data-i18n="optBasen">Pływanie – basen</option>
         <option value="WodyOtwarte" data-i18n="optWodyOtwarte">Pływanie – wody otwarte</option>
         <option value="Trekking" data-i18n="optTrekking">Trekking</option>
+        <option value="NordicWalking" data-i18n="optNordicWalking">Nordic walking (z kijkami)</option>
         <option value="Auto4x4" data-i18n="optAuto4x4">Auto 4x4 (teren)</option>
       </select>
       <label for="editDate" data-i18n="labelDate">Data</label>
@@ -465,7 +469,7 @@
     <div class="card">
       <h2 data-i18n="savedRoutesTitle">Zapisane trasy</h2>
       <div id="savedRoutesList"></div>
-      <button id="routeImportBtn" data-i18n="routeImportBtn">📂 WCZYTAJ TRASĘ Z PLIKU (GPX / TCX / FIT)</button>
+      <button id="routeImportBtn" data-i18n="routeImportBtn">📂 WCZYTAJ TRASĘ Z PLIKU (GPX / TCX / FIT / KML)</button>
       <input type="file" id="routeImportFile" style="display:none">
       <p class="hint-text" data-i18n="routeImportHint">Trasę z Garmin Connect, Komoot, Strava czy od znajomych wczytasz tutaj. Przyciskiem 🧭 przy trasie uruchomisz prowadzenie w nagrywaniu telefonem.</p>
     </div>
@@ -488,6 +492,7 @@
           <option value="Basen" data-i18n="optBasen">Pływanie – basen</option>
           <option value="WodyOtwarte" data-i18n="optWodyOtwarte">Pływanie – wody otwarte</option>
           <option value="Trekking" data-i18n="optTrekking">Trekking</option>
+          <option value="NordicWalking" data-i18n="optNordicWalking">Nordic walking (z kijkami)</option>
           <option value="Multi" data-i18n="optMulti">Multisport</option>
         </select>
         <label data-i18n="eventStartLabel">Data i godzina</label>

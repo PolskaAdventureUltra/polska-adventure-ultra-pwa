@@ -22,7 +22,7 @@ create table if not exists public.devices (
 create table if not exists public.activities (
   id uuid primary key default gen_random_uuid(),
   nick text not null check (char_length(nick) between 1 and 30),
-  disc text not null check (disc in ('Bieg', 'Rower', 'Kajak', 'Basen', 'WodyOtwarte', 'Trekking')),
+  disc text not null check (disc in ('Bieg', 'Rower', 'Kajak', 'Basen', 'WodyOtwarte', 'Trekking', 'NordicWalking')),
   activity_date date not null,
   dist_km numeric(7, 2) not null check (dist_km > 0 and dist_km <= 2000),
   time_min numeric(7, 1) check (time_min is null or (time_min >= 0 and time_min <= 20000)),
@@ -57,7 +57,7 @@ create table if not exists public.admin_keys (
 create table if not exists public.events (
   id uuid primary key default gen_random_uuid(),
   title text not null check (char_length(title) between 1 and 80),
-  disc text not null check (disc in ('Bieg', 'Rower', 'Kajak', 'Basen', 'WodyOtwarte', 'Trekking', 'Multi')),
+  disc text not null check (disc in ('Bieg', 'Rower', 'Kajak', 'Basen', 'WodyOtwarte', 'Trekking', 'NordicWalking', 'Multi')),
   starts_at timestamptz not null,
   place text not null check (char_length(place) between 1 and 120),
   lat double precision check (lat is null or lat between -90 and 90),
@@ -96,14 +96,14 @@ alter table public.event_completions add column if not exists result_at timestam
 -- „create table if not exists” nie zmienia istniejących tabel, więc ograniczenia podmieniamy wprost.
 alter table public.activities drop constraint if exists activities_disc_check;
 alter table public.activities add constraint activities_disc_check
-  check (disc in ('Bieg', 'Rower', 'Kajak', 'Basen', 'WodyOtwarte', 'Trekking'));
+  check (disc in ('Bieg', 'Rower', 'Kajak', 'Basen', 'WodyOtwarte', 'Trekking', 'NordicWalking'));
 -- Kto dodał wydarzenie (hash klucza organizatora) i którzy organizatorzy mogą usuwać wszystkie wydarzenia.
 -- Pozostali organizatorzy usuwają tylko własne. Nadanie: update public.admin_keys set superadmin = true where label = '...';
 alter table public.events add column if not exists created_by text;
 alter table public.admin_keys add column if not exists superadmin boolean not null default false;
 alter table public.events drop constraint if exists events_disc_check;
 alter table public.events add constraint events_disc_check
-  check (disc in ('Bieg', 'Rower', 'Kajak', 'Basen', 'WodyOtwarte', 'Trekking', 'Multi'));
+  check (disc in ('Bieg', 'Rower', 'Kajak', 'Basen', 'WodyOtwarte', 'Trekking', 'NordicWalking', 'Multi'));
 
 -- Postęp uczestników wyzwania 4000 km (2026-11-13). Tylko za zgodą uczestnika: nick + km, bez tras i treningów.
 -- Wiersz identyfikuje hash losowego tokenu z telefonu uczestnika (nie identyfikator urządzenia).
@@ -125,11 +125,11 @@ create table if not exists public.challenge_settings (
 insert into public.challenge_settings (id) values (1) on conflict (id) do nothing;
 
 alter table public.devices enable row level security;
--- Kroki (2026-11-13): tylko bieg i trekking, z zegarka lub wpisane ręcznie.
+-- Kroki (2026-11-13): tylko bieg, trekking i nordic walking (od 2026-11-23), z zegarka lub wpisane ręcznie.
 alter table public.activities add column if not exists steps integer;
 alter table public.activities drop constraint if exists activities_steps_check;
 alter table public.activities add constraint activities_steps_check
-  check (steps is null or (steps > 0 and steps <= 300000 and disc in ('Bieg', 'Trekking')));
+  check (steps is null or (steps > 0 and steps <= 300000 and disc in ('Bieg', 'Trekking', 'NordicWalking')));
 
 alter table public.activities enable row level security;
 alter table public.community_routes enable row level security;
@@ -192,7 +192,7 @@ declare
   v_max_km numeric;
 begin
   select l.kmh, l.km into v_max_kmh, v_max_km
-  from (values ('Bieg', 25, 400), ('Trekking', 15, 200), ('Rower', 70, 1200),
+  from (values ('Bieg', 25, 400), ('Trekking', 15, 200), ('NordicWalking', 15, 200), ('Rower', 70, 1200),
                ('Kajak', 25, 300), ('Basen', 8, 30), ('WodyOtwarte', 8, 100)) as l(disc, kmh, km)
   where l.disc = p_disc;
   if v_max_km is null or p_dist_km is null or p_dist_km <= 0 or p_dist_km > v_max_km then return false; end if;

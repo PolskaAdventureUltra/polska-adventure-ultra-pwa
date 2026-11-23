@@ -50,6 +50,7 @@ const TRANSLATIONS = {
     optWodyOtwarte: "Pływanie – wody otwarte",
     optTrekking: "Trekking",
     optAuto4x4: "Auto 4x4 (teren)",
+    optNordicWalking: "Nordic walking (z kijkami)",
     distSwimPlaceholder: "np. 1.5 = 1500 m",
     labelDate: "Data",
     labelDist: "Dystans (km)",
@@ -156,11 +157,12 @@ const TRANSLATIONS = {
     noHistory: "Brak zapisanych treningów.",
     deleteTitle: "Usuń wpis",
     navRouteLbl: "🧭 Prowadź po trasie (opcjonalnie)",
-    navRouteHint: "Trasa z zakładki Trasy albo z pliku GPX / TCX / FIT (np. z Garmin Connect, Komoot, Strava). Pokażę ją na mapie, policzę kilometry do końca i ostrzegę, gdy zboczysz.",
+    navRouteHint: "Trasa z zakładki Trasy albo z pliku GPX / TCX / FIT / KML (np. z Garmin Connect, Komoot, Strava, MAPS.ME). Pokażę ją na mapie, policzę kilometry do końca i ostrzegę, gdy zboczysz.",
     navNone: "— bez prowadzenia —",
-    navLoadFile: "📂 Wczytaj trasę z pliku (GPX / TCX / FIT)",
+    navLoadFile: "📂 Wczytaj trasę z pliku (GPX / TCX / FIT / KML)",
     navFileOpt: (name, km) => `📄 ${name} — ${km} km`,
     navNoPoints: "W pliku nie ma trasy (punktów GPS).",
+    errBadKmz: "Nie udało się rozpakować pliku KMZ (brak pliku KML w środku).",
     navLoadError: (msg) => `Nie udało się wczytać trasy: ${msg}`,
     navSaveToRoutes: (name) => `Zapisać trasę „${name}” w zakładce Trasy, żeby była dostępna także następnym razem?`,
     navLeft: (km) => `do końca ${km} km`,
@@ -173,7 +175,7 @@ const TRANSLATIONS = {
     navFinished: "🏁 Koniec trasy!",
     navBusy: "Trwa nagrywanie — prowadzenie wybierasz przed START.",
     navRouteTitle: "Prowadź po tej trasie (nagrywanie telefonem)",
-    routeImportBtn: "📂 WCZYTAJ TRASĘ Z PLIKU (GPX / TCX / FIT)",
+    routeImportBtn: "📂 WCZYTAJ TRASĘ Z PLIKU (GPX / TCX / FIT / KML)",
     routeImportHint: "Trasę z Garmin Connect, Komoot, Strava czy od znajomych wczytasz tutaj. Przyciskiem 🧭 przy trasie uruchomisz prowadzenie w nagrywaniu telefonem.",
     routeImported: (name, km) => `Wczytano trasę „${name}” (${km} km). Przycisk 🧭 przy trasie uruchamia prowadzenie.`,
     navNotifTitle: "Polska Adventure Ultra — trasa",
@@ -292,7 +294,7 @@ const TRANSLATIONS = {
     promptNewPin: "Podaj nowy PIN:",
     pinChanged: "PIN zmieniony.",
     historyLabels: { date: "Data", disc: "Dyscyplina", dist: "Dystans", weight: "Waga", hr: "Tętno", vo2max: "VO2max", notes: "Notatki" },
-    discNames: { Bieg: "Bieg", Rower: "Rower", Kajak: "Kajak", Basen: "Pływanie – basen", WodyOtwarte: "Pływanie – wody otwarte", Trekking: "Trekking", Auto4x4: "Auto 4x4 (teren)", Multi: "Multisport" },
+    discNames: { Bieg: "Bieg", Rower: "Rower", Kajak: "Kajak", Basen: "Pływanie – basen", WodyOtwarte: "Pływanie – wody otwarte", Trekking: "Trekking", NordicWalking: "Nordic walking", Auto4x4: "Auto 4x4 (teren)", Multi: "Multisport" },
     routeTitle: "Trasa",
     showRouteTitle: "Pokaż trasę",
     tabPlan: "Trasy",
@@ -524,8 +526,8 @@ const TRANSLATIONS = {
       <details><summary>🏃 Zapisywanie treningu</summary>
         <ul>
           <li>W zakładce <b>Trening</b> wybierz dyscyplinę, wpisz dystans (wymagany) i pozostałe dane, kliknij „ZAPISZ TRENING”.</li>
-          <li>Dyscypliny: bieg, rower, kajak, pływanie (basen albo wody otwarte: jezioro, rzeka, morze), trekking i auto 4x4 (przejazdy terenowe). Dystans pływania też wpisujesz w km (1500 m = 1.5). Przejazdy autem 4x4 zostają tylko w Twojej Historii — nie liczą się do wyzwania i nie udostępnia się ich w Aktywności.</li>
-          <li>„OBLICZ TEMPO” pokazuje tempo w min/km (bieg), tempo na 100 m (pływanie) albo prędkość w km/h (rower, kajak, trekking, auto 4x4); „POKAŻ WYKRES PROGRESU” rysuje wykres dystansów.</li>
+          <li>Dyscypliny: bieg, rower, kajak, pływanie (basen albo wody otwarte: jezioro, rzeka, morze), trekking, nordic walking (marsz z kijkami) i auto 4x4 (przejazdy terenowe). Dystans pływania też wpisujesz w km (1500 m = 1.5). Przejazdy autem 4x4 zostają tylko w Twojej Historii — nie liczą się do wyzwania i nie udostępnia się ich w Aktywności.</li>
+          <li>„OBLICZ TEMPO” pokazuje tempo w min/km (bieg), tempo na 100 m (pływanie) albo prędkość w km/h (rower, kajak, trekking, nordic walking, auto 4x4); „POKAŻ WYKRES PROGRESU” rysuje wykres dystansów.</li>
         </ul>
       </details>
       <details><summary>📍 Nagrywanie telefonem (bez zegarka)</summary>
@@ -577,7 +579,7 @@ const TRANSLATIONS = {
           <li>„EKSPORTUJ DO GPX” (lub przycisk GPX przy zapisanej trasie) tworzy plik do zegarka. Na telefonie otworzy się menu „Udostępnij”.</li>
           <li><b>Garmin</b>: Garmin Connect (www) → Trening → Trasy → Importuj → wyślij na zegarek. <b>Suunto</b>: otwórz plik GPX w Suunto app i zsynchronizuj zegarek. <b>Polar</b>: Polar Flow (www) → Ulubione → Trasy → Importuj → synchronizuj.</li>
           <li><b>📍 Punkty na trasie</b> (żywienie, przepak, nocleg, sklep, woda, ⚠️ niebezpieczne miejsce, inne): otwórz trasę (🗺), kliknij „📍 DODAJ PUNKT NA TRASIE” i dotknij miejsca na mapie — wybierasz rodzaj, nazwę i opis; kliknięcie ikony na mapie albo ✏️ na liście pozwala punkt poprawić lub usunąć. W nagrywaniu telefonem przycisk „📍 PUNKT TUTAJ” zapisuje punkt w miejscu, w którym jesteś (nazwę możesz od razu wpisać albo podyktować, a pod spodem jest lista dodanych punktów z ✏️ i 🗑); po zakończeniu zapiszesz przebytą trasę z punktami w zakładce Trasy (albo zaznacz przed START „🗺 Zapisz przebytą trasę”). Trasę z zegarka wczytasz „📂 WCZYTAJ TRASĘ Z PLIKU” i dodasz punkty potem. Punkty trafiają do pliku GPX (zegarek pokaże je jako punkty trasy), a przy prowadzeniu po trasie widać „Następny punkt: … za X km”, a głos uprzedza ok. 300 m wcześniej (przed niebezpiecznym miejscem 500 m wcześniej, z wibracją).</li>
-          <li><b>🧭 Prowadzenie po trasie w telefonie</b>: „📂 WCZYTAJ TRASĘ Z PLIKU” (GPX / TCX / FIT, np. z Garmin Connect, Komoot, Strava) dodaje trasę do listy. Przycisk 🧭 przy trasie — albo pole „Prowadź po trasie” przed START w nagrywaniu telefonem — włącza prowadzenie: trasa jest na mapie, widać kilometry do końca, a gdy zboczysz o ok. 50 m (rower 60 m, kajak i pływanie 100 m), telefon zawibruje, pokaże czerwony komunikat i powie to głosem (głos wyłączysz polem „🔊 Komunikaty głosowe” albo przyciskiem 🔊 w trakcie); w aplikacji ze Sklepu Play przy zgaszonym ekranie dostaniesz powiadomienie. Przy słabym GPS ostrzeżenia są wstrzymane, żeby nie było fałszywych alarmów — trasa zostaje na mapie.</li>
+          <li><b>🧭 Prowadzenie po trasie w telefonie</b>: „📂 WCZYTAJ TRASĘ Z PLIKU” (GPX / TCX / FIT / KML / KMZ, np. z Garmin Connect, Komoot, Strava, MAPS.ME) dodaje trasę do listy. Przycisk 🧭 przy trasie — albo pole „Prowadź po trasie” przed START w nagrywaniu telefonem — włącza prowadzenie: trasa jest na mapie, widać kilometry do końca, a gdy zboczysz o ok. 50 m (rower 60 m, kajak i pływanie 100 m), telefon zawibruje, pokaże czerwony komunikat i powie to głosem (głos wyłączysz polem „🔊 Komunikaty głosowe” albo przyciskiem 🔊 w trakcie); w aplikacji ze Sklepu Play przy zgaszonym ekranie dostaniesz powiadomienie. Przy słabym GPS ostrzeżenia są wstrzymane, żeby nie było fałszywych alarmów — trasa zostaje na mapie.</li>
           <li>Wyznaczanie trasy po drogach wymaga internetu (darmowy serwis BRouter — wysyłane są wyłącznie współrzędne klikniętych punktów). Bez internetu odcinki będą liniami prostymi.</li>
         </ul>
       </details>
@@ -721,6 +723,7 @@ const TRANSLATIONS = {
     optWodyOtwarte: "Swimming – open water",
     optTrekking: "Hiking",
     optAuto4x4: "4x4 off-road",
+    optNordicWalking: "Nordic walking",
     distSwimPlaceholder: "e.g. 1.5 = 1500 m",
     labelDate: "Date",
     labelDist: "Distance (km)",
@@ -827,11 +830,12 @@ const TRANSLATIONS = {
     noHistory: "No saved trainings yet.",
     deleteTitle: "Delete entry",
     navRouteLbl: "🧭 Follow a route (optional)",
-    navRouteHint: "A route from the Routes tab or a GPX / TCX / FIT file (e.g. from Garmin Connect, Komoot, Strava). It is shown on the map with the distance left, and you get a warning when you go off route.",
+    navRouteHint: "A route from the Routes tab or a GPX / TCX / FIT / KML file (e.g. from Garmin Connect, Komoot, Strava, MAPS.ME). It is shown on the map with the distance left, and you get a warning when you go off route.",
     navNone: "— no route —",
-    navLoadFile: "📂 Load route from file (GPX / TCX / FIT)",
+    navLoadFile: "📂 Load route from file (GPX / TCX / FIT / KML)",
     navFileOpt: (name, km) => `📄 ${name} — ${km} km`,
     navNoPoints: "The file contains no route (GPS points).",
+    errBadKmz: "Could not unpack the KMZ file (no KML inside).",
     navLoadError: (msg) => `Could not load the route: ${msg}`,
     navSaveToRoutes: (name) => `Save the route “${name}” in the Routes tab so it is available next time too?`,
     navLeft: (km) => `${km} km to go`,
@@ -844,7 +848,7 @@ const TRANSLATIONS = {
     navFinished: "🏁 End of the route!",
     navBusy: "Recording in progress — choose a route before START.",
     navRouteTitle: "Follow this route (phone recording)",
-    routeImportBtn: "📂 LOAD ROUTE FROM FILE (GPX / TCX / FIT)",
+    routeImportBtn: "📂 LOAD ROUTE FROM FILE (GPX / TCX / FIT / KML)",
     routeImportHint: "Load a route from Garmin Connect, Komoot, Strava or a friend here. The 🧭 button next to a route starts guidance in phone recording.",
     routeImported: (name, km) => `Loaded route “${name}” (${km} km). The 🧭 button next to the route starts guidance.`,
     navNotifTitle: "Polska Adventure Ultra — route",
@@ -963,7 +967,7 @@ const TRANSLATIONS = {
     promptNewPin: "Enter new PIN:",
     pinChanged: "PIN changed.",
     historyLabels: { date: "Date", disc: "Discipline", dist: "Distance", weight: "Weight", hr: "HR", vo2max: "VO2max", notes: "Notes" },
-    discNames: { Bieg: "Running", Rower: "Cycling", Kajak: "Kayaking", Basen: "Swimming – pool", WodyOtwarte: "Swimming – open water", Trekking: "Hiking", Auto4x4: "4x4 off-road", Multi: "Multisport" },
+    discNames: { Bieg: "Running", Rower: "Cycling", Kajak: "Kayaking", Basen: "Swimming – pool", WodyOtwarte: "Swimming – open water", Trekking: "Hiking", NordicWalking: "Nordic walking", Auto4x4: "4x4 off-road", Multi: "Multisport" },
     routeTitle: "Route",
     showRouteTitle: "Show route",
     tabPlan: "Routes",
@@ -1195,8 +1199,8 @@ const TRANSLATIONS = {
       <details><summary>🏃 Saving a training</summary>
         <ul>
           <li>In the <b>Training</b> tab choose a discipline, enter the distance (required) and other data, then tap “SAVE TRAINING”.</li>
-          <li>Disciplines: running, cycling, kayaking, swimming (pool or open water: lake, river, sea), hiking and 4x4 off-road driving. Swimming distance is also entered in km (1500 m = 1.5). 4x4 drives stay only in your History — they don't count towards the challenge and can't be shared in Activity.</li>
-          <li>“CALCULATE PACE” shows pace per km (running), pace per 100 m (swimming) or speed in km/h (cycling, kayaking, hiking, 4x4); “SHOW PROGRESS CHART” draws a distance chart.</li>
+          <li>Disciplines: running, cycling, kayaking, swimming (pool or open water: lake, river, sea), hiking, Nordic walking and 4x4 off-road driving. Swimming distance is also entered in km (1500 m = 1.5). 4x4 drives stay only in your History — they don't count towards the challenge and can't be shared in Activity.</li>
+          <li>“CALCULATE PACE” shows pace per km (running), pace per 100 m (swimming) or speed in km/h (cycling, kayaking, hiking, Nordic walking, 4x4); “SHOW PROGRESS CHART” draws a distance chart.</li>
         </ul>
       </details>
       <details><summary>📍 Recording with your phone (no watch)</summary>
@@ -1248,7 +1252,7 @@ const TRANSLATIONS = {
           <li>“EXPORT TO GPX” (or the GPX button next to a saved route) creates a file for your watch. On a phone the Share menu opens.</li>
           <li><b>Garmin</b>: Garmin Connect (web) → Training → Courses → Import → send to device. <b>Suunto</b>: open the GPX file in the Suunto app and sync the watch. <b>Polar</b>: Polar Flow (web) → Favorites → Routes → Import → sync.</li>
           <li><b>📍 Points on the route</b> (food, drop bag, overnight, shop, water, ⚠️ dangerous spot, other): open a route (🗺), tap “📍 ADD A POINT ON THE ROUTE” and tap the place on the map — choose the type, name and description; tapping the icon on the map or ✏️ in the list lets you edit or delete it. In phone recording, “📍 POINT HERE” saves a point where you are (you can type or dictate a name right away; below there is a list of added points with ✏️ and 🗑); after finishing you can save the recorded route with the points in the Routes tab (or tick “🗺 Save the recorded route” before START). Load a watch route with “📂 LOAD ROUTE FROM FILE” and add points afterwards. Points go into the GPX file (the watch shows them as course points), and during route guidance you see “Next point: … in X km” and the voice warns about 300 m ahead (500 m ahead with vibration before a dangerous spot).</li>
-          <li><b>🧭 Route guidance on the phone</b>: “📂 LOAD ROUTE FROM FILE” (GPX / TCX / FIT, e.g. from Garmin Connect, Komoot, Strava) adds a route to the list. The 🧭 button next to a route — or the “Follow a route” field before START in phone recording — turns on guidance: the route is on the map, you see the distance left, and when you go about 50 m off route (cycling 60 m, kayak and swimming 100 m) the phone vibrates, shows a red message and says it out loud (turn the voice off with the “🔊 Voice prompts” box or the 🔊 button while recording); in the Play Store app you get a notification while the screen is off. With weak GPS, warnings are paused to avoid false alarms — the route stays on the map.</li>
+          <li><b>🧭 Route guidance on the phone</b>: “📂 LOAD ROUTE FROM FILE” (GPX / TCX / FIT / KML / KMZ, e.g. from Garmin Connect, Komoot, Strava, MAPS.ME) adds a route to the list. The 🧭 button next to a route — or the “Follow a route” field before START in phone recording — turns on guidance: the route is on the map, you see the distance left, and when you go about 50 m off route (cycling 60 m, kayak and swimming 100 m) the phone vibrates, shows a red message and says it out loud (turn the voice off with the “🔊 Voice prompts” box or the 🔊 button while recording); in the Play Store app you get a notification while the screen is off. With weak GPS, warnings are paused to avoid false alarms — the route stays on the map.</li>
           <li>Road routing needs internet (free BRouter service — only the coordinates of tapped points are sent). Offline, sections are straight lines.</li>
         </ul>
       </details>
@@ -1457,7 +1461,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "113";
+const APP_BUILD = "116";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -1775,7 +1779,7 @@ function logout() {
 }
 
 // --- Podsumowanie, passa i rekordy (liczone na bieżąco z historii) ---
-const DISCIPLINES = ["Bieg", "Rower", "Kajak", "Basen", "WodyOtwarte", "Trekking", "Auto4x4"];
+const DISCIPLINES = ["Bieg", "Rower", "Kajak", "Basen", "WodyOtwarte", "Trekking", "NordicWalking", "Auto4x4"];
 // Do wyzwania 4000 km liczą się tylko te dyscypliny (pływanie i trekking - tylko do Historii/statystyk).
 const CHALLENGE_DISCIPLINES = ["Bieg", "Rower", "Kajak"];
 const SWIM_DISCIPLINES = ["Basen", "WodyOtwarte"];
@@ -1785,7 +1789,7 @@ function isShareableDisc(disc) {
   return !NO_SHARE_DISCIPLINES.includes(disc);
 }
 // Kroki mają sens tylko w dyscyplinach pieszych.
-const STEP_DISCIPLINES = ["Bieg", "Trekking"];
+const STEP_DISCIPLINES = ["Bieg", "Trekking", "NordicWalking"];
 const MAX_STEPS = 300000;
 
 // --- Wiarygodność danych treningu ---
@@ -1794,6 +1798,7 @@ const MAX_STEPS = 300000;
 const PLAUSIBLE_LIMITS = {
   Bieg:        { maxKmh: 25, maxKm: 400 },
   Trekking:    { maxKmh: 15, maxKm: 200 },
+  NordicWalking: { maxKmh: 15, maxKm: 200 },
   Rower:       { maxKmh: 70, maxKm: 1200 },
   Kajak:       { maxKmh: 25, maxKm: 300 },
   Basen:       { maxKmh: 8,  maxKm: 30 },
@@ -2958,6 +2963,8 @@ const DISC_ICON_PATHS = {
   Trekking: '<path d="M3 20l6-10 4 6 3-4 5 8z"></path><path d="M12 5l2 2"></path>',
 };
 DISC_ICON_PATHS.WodyOtwarte = DISC_ICON_PATHS.Basen;
+// Nordic walking: idąca postać z dwoma kijkami.
+DISC_ICON_PATHS.NordicWalking = '<circle cx="12" cy="4" r="2"></circle><path d="M12 7l-1.5 6 2.5 3v5M10.5 13L8 16.5 7 21M12 8l3 3.5M9.5 9.5L7 12M15 11.5l3 9.5M7 12l-2 9"></path>';
 DISC_ICON_PATHS.Auto4x4 = '<path d="M3 15v-3l2-5h11l3 5h2v3z"></path><path d="M6 7v5M11 7v5"></path><circle cx="7" cy="17" r="2.5"></circle><circle cx="17" cy="17" r="2.5"></circle>';
 DISC_ICON_PATHS.Multi = '<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path>';
 
@@ -4179,6 +4186,7 @@ function buildKml(name, track, pois) {
   const marks = (pois || []).map((p) =>
     `    <Placemark><name>${escapeXml(p.name || poiLabel(p.type))}</name>` +
     (p.note ? `<description>${escapeXml(p.note)}</description>` : "") +
+    `<ExtendedData><Data name="pau_type"><value>pau:${p.type}</value></Data></ExtendedData>` +
     `<Point><coordinates>${p.lon.toFixed(6)},${p.lat.toFixed(6)}</coordinates></Point></Placemark>\n`).join("");
   return `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
@@ -5620,6 +5628,7 @@ function activityTypeToDisc(type) {
   const s = String(type || "").toLowerCase();
   if (!s) return null;
   if (/swim/.test(s)) return /pool|lap|basen/.test(s) ? "Basen" : "WodyOtwarte";
+  if (/nordic/.test(s)) return "NordicWalking";
   if (/hik|walk|trek|mountaineer/.test(s)) return "Trekking";
   if (/kayak|paddl|canoe|row/.test(s)) return "Kajak";
   if (/driv|4x4|off.?road/.test(s)) return "Auto4x4";
@@ -6006,11 +6015,11 @@ function importTrainingFile(file) {
 // (Screen Wake Lock), bo przeglądarka wstrzymuje GPS, gdy aplikacja jest w tle.
 // Bieżące nagranie zapisywane w localStorage - zamknięcie aplikacji nie gubi trasy.
 const RECORDING_KEY = "pau_recording";
-const REC_DISCIPLINES = ["Bieg", "Rower", "Kajak", "WodyOtwarte", "Trekking", "Auto4x4"];
+const REC_DISCIPLINES = ["Bieg", "Rower", "Kajak", "WodyOtwarte", "Trekking", "NordicWalking", "Auto4x4"];
 const REC_MAX_ACCURACY_M = 35;   // gorsze odczyty pomijamy
 const REC_MIN_STEP_M = 5;        // drobniejsze ruchy to szum GPS
 const REC_GAP_S = 20;            // dłuższa przerwa = aplikacja była w tle / brak sygnału
-const REC_MAX_KMH = { Bieg: 30, Trekking: 15, Kajak: 20, WodyOtwarte: 10, Rower: 90, Auto4x4: 160 };
+const REC_MAX_KMH = { Bieg: 30, Trekking: 15, NordicWalking: 15, Kajak: 20, WodyOtwarte: 10, Rower: 90, Auto4x4: 160 };
 const REC_SAVE_MS = 10000;
 
 // Kalorie = MET × waga (kg) × czas (h). MET zależy od prędkości odcinka (km/h);
@@ -6022,6 +6031,8 @@ const MET_TABLES = {
   Kajak: [[0, 2.0], [4, 3.5], [6, 5.0], [8, 8.0], [10, 12.5]],
   WodyOtwarte: [[0, 2.0], [1.5, 5.8], [2.5, 8.3], [3.5, 10.0], [4.5, 11.0]],
   Auto4x4: [[0, 2.0]], // prowadzenie auta terenowego ~2 MET niezależnie od prędkości
+  // Nordic walking: kijki angażują ręce i tułów, więc wydatek ok. 10-20% wyższy niż przy zwykłym marszu (przybliżenie).
+  NordicWalking: [[0, 2.0], [3.2, 4.5], [4.8, 5.5], [5.6, 6.5], [6.4, 7.5], [8, 9.0]],
 };
 
 function metFor(disc, kmh) {
@@ -6705,6 +6716,15 @@ function navParseFile(buf, fileName) {
     const text = new TextDecoder("utf-8").decode(buf);
     const xml = new DOMParser().parseFromString(text, "application/xml");
     if (xml.getElementsByTagName("parsererror").length > 0) throw new Error(t().errBadXml);
+    if (xml.documentElement && xml.documentElement.localName === "kml") {
+      const parsed = parseKmlRoute(xml);
+      track = parsed.track;
+      name = parsed.name;
+      pois = parsed.pois;
+      track = track.filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lon) && Math.abs(p.lat) <= 90 && Math.abs(p.lon) <= 180);
+      if (track.length < 2) throw new Error(t().navNoPoints);
+      return { name: (name || fallbackName).slice(0, 60), track, pois };
+    }
     const fromPts = (tag) => Array.from(xml.getElementsByTagName(tag)).map((pt) => {
       const lat = parseFloat(pt.getAttribute("lat"));
       const lon = parseFloat(pt.getAttribute("lon"));
@@ -6736,6 +6756,82 @@ function navParseFile(buf, fileName) {
   track = track.filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lon) && Math.abs(p.lat) <= 90 && Math.abs(p.lon) <= 180);
   if (track.length < 2) throw new Error(t().navNoPoints);
   return { name: (name || fallbackName).slice(0, 60), track, pois };
+}
+
+// KML (Google Earth, MAPS.ME, Mapy.cz): linia trasy = wszystkie LineString po kolei (albo gx:Track),
+// punkty = Placemarki z Point. Współrzędne w KML: „lon,lat[,ele]” oddzielone spacjami.
+function parseKmlRoute(xml) {
+  const byName = (root, tag) => Array.from(root.getElementsByTagNameNS("*", tag));
+  const childText = (el, tag) => {
+    const c = Array.from(el.children).find((x) => x.localName === tag);
+    return c ? c.textContent.trim() : "";
+  };
+  const track = [];
+  byName(xml, "LineString").forEach((ls) => {
+    const coords = byName(ls, "coordinates")[0];
+    if (!coords) return;
+    coords.textContent.trim().split(/\s+/).forEach((c) => {
+      const [lon, lat, ele] = c.split(",").map(parseFloat);
+      if (Number.isFinite(lat) && Number.isFinite(lon)) track.push(Number.isFinite(ele) ? { lat, lon, ele } : { lat, lon });
+    });
+  });
+  if (track.length < 2) {
+    byName(xml, "coord").forEach((c) => { // gx:Track: „lon lat ele”
+      const [lon, lat, ele] = c.textContent.trim().split(/\s+/).map(parseFloat);
+      if (Number.isFinite(lat) && Number.isFinite(lon)) track.push(Number.isFinite(ele) ? { lat, lon, ele } : { lat, lon });
+    });
+  }
+  const pois = byName(xml, "Placemark").map((pm) => {
+    const point = byName(pm, "Point")[0];
+    const coords = point && byName(point, "coordinates")[0];
+    if (!coords) return null;
+    const [lon, lat] = coords.textContent.trim().split(",").map(parseFloat);
+    const pname = childText(pm, "name");
+    const note = childText(pm, "description").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+    const extra = byName(pm, "value").map((v) => v.textContent).join(" ");
+    return poiNormalize({ lat, lon, type: poiGuessType(`${extra} ${pname}`), name: pname, note });
+  }).filter(Boolean).slice(0, 500);
+  const doc = byName(xml, "Document")[0];
+  const line = byName(xml, "LineString")[0] || byName(xml, "Track")[0];
+  const name = (doc && childText(doc, "name")) || (line && line.parentElement && childText(line.parentElement, "name")) || "";
+  return { track, name, pois };
+}
+
+// KMZ = ZIP z plikiem .kml w środku. Rozpakowanie bez bibliotek: katalog centralny ZIP + DecompressionStream.
+async function unzipKmz(buf) {
+  const dv = new DataView(buf);
+  let eocd = -1;
+  for (let i = buf.byteLength - 22; i >= Math.max(0, buf.byteLength - 65557); i--) {
+    if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  }
+  if (eocd < 0) throw new Error(t().errBadKmz);
+  const count = dv.getUint16(eocd + 10, true);
+  let p = dv.getUint32(eocd + 16, true);
+  for (let n = 0; n < count && dv.getUint32(p, true) === 0x02014b50; n++) {
+    const method = dv.getUint16(p + 10, true);
+    const size = dv.getUint32(p + 20, true);
+    const nameLen = dv.getUint16(p + 28, true);
+    const skip = nameLen + dv.getUint16(p + 30, true) + dv.getUint16(p + 32, true);
+    const local = dv.getUint32(p + 42, true);
+    const fname = new TextDecoder().decode(new Uint8Array(buf, p + 46, nameLen));
+    p += 46 + skip;
+    if (!/\.kml$/i.test(fname)) continue;
+    const start = local + 30 + dv.getUint16(local + 26, true) + dv.getUint16(local + 28, true);
+    const data = new Uint8Array(buf, start, size);
+    if (method === 0) return data.slice().buffer;
+    if (method !== 8 || typeof DecompressionStream !== "function") throw new Error(t().errBadKmz);
+    const stream = new Blob([data]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+    return await new Response(stream).arrayBuffer();
+  }
+  throw new Error(t().errBadKmz);
+}
+
+// Plik z trasą: KMZ rozpakowujemy do KML, resztę (GPX/TCX/FIT/KML) czyta navParseFile.
+async function readRouteFile(file) {
+  let buf = await readFileBuffer(file);
+  const b = new Uint8Array(buf, 0, Math.min(4, buf.byteLength));
+  if (b[0] === 0x50 && b[1] === 0x4b && b[2] === 3 && b[3] === 4) buf = await unzipKmz(buf); // „PK” = ZIP
+  return navParseFile(buf, file.name);
 }
 
 function readFileBuffer(file) {
@@ -6798,7 +6894,7 @@ function saveImportedRoute(name, track, pois) {
 async function importRouteFile(file) {
   const dict = t();
   try {
-    const parsed = navParseFile(await readFileBuffer(file), file.name);
+    const parsed = await readRouteFile(file);
     const name = prompt(dict.promptRouteName, parsed.name);
     if (name === null) return;
     const index = saveImportedRoute(name.trim() || parsed.name, parsed.track, parsed.pois);
@@ -6815,7 +6911,7 @@ async function importRouteFile(file) {
 async function navLoadFileForRecording(file) {
   const dict = t();
   try {
-    const parsed = navParseFile(await readFileBuffer(file), file.name);
+    const parsed = await readRouteFile(file);
     if (confirm(dict.navSaveToRoutes(parsed.name))) {
       const index = saveImportedRoute(parsed.name, parsed.track, parsed.pois);
       navSelected = "r:" + index;
