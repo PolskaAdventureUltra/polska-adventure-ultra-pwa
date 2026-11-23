@@ -444,6 +444,9 @@ body.dark .challenge { --ch-bg: #0A1322; --ch-band: #131E31; }
 .modal-card h3 { margin-top: 0; }
 .modal-card p { font-size: 14px; }
 .modal-card .link-btn { display: block; margin: 8px auto 0; width: auto; }
+.export-menu-route { color: var(--subtle-fg); margin: -4px 0 12px; word-break: break-word; }
+.export-menu .export-opt { display: block; width: 100%; text-align: left; margin: 0 0 8px; }
+.export-menu .export-opt small { display: block; font-size: 12px; font-weight: 400; opacity: 0.8; margin-top: 2px; }
 
 /* --- Nagrywanie GPS telefonem --- */
 .rec-card h2 { margin-top: 0; }
