@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "106";
+  window.PAU_PAGE_BUILD = "110";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -176,6 +176,7 @@
           <option value="Kajak" data-i18n="optKajak">Kajak</option>
           <option value="WodyOtwarte" data-i18n="optWodyOtwarte">Pływanie – wody otwarte</option>
           <option value="Trekking" data-i18n="optTrekking">Trekking</option>
+          <option value="Auto4x4" data-i18n="optAuto4x4">Auto 4x4 (teren)</option>
         </select>
         <label for="recWeight" data-i18n="recWeightLbl">Twoja waga (kg) — do liczenia kalorii</label>
         <input id="recWeight" type="number" step="0.1" min="20" max="300" inputmode="decimal" placeholder="np. 75 (opcjonalnie)">
@@ -259,6 +260,7 @@
         <option value="Basen" data-i18n="optBasen">Pływanie – basen</option>
         <option value="WodyOtwarte" data-i18n="optWodyOtwarte">Pływanie – wody otwarte</option>
         <option value="Trekking" data-i18n="optTrekking">Trekking</option>
+        <option value="Auto4x4" data-i18n="optAuto4x4">Auto 4x4 (teren)</option>
       </select>
 
       <label data-i18n="labelDate">Data</label>
@@ -322,6 +324,7 @@
           <option value="Basen" data-i18n="optBasen">Pływanie – basen</option>
           <option value="WodyOtwarte" data-i18n="optWodyOtwarte">Pływanie – wody otwarte</option>
           <option value="Trekking" data-i18n="optTrekking">Trekking</option>
+          <option value="Auto4x4" data-i18n="optAuto4x4">Auto 4x4 (teren)</option>
         </select>
         <label data-i18n="goalKmLabel">Dystans (km)</label>
         <input id="goalKm" type="number" step="1" min="1" inputmode="decimal">
@@ -368,6 +371,7 @@
         <option value="Basen" data-i18n="optBasen">Pływanie – basen</option>
         <option value="WodyOtwarte" data-i18n="optWodyOtwarte">Pływanie – wody otwarte</option>
         <option value="Trekking" data-i18n="optTrekking">Trekking</option>
+        <option value="Auto4x4" data-i18n="optAuto4x4">Auto 4x4 (teren)</option>
       </select>
       <label for="editDate" data-i18n="labelDate">Data</label>
       <input id="editDate" type="date">

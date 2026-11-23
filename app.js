@@ -49,6 +49,7 @@ const TRANSLATIONS = {
     optBasen: "Pływanie – basen",
     optWodyOtwarte: "Pływanie – wody otwarte",
     optTrekking: "Trekking",
+    optAuto4x4: "Auto 4x4 (teren)",
     distSwimPlaceholder: "np. 1.5 = 1500 m",
     labelDate: "Data",
     labelDist: "Dystans (km)",
@@ -258,6 +259,7 @@ const TRANSLATIONS = {
     editSaved: "Zmiany zapisane.",
     editReshared: "Zmiany zapisane — udostępniony trening w Aktywności też jest poprawiony.",
     editReshareFailed: "Zmiany zapisane na telefonie, ale nie udało się poprawić udostępnionego treningu w Aktywności (brak internetu?). Spróbuj ponownie: popraw i zapisz trening jeszcze raz.",
+    editUnsharedNoShare: "Zmiany zapisane. Auto 4x4 nie trafia do Aktywności, więc ten trening został z niej usunięty.",
     confirmDelete: "Usunąć ten wpis z historii?",
     alertDistRequired: "Podaj dystans większy od 0.",
     implausibleField: "Dane niepoprawne lub nierealne — sprawdź wpisane wartości.",
@@ -290,7 +292,7 @@ const TRANSLATIONS = {
     promptNewPin: "Podaj nowy PIN:",
     pinChanged: "PIN zmieniony.",
     historyLabels: { date: "Data", disc: "Dyscyplina", dist: "Dystans", weight: "Waga", hr: "Tętno", vo2max: "VO2max", notes: "Notatki" },
-    discNames: { Bieg: "Bieg", Rower: "Rower", Kajak: "Kajak", Basen: "Pływanie – basen", WodyOtwarte: "Pływanie – wody otwarte", Trekking: "Trekking", Multi: "Multisport" },
+    discNames: { Bieg: "Bieg", Rower: "Rower", Kajak: "Kajak", Basen: "Pływanie – basen", WodyOtwarte: "Pływanie – wody otwarte", Trekking: "Trekking", Auto4x4: "Auto 4x4 (teren)", Multi: "Multisport" },
     routeTitle: "Trasa",
     showRouteTitle: "Pokaż trasę",
     tabPlan: "Trasy",
@@ -505,7 +507,7 @@ const TRANSLATIONS = {
           <li>Zakładka <b>Wyzwanie</b> jest dostępna dla wszystkich: pokazuje trasę 4000 km (start i meta: Lublin) i zasady. Licznik na mapie jest poglądowy — prawdziwy postęp widzą tylko uczestnicy.</li>
           <li>Zapisy ruszają we wrześniu 2027. Po dołączeniu ekran pokazuje Twój postęp: kilometry w każdej dyscyplinie, miejsce na trasie i prognozę mety.</li>
           <li>Masz kod zaproszenia od organizatora? Kliknij „Masz kod zaproszenia?” pod przyciskiem zapisów — po wpisaniu kodu możesz dołączyć wcześniej. Kod działa tylko na jednym telefonie (przy zmianie telefonu przywróć kopię zapasową albo poproś organizatora o zwolnienie kodu). Jeśli organizator wycofa kod, udział w wyzwaniu zostanie zakończony (treningi zostają w Historii).</li>
-          <li>Do postępu liczą się <b>tylko odcinki wyzwania</b>: przy zapisie treningu zaznacz „🏁 Odcinek wyzwania 4000 km”, przy nagrywaniu telefonem — zaznacz 🏁 przed START, wtedy kilometry dopisują się do wyzwania na żywo w trakcie; a w Historii możesz oznaczyć lub odznaczyć trening przyciskiem 🏁. Codzienne treningi gdzie indziej trafiają tylko do Historii. Wyzwanie to bieg, rower i kajak — pływanie i trekking się do niego nie liczą (nie mają pola 🏁).</li>
+          <li>Do postępu liczą się <b>tylko odcinki wyzwania</b>: przy zapisie treningu zaznacz „🏁 Odcinek wyzwania 4000 km”, przy nagrywaniu telefonem — zaznacz 🏁 przed START, wtedy kilometry dopisują się do wyzwania na żywo w trakcie; a w Historii możesz oznaczyć lub odznaczyć trening przyciskiem 🏁. Codzienne treningi gdzie indziej trafiają tylko do Historii. Wyzwanie to bieg, rower i kajak — pływanie, trekking i auto 4x4 się do niego nie liczą (nie mają pola 🏁).</li>
           <li><b>📢 Komunikaty organizatora</b>: w zakładce Wyzwanie uczestnicy widzą ogłoszenia organizatora (np. zmiany trasy, niebezpieczne miejsca, posiłki). Nowe są oznaczone czerwoną kropką na zakładce. W trakcie nagrywania telefon daje znać od razu (wibracja, a przy zgaszonym ekranie powiadomienie), a ważne komunikaty czyta na głos (wyłącznik 🔊 jak przy prowadzeniu po trasie). Gdy aplikacja jest zamknięta, nowe komunikaty zobaczysz przy jej otwarciu.</li>
           <li>Po rezygnacji ekran wraca do widoku dla obserwatorów; treningi zostają w Historii.</li>
         </ul>
@@ -513,8 +515,8 @@ const TRANSLATIONS = {
       <details><summary>🏃 Zapisywanie treningu</summary>
         <ul>
           <li>W zakładce <b>Trening</b> wybierz dyscyplinę, wpisz dystans (wymagany) i pozostałe dane, kliknij „ZAPISZ TRENING”.</li>
-          <li>Dyscypliny: bieg, rower, kajak, pływanie (basen albo wody otwarte: jezioro, rzeka, morze) i trekking. Dystans pływania też wpisujesz w km (1500 m = 1.5).</li>
-          <li>„OBLICZ TEMPO” pokazuje tempo w min/km (bieg), tempo na 100 m (pływanie) albo prędkość w km/h (rower, kajak, trekking); „POKAŻ WYKRES PROGRESU” rysuje wykres dystansów.</li>
+          <li>Dyscypliny: bieg, rower, kajak, pływanie (basen albo wody otwarte: jezioro, rzeka, morze), trekking i auto 4x4 (przejazdy terenowe). Dystans pływania też wpisujesz w km (1500 m = 1.5). Przejazdy autem 4x4 zostają tylko w Twojej Historii — nie liczą się do wyzwania i nie udostępnia się ich w Aktywności.</li>
+          <li>„OBLICZ TEMPO” pokazuje tempo w min/km (bieg), tempo na 100 m (pływanie) albo prędkość w km/h (rower, kajak, trekking, auto 4x4); „POKAŻ WYKRES PROGRESU” rysuje wykres dystansów.</li>
         </ul>
       </details>
       <details><summary>📍 Nagrywanie telefonem (bez zegarka)</summary>
@@ -709,6 +711,7 @@ const TRANSLATIONS = {
     optBasen: "Swimming – pool",
     optWodyOtwarte: "Swimming – open water",
     optTrekking: "Hiking",
+    optAuto4x4: "4x4 off-road",
     distSwimPlaceholder: "e.g. 1.5 = 1500 m",
     labelDate: "Date",
     labelDist: "Distance (km)",
@@ -918,6 +921,7 @@ const TRANSLATIONS = {
     editSaved: "Changes saved.",
     editReshared: "Changes saved — the shared training in Activity is updated too.",
     editReshareFailed: "Changes saved on this phone, but the shared training in Activity could not be updated (no internet?). Try again: open and save the training once more.",
+    editUnsharedNoShare: "Changes saved. 4x4 drives are not shown in Activity, so this training was removed from it.",
     confirmDelete: "Delete this entry from history?",
     alertDistRequired: "Enter a distance greater than 0.",
     implausibleField: "Incorrect or unrealistic data — check the values you entered.",
@@ -950,7 +954,7 @@ const TRANSLATIONS = {
     promptNewPin: "Enter new PIN:",
     pinChanged: "PIN changed.",
     historyLabels: { date: "Date", disc: "Discipline", dist: "Distance", weight: "Weight", hr: "HR", vo2max: "VO2max", notes: "Notes" },
-    discNames: { Bieg: "Running", Rower: "Cycling", Kajak: "Kayaking", Basen: "Swimming – pool", WodyOtwarte: "Swimming – open water", Trekking: "Hiking", Multi: "Multisport" },
+    discNames: { Bieg: "Running", Rower: "Cycling", Kajak: "Kayaking", Basen: "Swimming – pool", WodyOtwarte: "Swimming – open water", Trekking: "Hiking", Auto4x4: "4x4 off-road", Multi: "Multisport" },
     routeTitle: "Route",
     showRouteTitle: "Show route",
     tabPlan: "Routes",
@@ -1165,7 +1169,7 @@ const TRANSLATIONS = {
           <li>The <b>Challenge</b> tab is open to everyone: it shows the 4000 km route (start and finish: Lublin) and the rules. The counter on the map is just an illustration — real progress is visible only to participants.</li>
           <li>Sign-ups open in September 2027. After joining, the screen shows your progress: kilometres per discipline, your place on the route and a finish forecast.</li>
           <li>Got an invitation code from the organiser? Tap “Have an invitation code?” below the sign-up button — after entering it you can join early. The code works on one phone only (when changing phones, restore your backup or ask the organiser to release the code). If the organiser withdraws the code, your participation ends (your trainings stay in History).</li>
-          <li>Only <b>challenge stages</b> count towards progress: when saving a training tick “🏁 4000 km challenge stage”, when recording with the phone tick 🏁 before START and the kilometres are added to the challenge live as you go; and in History you can mark or unmark a training with the 🏁 button. Everyday trainings elsewhere go only to History. The challenge is running, cycling and kayaking — swimming and hiking don't count towards it (they have no 🏁 option).</li>
+          <li>Only <b>challenge stages</b> count towards progress: when saving a training tick “🏁 4000 km challenge stage”, when recording with the phone tick 🏁 before START and the kilometres are added to the challenge live as you go; and in History you can mark or unmark a training with the 🏁 button. Everyday trainings elsewhere go only to History. The challenge is running, cycling and kayaking — swimming, hiking and 4x4 off-road don't count towards it (they have no 🏁 option).</li>
           <li><b>📢 Organizer messages</b>: in the Challenge tab participants see announcements from the organizer (e.g. route changes, dangerous spots, meals). New ones are marked with a red dot on the tab. While recording, the phone lets you know right away (vibration, and a notification with the screen off), and reads important messages out loud (🔊 switch as in route guidance). When the app is closed, you see new messages the next time you open it.</li>
           <li>After leaving, the screen returns to the observer view; your trainings stay in History.</li>
         </ul>
@@ -1173,8 +1177,8 @@ const TRANSLATIONS = {
       <details><summary>🏃 Saving a training</summary>
         <ul>
           <li>In the <b>Training</b> tab choose a discipline, enter the distance (required) and other data, then tap “SAVE TRAINING”.</li>
-          <li>Disciplines: running, cycling, kayaking, swimming (pool or open water: lake, river, sea) and hiking. Swimming distance is also entered in km (1500 m = 1.5).</li>
-          <li>“CALCULATE PACE” shows pace per km (running), pace per 100 m (swimming) or speed in km/h (cycling, kayaking, hiking); “SHOW PROGRESS CHART” draws a distance chart.</li>
+          <li>Disciplines: running, cycling, kayaking, swimming (pool or open water: lake, river, sea), hiking and 4x4 off-road driving. Swimming distance is also entered in km (1500 m = 1.5). 4x4 drives stay only in your History — they don't count towards the challenge and can't be shared in Activity.</li>
+          <li>“CALCULATE PACE” shows pace per km (running), pace per 100 m (swimming) or speed in km/h (cycling, kayaking, hiking, 4x4); “SHOW PROGRESS CHART” draws a distance chart.</li>
         </ul>
       </details>
       <details><summary>📍 Recording with your phone (no watch)</summary>
@@ -1435,7 +1439,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "106";
+const APP_BUILD = "110";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -1753,10 +1757,15 @@ function logout() {
 }
 
 // --- Podsumowanie, passa i rekordy (liczone na bieżąco z historii) ---
-const DISCIPLINES = ["Bieg", "Rower", "Kajak", "Basen", "WodyOtwarte", "Trekking"];
+const DISCIPLINES = ["Bieg", "Rower", "Kajak", "Basen", "WodyOtwarte", "Trekking", "Auto4x4"];
 // Do wyzwania 4000 km liczą się tylko te dyscypliny (pływanie i trekking - tylko do Historii/statystyk).
 const CHALLENGE_DISCIPLINES = ["Bieg", "Rower", "Kajak"];
 const SWIM_DISCIPLINES = ["Basen", "WodyOtwarte"];
+// Auto 4x4 (przejazdy terenowe) - tylko Historia; Supabase (activities) go nie przyjmuje, więc bez udostępniania.
+const NO_SHARE_DISCIPLINES = ["Auto4x4"];
+function isShareableDisc(disc) {
+  return !NO_SHARE_DISCIPLINES.includes(disc);
+}
 // Kroki mają sens tylko w dyscyplinach pieszych.
 const STEP_DISCIPLINES = ["Bieg", "Trekking"];
 const MAX_STEPS = 300000;
@@ -1771,6 +1780,7 @@ const PLAUSIBLE_LIMITS = {
   Kajak:       { maxKmh: 25, maxKm: 300 },
   Basen:       { maxKmh: 8,  maxKm: 30 },
   WodyOtwarte: { maxKmh: 8,  maxKm: 100 },
+  Auto4x4:     { maxKmh: 150, maxKm: 1500 }, // tylko lokalnie (nie idzie do share_activity)
 };
 const MAX_TIME_MIN = 7 * 24 * 60;
 
@@ -2181,7 +2191,7 @@ const CHALLENGE_PARTNERS = [
   { name: "TVP3 Lublin", url: "https://lublin.tvp.pl/", logo: "partners/tvplublin.png", ratio: 199 / 49 },
   { name: "Agnieszka Danieluk", url: "https://agnieszkadanieluk.pl/", logo: "partners/agnieszkadanieluk.png", ratio: 196 / 200 },
   { name: "4evolve", url: "https://4evolve.com/pl/", logo: "partners/4evolve.png", ratio: 226 / 84 },
-  { name: "Gospodarstwo rolne Szymon Gorzałczany", logo: "partners/szymong.png", ratio: 360 / 96 },
+  { name: "Gospodarstwo rolne Szymon Gorzałczany", url: "https://gospodarstwo-gorzalczany.pl/", logo: "partners/szymong.png", ratio: 360 / 96 },
   { name: "Stokrotka", url: "https://stokrotka.pl/", logo: "partners/stokrotka.png", ratio: 254 / 200 },
   { name: "MOSiR Lublin", url: "https://mosir.lublin.pl/", logo: "partners/mosir.png", ratio: 360 / 157 },
 ];
@@ -2874,7 +2884,7 @@ function refreshHistoryList() {
       const flagBtn = getChallenge() && (isChallengeDisc(item.disc) || item.challenge)
         ? `<button class="flag-btn${item.challenge ? " on" : ""}" data-index="${index}" title="${item.challenge ? dict.flagOnTitle : dict.flagOffTitle}" aria-pressed="${item.challenge ? "true" : "false"}">🏁</button>`
         : "";
-      const shareBtn = isCommunityConfigured()
+      const shareBtn = isCommunityConfigured() && (isShareableDisc(item.disc) || item.sharedId)
         ? `<button class="share-btn" data-index="${index}" title="${item.sharedId ? dict.unshareTitle : dict.shareTitle}">${item.sharedId ? "🌍" : "📤"}</button>`
         : "";
       const meta = [item.date];
@@ -2930,6 +2940,7 @@ const DISC_ICON_PATHS = {
   Trekking: '<path d="M3 20l6-10 4 6 3-4 5 8z"></path><path d="M12 5l2 2"></path>',
 };
 DISC_ICON_PATHS.WodyOtwarte = DISC_ICON_PATHS.Basen;
+DISC_ICON_PATHS.Auto4x4 = '<path d="M3 15v-3l2-5h11l3 5h2v3z"></path><path d="M6 7v5M11 7v5"></path><circle cx="7" cy="17" r="2.5"></circle><circle cx="17" cy="17" r="2.5"></circle>';
 DISC_ICON_PATHS.Multi = '<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path>';
 
 function discIcon(disc) {
@@ -3047,6 +3058,15 @@ async function saveEditTraining() {
   if (entry.event) { renderEvents(); syncEventResult(entry.event); }
 
   if (!entry.sharedId) { alert(t().editSaved); return; }
+  if (!isShareableDisc(entry.disc)) {
+    // Zmieniono na dyscyplinę bez Aktywności (auto 4x4) - zdejmujemy wpis z Aktywności.
+    const ok = await deleteSharedActivity(entry.sharedId);
+    const fresh = getHistory();
+    if (ok && fresh[index]) { delete fresh[index].sharedId; saveHistory(fresh); }
+    refreshHistoryList();
+    alert(ok ? t().editUnsharedNoShare : t().editReshareFailed);
+    return;
+  }
   // Udostępniony: najpierw wysyłamy poprawioną wersję, potem usuwamy starą - przy błędzie sieci stara zostaje.
   const oldId = entry.sharedId;
   const nick = (localStorage.getItem(NICK_KEY) || "").trim();
@@ -4468,6 +4488,7 @@ async function toggleShareTraining(index) {
     return;
   }
 
+  if (!isShareableDisc(entry.disc)) return;
   if (!confirmPlausible(entry, null)) return;
   const route = trimRouteEnds(entry.route);
   if (!confirm(t().shareConfirm(Boolean(route)))) return;
@@ -5492,6 +5513,7 @@ function activityTypeToDisc(type) {
   if (/swim/.test(s)) return /pool|lap|basen/.test(s) ? "Basen" : "WodyOtwarte";
   if (/hik|walk|trek|mountaineer/.test(s)) return "Trekking";
   if (/kayak|paddl|canoe|row/.test(s)) return "Kajak";
+  if (/driv|4x4|off.?road/.test(s)) return "Auto4x4";
   if (/cycl|bik|ride/.test(s)) return "Rower";
   if (/run|jog/.test(s)) return "Bieg";
   return null;
@@ -5875,11 +5897,11 @@ function importTrainingFile(file) {
 // (Screen Wake Lock), bo przeglądarka wstrzymuje GPS, gdy aplikacja jest w tle.
 // Bieżące nagranie zapisywane w localStorage - zamknięcie aplikacji nie gubi trasy.
 const RECORDING_KEY = "pau_recording";
-const REC_DISCIPLINES = ["Bieg", "Rower", "Kajak", "WodyOtwarte", "Trekking"];
+const REC_DISCIPLINES = ["Bieg", "Rower", "Kajak", "WodyOtwarte", "Trekking", "Auto4x4"];
 const REC_MAX_ACCURACY_M = 35;   // gorsze odczyty pomijamy
 const REC_MIN_STEP_M = 5;        // drobniejsze ruchy to szum GPS
 const REC_GAP_S = 20;            // dłuższa przerwa = aplikacja była w tle / brak sygnału
-const REC_MAX_KMH = { Bieg: 30, Trekking: 15, Kajak: 20, WodyOtwarte: 10, Rower: 90 };
+const REC_MAX_KMH = { Bieg: 30, Trekking: 15, Kajak: 20, WodyOtwarte: 10, Rower: 90, Auto4x4: 160 };
 const REC_SAVE_MS = 10000;
 
 // Kalorie = MET × waga (kg) × czas (h). MET zależy od prędkości odcinka (km/h);
@@ -5890,6 +5912,7 @@ const MET_TABLES = {
   Rower: [[0, 2.0], [10, 4.0], [16, 6.8], [19.3, 8.0], [22.5, 10.0], [25.7, 12.0], [32, 15.8]],
   Kajak: [[0, 2.0], [4, 3.5], [6, 5.0], [8, 8.0], [10, 12.5]],
   WodyOtwarte: [[0, 2.0], [1.5, 5.8], [2.5, 8.3], [3.5, 10.0], [4.5, 11.0]],
+  Auto4x4: [[0, 2.0]], // prowadzenie auta terenowego ~2 MET niezależnie od prędkości
 };
 
 function metFor(disc, kmh) {
@@ -6484,7 +6507,7 @@ function recStopWatching() {
 // Przy słabym GPS ostrzeżenia są wstrzymane - żeby nie było fałszywych alarmów.
 // Komunikaty idą przez navAlert() - tam można później dodać głos (z wyłącznikiem).
 const NAV_MAX_POINTS = 2000;
-const NAV_OFF_M = { Rower: 60, Kajak: 100, WodyOtwarte: 100 }; // pozostałe: NAV_OFF_DEFAULT_M
+const NAV_OFF_M = { Rower: 60, Kajak: 100, WodyOtwarte: 100, Auto4x4: 80 }; // pozostałe: NAV_OFF_DEFAULT_M
 const NAV_OFF_DEFAULT_M = 50;
 const NAV_GOOD_ACC_M = 25;     // tylko przy takiej dokładności oceniamy zboczenie
 const NAV_NO_FIX_MS = 15000;   // tyle bez dobrego odczytu = „brak sygnału GPS”
