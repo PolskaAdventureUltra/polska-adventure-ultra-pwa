@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "109";
+  window.PAU_PAGE_BUILD = "111";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -457,8 +457,8 @@
       </div>
       <div id="planPoiList" class="poi-list"></div>
       <button class="primary" id="planSaveBtn" data-i18n="planSaveBtn">ZAPISZ TRASĘ</button>
-      <button id="planExportBtn" data-i18n="planExportBtn">EKSPORTUJ DO GPX (ZEGAREK)</button>
-      <p class="hint-text" data-i18n="planExportHint">Garmin: Garmin Connect (www) → Trening → Trasy → Importuj. Suunto: otwórz plik GPX w Suunto app. Polar: Polar Flow (www) → Ulubione → Trasy → Importuj.</p>
+      <button id="planExportBtn" data-i18n="planExportBtn">EKSPORTUJ / OTWÓRZ (GPX, KML)</button>
+      <p class="hint-text" data-i18n="planExportHint">Garmin: Garmin Connect (www) → Trening → Trasy → Importuj. Suunto: otwórz plik GPX w Suunto app. Polar: Polar Flow (www) → Ulubione → Trasy → Importuj. Nawigacja po trasie: OsmAnd (GPX) albo MAPS.ME (KML).</p>
     </div>
 
     <div class="card">
