@@ -84,7 +84,7 @@ const TRANSLATIONS = {
     paceBtn: "OBLICZ TEMPO",
     chartBtn: "POKAŻ WYKRES PROGRESU",
     exportBtn: "EKSPORTUJ DO CSV",
-    importBtn: "📂 WCZYTAJ PLIK GPX / TCX / FIT",
+    importBtn: "📂 WCZYTAJ PLIK GPX / TCX / FIT / KML",
     modePhone: "Trening z telefonu",
     modeWatch: "Trening z zegarka",
     modeManual: "Stwórz własny trening",
@@ -557,7 +557,7 @@ const TRANSLATIONS = {
           <li><b>Samsung Health</b> (Galaxy Watch): w telefonie otwórz trening z trasą GPS → ⋮ → „Eksportuj do pliku GPX”. Opcja jest tylko przy treningach z GPS (np. bieg, rower, spacer), a plik nie zawiera tętna.</li>
           <li><b>Huawei Health</b> (Huawei Watch): otwórz trening → ikona udostępniania/⋮ → „Eksportuj trasę” → GPX lub TCX (zależnie od wersji aplikacji i zegarka). Jeśli tej opcji nie ma: połącz Huawei Health ze Stravą (Ja → Udostępnianie danych i autoryzacja → Strava), a potem na strava.com otwórz trening → ⋯ → „Eksportuj GPX”.</li>
           <li><b>Strava</b> (www): otwórz trening → ⋯ → „Eksportuj GPX” — działa dla każdego zegarka zsynchronizowanego ze Stravą.</li>
-          <li>W zakładce Trening kliknij kafelek „⌚ Trening z zegarka”, potem „WCZYTAJ PLIK GPX / TCX / FIT”, wybierz plik, sprawdź dane i kliknij „ZAPISZ TRENING”. Trasa zapisze się razem z treningiem.</li>
+          <li>W zakładce Trening kliknij kafelek „⌚ Trening z zegarka”, potem „WCZYTAJ PLIK GPX / TCX / FIT / KML”, wybierz plik, sprawdź dane i kliknij „ZAPISZ TRENING”. Trasa zapisze się razem z treningiem.</li>
         </ul>
       </details>
       <details><summary>📋 Historia</summary>
@@ -757,7 +757,7 @@ const TRANSLATIONS = {
     paceBtn: "CALCULATE PACE",
     chartBtn: "SHOW PROGRESS CHART",
     exportBtn: "EXPORT TO CSV",
-    importBtn: "📂 LOAD GPX / TCX / FIT FILE",
+    importBtn: "📂 LOAD GPX / TCX / FIT / KML FILE",
     modePhone: "Training from phone",
     modeWatch: "Training from watch",
     modeManual: "Create your own training",
@@ -1230,7 +1230,7 @@ const TRANSLATIONS = {
           <li><b>Samsung Health</b> (Galaxy Watch): on the phone open a workout with a GPS route → ⋮ → “Export to GPX file”. Only available for GPS workouts (e.g. running, cycling, walking); the file has no heart rate.</li>
           <li><b>Huawei Health</b> (Huawei Watch): open the workout → share icon/⋮ → “Export route” → GPX or TCX (depends on app and watch version). If it's missing: link Huawei Health with Strava (Me → Data sharing and authorization → Strava), then on strava.com open the activity → ⋯ → “Export GPX”.</li>
           <li><b>Strava</b> (web): open the activity → ⋯ → “Export GPX” — works for any watch synced with Strava.</li>
-          <li>On the Training tab tap the “⌚ Training from watch” tile, then “LOAD GPX / TCX / FIT FILE”, choose the file, check the data and tap “SAVE TRAINING”. The route is saved with the training.</li>
+          <li>On the Training tab tap the “⌚ Training from watch” tile, then “LOAD GPX / TCX / FIT / KML FILE”, choose the file, check the data and tap “SAVE TRAINING”. The route is saved with the training.</li>
         </ul>
       </details>
       <details><summary>📋 History</summary>
@@ -1461,7 +1461,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "118";
+const APP_BUILD = "120";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -5627,13 +5627,13 @@ function gpxDiscipline(xml) {
 function activityTypeToDisc(type) {
   const s = String(type || "").toLowerCase();
   if (!s) return null;
-  if (/swim/.test(s)) return /pool|lap|basen/.test(s) ? "Basen" : "WodyOtwarte";
+  if (/swim|pływ|plyw/.test(s)) return /pool|lap|basen/.test(s) ? "Basen" : "WodyOtwarte";
   if (/nordic/.test(s)) return "NordicWalking";
-  if (/hik|walk|trek|mountaineer/.test(s)) return "Trekking";
-  if (/kayak|paddl|canoe|row/.test(s)) return "Kajak";
-  if (/driv|4x4|off.?road/.test(s)) return "Auto4x4";
-  if (/cycl|bik|ride/.test(s)) return "Rower";
-  if (/run|jog/.test(s)) return "Bieg";
+  if (/cycl|bik|ride|rower/.test(s)) return "Rower"; // przed „row” (wioślarstwo), bo „rower” je zawiera
+  if (/hik|walk|trek|mountaineer|marsz|spacer|wędr|wedr/.test(s)) return "Trekking";
+  if (/kayak|kajak|paddl|canoe|row|kanu/.test(s)) return "Kajak";
+  if (/driv|4x4|off.?road|terenow/.test(s)) return "Auto4x4";
+  if (/run|jog|bieg/.test(s)) return "Bieg";
   return null;
 }
 
@@ -5972,42 +5972,42 @@ function initTrainModes() {
   renderTrainMode();
 }
 
-function importTrainingFile(file) {
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      let parsed;
-      if (isFitFile(reader.result)) {
-        parsed = parseFit(reader.result);
-      } else {
-        const text = new TextDecoder("utf-8").decode(reader.result);
-        const xml = new DOMParser().parseFromString(text, "application/xml");
-        if (xml.getElementsByTagName("parsererror").length > 0) {
-          throw new Error(t().errBadXml);
-        }
-        const isTcx = xml.getElementsByTagName("TrainingCenterDatabase").length > 0;
-        parsed = isTcx ? parseTcx(xml) : parseGpx(xml);
+async function importTrainingFile(file) {
+  try {
+    let parsed;
+    let buf = await readFileBuffer(file);
+    const b = new Uint8Array(buf, 0, Math.min(4, buf.byteLength));
+    if (b[0] === 0x50 && b[1] === 0x4b && b[2] === 3 && b[3] === 4) buf = await unzipKmz(buf); // KMZ = ZIP z KML
+    if (isFitFile(buf)) {
+      parsed = parseFit(buf);
+    } else {
+      const text = new TextDecoder("utf-8").decode(buf);
+      const xml = new DOMParser().parseFromString(text, "application/xml");
+      if (xml.getElementsByTagName("parsererror").length > 0) {
+        throw new Error(t().errBadXml);
       }
-
-      document.getElementById("date").value = parsed.date;
-      document.getElementById("dist").value = parsed.dist;
-      document.getElementById("time").value = parsed.time;
-      document.getElementById("hr").value = parsed.hr;
-      document.getElementById("steps").value = parsed.steps || "";
-      document.getElementById("discipline").value = parsed.disc;
-      updateDisciplineUi();
-      pendingRoute = parsed.route && parsed.route.length >= 2 ? parsed.route : null;
-      pendingRouteImported = true;
-      openTrainForm();
-      updateTrainSaveRouteRow();
-
-      const noSteps = STEP_DISCIPLINES.includes(parsed.disc) && !parsed.steps;
-      alert(t().importSuccess(parsed) + (noSteps ? t().importNoSteps : ""));
-    } catch (e) {
-      alert(t().importError(e.message));
+      const isTcx = xml.getElementsByTagName("TrainingCenterDatabase").length > 0;
+      const isKml = xml.documentElement && xml.documentElement.localName === "kml";
+      parsed = isTcx ? parseTcx(xml) : isKml ? parseKmlTraining(xml) : parseGpx(xml);
     }
-  };
-  reader.readAsArrayBuffer(file);
+
+    document.getElementById("date").value = parsed.date;
+    document.getElementById("dist").value = parsed.dist;
+    document.getElementById("time").value = parsed.time;
+    document.getElementById("hr").value = parsed.hr;
+    document.getElementById("steps").value = parsed.steps || "";
+    document.getElementById("discipline").value = parsed.disc;
+    updateDisciplineUi();
+    pendingRoute = parsed.route && parsed.route.length >= 2 ? parsed.route : null;
+    pendingRouteImported = true;
+    openTrainForm();
+    updateTrainSaveRouteRow();
+
+    const noSteps = STEP_DISCIPLINES.includes(parsed.disc) && !parsed.steps;
+    alert(t().importSuccess(parsed) + (noSteps ? t().importNoSteps : ""));
+  } catch (e) {
+    alert(t().importError(e.message));
+  }
 }
 
 // --- Nagrywanie treningu GPS-em telefonu (bez zegarka) ---
@@ -6795,6 +6795,34 @@ function parseKmlRoute(xml) {
   const line = byName(xml, "LineString")[0] || byName(xml, "Track")[0];
   const name = (doc && childText(doc, "name")) || (line && line.parentElement && childText(line.parentElement, "name")) || "";
   return { track, name, pois };
+}
+
+// Trening z KML/KMZ (eksport z zegarka/aplikacji, Google Earth, Mapy.cz): trasa jak w parseKmlRoute,
+// czas z gx:Track <when> albo TimeSpan/TimeStamp; dyscyplina zgadywana z nazwy i opisu.
+function parseKmlTraining(xml) {
+  const parsed = parseKmlRoute(xml);
+  const track = parsed.track.filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lon) && Math.abs(p.lat) <= 90 && Math.abs(p.lon) <= 180);
+  if (track.length < 2) throw new Error(t().navNoPoints);
+  const byName = (tag) => Array.from(xml.getElementsByTagNameNS("*", tag));
+  const times = byName("when").concat(byName("begin"), byName("end"))
+    .map((el) => Date.parse(el.textContent.trim()))
+    .filter(Number.isFinite)
+    .sort((a, b) => a - b);
+  let timeMin = 0;
+  let date = new Date().toISOString().slice(0, 10);
+  if (times.length) {
+    date = new Date(times[0]).toISOString().slice(0, 10);
+    timeMin = (times[times.length - 1] - times[0]) / 60000;
+  }
+  const descr = byName("description").map((el) => el.textContent).join(" ");
+  return {
+    date,
+    dist: trackDistanceKm(track).toFixed(2),
+    time: timeMin.toFixed(1),
+    hr: "0",
+    disc: activityTypeToDisc(`${parsed.name} ${descr}`) || "Bieg",
+    route: downsampleRoute(track, 200),
+  };
 }
 
 // KMZ = ZIP z plikiem .kml w środku. Rozpakowanie bez bibliotek: katalog centralny ZIP + DecompressionStream.
