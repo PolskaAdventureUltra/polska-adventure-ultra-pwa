@@ -57,6 +57,7 @@ const TRANSLATIONS = {
     labelTime: "Czas (min)",
     labelHr: "Śr. tętno (bpm)",
     labelSteps: "Kroki",
+    importNoTime: "\n⏱ Ten plik zawiera tylko trasę, bez czasu i tętna. Wpisz czas ręcznie (FIT z zegarka ma komplet danych).",
     importNoSteps: "\n👣 Ten plik nie zawiera kroków. Wyeksportuj trening jako FIT albo wpisz kroki ręcznie.",
     updateText: "🆕 Nowa wersja PAU w Sklepie Google Play. Twoje treningi zostają na telefonie.",
     updateNowBtn: "AKTUALIZUJ",
@@ -84,7 +85,7 @@ const TRANSLATIONS = {
     paceBtn: "OBLICZ TEMPO",
     chartBtn: "POKAŻ WYKRES PROGRESU",
     exportBtn: "EKSPORTUJ DO CSV",
-    importBtn: "📂 WCZYTAJ PLIK GPX / TCX / FIT",
+    importBtn: "📂 WCZYTAJ PLIK GPX / TCX / FIT / KML",
     modePhone: "Trening z telefonu",
     modeWatch: "Trening z zegarka",
     modeManual: "Stwórz własny trening",
@@ -557,7 +558,7 @@ const TRANSLATIONS = {
           <li><b>Samsung Health</b> (Galaxy Watch): w telefonie otwórz trening z trasą GPS → ⋮ → „Eksportuj do pliku GPX”. Opcja jest tylko przy treningach z GPS (np. bieg, rower, spacer), a plik nie zawiera tętna.</li>
           <li><b>Huawei Health</b> (Huawei Watch): otwórz trening → ikona udostępniania/⋮ → „Eksportuj trasę” → GPX lub TCX (zależnie od wersji aplikacji i zegarka). Jeśli tej opcji nie ma: połącz Huawei Health ze Stravą (Ja → Udostępnianie danych i autoryzacja → Strava), a potem na strava.com otwórz trening → ⋯ → „Eksportuj GPX”.</li>
           <li><b>Strava</b> (www): otwórz trening → ⋯ → „Eksportuj GPX” — działa dla każdego zegarka zsynchronizowanego ze Stravą.</li>
-          <li>W zakładce Trening kliknij kafelek „⌚ Trening z zegarka”, potem „WCZYTAJ PLIK GPX / TCX / FIT”, wybierz plik, sprawdź dane i kliknij „ZAPISZ TRENING”. Trasa zapisze się razem z treningiem.</li>
+          <li>W zakładce Trening kliknij kafelek „⌚ Trening z zegarka”, potem „WCZYTAJ PLIK GPX / TCX / FIT / KML”, wybierz plik, sprawdź dane i kliknij „ZAPISZ TRENING”. Trasa zapisze się razem z treningiem.</li>
         </ul>
       </details>
       <details><summary>📋 Historia</summary>
@@ -730,6 +731,7 @@ const TRANSLATIONS = {
     labelTime: "Time (min)",
     labelHr: "Avg. heart rate (bpm)",
     labelSteps: "Steps",
+    importNoTime: "\n⏱ This file has only the route, no time or heart rate. Enter the time manually (a FIT file from the watch has all the data).",
     importNoSteps: "\n👣 This file has no steps. Export the training as FIT or enter the steps manually.",
     updateText: "🆕 New PAU version on Google Play. Your trainings stay on your phone.",
     updateNowBtn: "UPDATE",
@@ -757,7 +759,7 @@ const TRANSLATIONS = {
     paceBtn: "CALCULATE PACE",
     chartBtn: "SHOW PROGRESS CHART",
     exportBtn: "EXPORT TO CSV",
-    importBtn: "📂 LOAD GPX / TCX / FIT FILE",
+    importBtn: "📂 LOAD GPX / TCX / FIT / KML FILE",
     modePhone: "Training from phone",
     modeWatch: "Training from watch",
     modeManual: "Create your own training",
@@ -1230,7 +1232,7 @@ const TRANSLATIONS = {
           <li><b>Samsung Health</b> (Galaxy Watch): on the phone open a workout with a GPS route → ⋮ → “Export to GPX file”. Only available for GPS workouts (e.g. running, cycling, walking); the file has no heart rate.</li>
           <li><b>Huawei Health</b> (Huawei Watch): open the workout → share icon/⋮ → “Export route” → GPX or TCX (depends on app and watch version). If it's missing: link Huawei Health with Strava (Me → Data sharing and authorization → Strava), then on strava.com open the activity → ⋯ → “Export GPX”.</li>
           <li><b>Strava</b> (web): open the activity → ⋯ → “Export GPX” — works for any watch synced with Strava.</li>
-          <li>On the Training tab tap the “⌚ Training from watch” tile, then “LOAD GPX / TCX / FIT FILE”, choose the file, check the data and tap “SAVE TRAINING”. The route is saved with the training.</li>
+          <li>On the Training tab tap the “⌚ Training from watch” tile, then “LOAD GPX / TCX / FIT / KML FILE”, choose the file, check the data and tap “SAVE TRAINING”. The route is saved with the training.</li>
         </ul>
       </details>
       <details><summary>📋 History</summary>
@@ -1461,7 +1463,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "119";
+const APP_BUILD = "121";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -5627,13 +5629,13 @@ function gpxDiscipline(xml) {
 function activityTypeToDisc(type) {
   const s = String(type || "").toLowerCase();
   if (!s) return null;
-  if (/swim/.test(s)) return /pool|lap|basen/.test(s) ? "Basen" : "WodyOtwarte";
+  if (/swim|pływ|plyw/.test(s)) return /pool|lap|basen/.test(s) ? "Basen" : "WodyOtwarte";
   if (/nordic/.test(s)) return "NordicWalking";
-  if (/hik|walk|trek|mountaineer/.test(s)) return "Trekking";
-  if (/kayak|paddl|canoe|row/.test(s)) return "Kajak";
-  if (/driv|4x4|off.?road/.test(s)) return "Auto4x4";
-  if (/cycl|bik|ride/.test(s)) return "Rower";
-  if (/run|jog/.test(s)) return "Bieg";
+  if (/cycl|bik|ride|rower/.test(s)) return "Rower"; // przed „row” (wioślarstwo), bo „rower” je zawiera
+  if (/hik|walk|trek|mountaineer|marsz|spacer|wędr|wedr/.test(s)) return "Trekking";
+  if (/kayak|kajak|paddl|canoe|row|kanu/.test(s)) return "Kajak";
+  if (/driv|4x4|off.?road|terenow/.test(s)) return "Auto4x4";
+  if (/run|jog|bieg/.test(s)) return "Bieg";
   return null;
 }
 
@@ -5972,42 +5974,42 @@ function initTrainModes() {
   renderTrainMode();
 }
 
-function importTrainingFile(file) {
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      let parsed;
-      if (isFitFile(reader.result)) {
-        parsed = parseFit(reader.result);
-      } else {
-        const text = new TextDecoder("utf-8").decode(reader.result);
-        const xml = new DOMParser().parseFromString(text, "application/xml");
-        if (xml.getElementsByTagName("parsererror").length > 0) {
-          throw new Error(t().errBadXml);
-        }
-        const isTcx = xml.getElementsByTagName("TrainingCenterDatabase").length > 0;
-        parsed = isTcx ? parseTcx(xml) : parseGpx(xml);
+async function importTrainingFile(file) {
+  try {
+    let parsed;
+    let buf = await readFileBuffer(file);
+    const b = new Uint8Array(buf, 0, Math.min(4, buf.byteLength));
+    if (b[0] === 0x50 && b[1] === 0x4b && b[2] === 3 && b[3] === 4) buf = await unzipKmz(buf); // KMZ = ZIP z KML
+    if (isFitFile(buf)) {
+      parsed = parseFit(buf);
+    } else {
+      const text = new TextDecoder("utf-8").decode(buf);
+      const xml = new DOMParser().parseFromString(text, "application/xml");
+      if (xml.getElementsByTagName("parsererror").length > 0) {
+        throw new Error(t().errBadXml);
       }
-
-      document.getElementById("date").value = parsed.date;
-      document.getElementById("dist").value = parsed.dist;
-      document.getElementById("time").value = parsed.time;
-      document.getElementById("hr").value = parsed.hr;
-      document.getElementById("steps").value = parsed.steps || "";
-      document.getElementById("discipline").value = parsed.disc;
-      updateDisciplineUi();
-      pendingRoute = parsed.route && parsed.route.length >= 2 ? parsed.route : null;
-      pendingRouteImported = true;
-      openTrainForm();
-      updateTrainSaveRouteRow();
-
-      const noSteps = STEP_DISCIPLINES.includes(parsed.disc) && !parsed.steps;
-      alert(t().importSuccess(parsed) + (noSteps ? t().importNoSteps : ""));
-    } catch (e) {
-      alert(t().importError(e.message));
+      const isTcx = xml.getElementsByTagName("TrainingCenterDatabase").length > 0;
+      const isKml = xml.documentElement && xml.documentElement.localName === "kml";
+      parsed = isTcx ? parseTcx(xml) : isKml ? parseKmlTraining(xml, file.name) : parseGpx(xml);
     }
-  };
-  reader.readAsArrayBuffer(file);
+
+    document.getElementById("date").value = parsed.date;
+    document.getElementById("dist").value = parsed.dist;
+    document.getElementById("time").value = parsed.time;
+    document.getElementById("hr").value = parsed.hr;
+    document.getElementById("steps").value = parsed.steps || "";
+    document.getElementById("discipline").value = parsed.disc;
+    updateDisciplineUi();
+    pendingRoute = parsed.route && parsed.route.length >= 2 ? parsed.route : null;
+    pendingRouteImported = true;
+    openTrainForm();
+    updateTrainSaveRouteRow();
+
+    const noSteps = STEP_DISCIPLINES.includes(parsed.disc) && !parsed.steps;
+    alert(t().importSuccess(parsed) + (parsed.noTime ? t().importNoTime : "") + (noSteps ? t().importNoSteps : ""));
+  } catch (e) {
+    alert(t().importError(e.message));
+  }
 }
 
 // --- Nagrywanie treningu GPS-em telefonu (bez zegarka) ---
@@ -6066,6 +6068,33 @@ function getBodyWeight() {
 function recAddKcal(disc, kmh, seconds) {
   if (!rec || !rec.weightKg) return;
   rec.kcal = (rec.kcal || 0) + metFor(disc, kmh) * rec.weightKg * (seconds / 3600);
+}
+
+// Poniżej tej prędkości (km/h) uznajemy, że stoisz - bez kalorii. Bez tego „pływanie” GPS-u
+// nieruchomego telefonu (skoki po kilka metrów co sekundę) liczyło się jak bieg 20 km/h.
+const REC_STILL_KMH = { Bieg: 2, Trekking: 1.5, NordicWalking: 1.5, Rower: 3, Kajak: 1, WodyOtwarte: 0.5, Auto4x4: 3 };
+
+// Ostatnie surowe odczyty (ok. 30 s) - prędkość „z okna”, gdy telefon nie podaje prędkości z GPS.
+// Szum pozycji stojącego telefonu w 30 s to kilka-kilkanaście metrów (< 2 km/h), bieg to ~80 m.
+const REC_SPEED_WINDOW_MS = 30000;
+let recRaw = [];
+function recWindowKmh(lat, lon, ts) {
+  recRaw.push([lat, lon, ts]);
+  while (recRaw.length > 2 && recRaw[1][2] <= ts - REC_SPEED_WINDOW_MS) recRaw.shift();
+  const [lat0, lon0, ts0] = recRaw[0];
+  const span = (ts - ts0) / 1000;
+  return span >= 10 ? haversineKm(lat0, lon0, lat, lon) / (span / 3600) : null;
+}
+
+// Kalorie liczone od ostatniego odczytu (rec.kcalAt), osobno od dystansu, żeby czas stania
+// nie trafiał do następnego odcinka ruchu. kmh = prędkość z GPS (Doppler) albo z odcinka.
+function recKcalTick(ts, kmh) {
+  if (!rec) return;
+  const from = rec.kcalAt;
+  rec.kcalAt = ts;
+  if (!from || ts <= from) return;
+  if (!(kmh >= (REC_STILL_KMH[rec.disc] || 1.5))) return;
+  recAddKcal(rec.disc, kmh, (ts - from) / 1000);
 }
 
 let rec = null;            // { disc, startedAt, pausedMs, pausedAt, points: [[lat, lon, ele|null, t]], distKm, gaps }
@@ -6241,17 +6270,33 @@ function recOnPosition(pos) {
   const point = [+c.latitude.toFixed(6), +c.longitude.toFixed(6), ele, ts];
   const last = rec.points[rec.points.length - 1];
 
+  // Prędkość z GPS (efekt Dopplera) - przy staniu bliska 0, w przeciwieństwie do skoków pozycji;
+  // gdy jej brak - średnia z ostatnich 30 s. null = jeszcze nie wiadomo (pierwsze sekundy).
+  const gpsKmh = Number.isFinite(c.speed) && c.speed >= 0 ? c.speed * 3.6 : null;
+  const fixGapS = recRaw.length ? (ts - recRaw[recRaw.length - 1][2]) / 1000 : 0; // od poprzedniego odczytu
+  const winKmh = recWindowKmh(point[0], point[1], ts);
+  const speedKmh = gpsKmh !== null ? gpsKmh : winKmh;
+  const stillKmh = REC_STILL_KMH[rec.disc] || 1.5;
+
   if (!last || rec.resumed) {
     // Pierwszy punkt albo pierwszy po pauzie: ruch w czasie pauzy się nie liczy.
     rec.points.push(point);
     rec.resumed = false;
+    rec.kcalAt = ts;
     recSetStatus(t().recGpsOk);
   } else {
     const d = haversineKm(last[0], last[1], point[0], point[1]);
     const dt = Math.max(1, (ts - last[3]) / 1000);
     const kmh = d / (dt / 3600);
     const maxKmh = REC_MAX_KMH[rec.disc] || 60;
-    if (d * 1000 < REC_MIN_STEP_M) { recRender(); return; }
+    // Szum GPS: drobny ruch albo stanie w miejscu (wg prędkości) - punkt pomijamy, bez dystansu i kalorii.
+    // Po długiej przerwie (tło, brak sygnału) prędkość chwilowa nic nie mówi o odcinku - decyduje dystans.
+    const still = fixGapS <= REC_GAP_S && speedKmh !== null && speedKmh < stillKmh;
+    if (d * 1000 < REC_MIN_STEP_M || still) {
+      if (speedKmh !== null) recKcalTick(ts, speedKmh); // jeszcze bez prędkości - czas doliczy następny odcinek
+      recRender();
+      return;
+    }
     if (dt <= REC_GAP_S && kmh > maxKmh) {
       // Skok GPS - pomijamy; po kilku z rzędu uznajemy nowe miejsce, ale bez doliczania dystansu.
       recRejects++;
@@ -6261,7 +6306,10 @@ function recOnPosition(pos) {
       if (dt > REC_GAP_S) rec.gaps = (rec.gaps || 0) + 1;
       if (kmh <= maxKmh) {
         rec.distKm += d;
-        recAddKcal(rec.disc, kmh, dt);
+        // Po długiej przerwie (tło, brak sygnału) - średnia z odcinka; inaczej prędkość z GPS, jeśli jest.
+        recKcalTick(ts, dt > REC_GAP_S || speedKmh === null ? kmh : speedKmh);
+      } else {
+        recKcalTick(ts, 0);
       }
       rec.points.push(point);
     }
@@ -6797,6 +6845,38 @@ function parseKmlRoute(xml) {
   return { track, name, pois };
 }
 
+// Trening z KML/KMZ (eksport z zegarka/aplikacji, Google Earth, Mapy.cz): trasa jak w parseKmlRoute,
+// czas z gx:Track <when> albo TimeSpan/TimeStamp; dyscyplina zgadywana z nazwy i opisu.
+// Suunto app eksportuje samą linię bez czasów - datę i dyscyplinę bierzemy wtedy z nazwy pliku
+// (np. „suuntoapp-Running-2026-11-25T14-04-45Z-route.kml”), czas trzeba wpisać ręcznie.
+function parseKmlTraining(xml, fileName) {
+  const parsed = parseKmlRoute(xml);
+  const track = parsed.track.filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lon) && Math.abs(p.lat) <= 90 && Math.abs(p.lon) <= 180);
+  if (track.length < 2) throw new Error(t().navNoPoints);
+  const byName = (tag) => Array.from(xml.getElementsByTagNameNS("*", tag));
+  const times = byName("when").concat(byName("begin"), byName("end"))
+    .map((el) => Date.parse(el.textContent.trim()))
+    .filter(Number.isFinite)
+    .sort((a, b) => a - b);
+  let timeMin = 0;
+  const fileDate = String(fileName || "").match(/(20\d\d)-(\d\d)-(\d\d)/);
+  let date = fileDate ? fileDate.slice(1).join("-") : new Date().toISOString().slice(0, 10);
+  if (times.length) {
+    date = new Date(times[0]).toISOString().slice(0, 10);
+    timeMin = (times[times.length - 1] - times[0]) / 60000;
+  }
+  const descr = byName("description").map((el) => el.textContent).join(" ");
+  return {
+    date,
+    dist: trackDistanceKm(track).toFixed(2),
+    time: timeMin.toFixed(1),
+    hr: "0",
+    disc: activityTypeToDisc(`${parsed.name} ${descr}`) || activityTypeToDisc(String(fileName || "").replace(/suunto\s*app/gi, "")) || "Bieg",
+    noTime: !times.length,
+    route: downsampleRoute(track, 200),
+  };
+}
+
 // KMZ = ZIP z plikiem .kml w środku. Rozpakowanie bez bibliotek: katalog centralny ZIP + DecompressionStream.
 async function unzipKmz(buf) {
   const dv = new DataView(buf);
@@ -7244,6 +7324,7 @@ function startRecording() {
     try { localStorage.setItem(BODY_WEIGHT_KEY, String(rec.weightKg)); } catch (e) { /* brak dostępu */ }
   }
   recRejects = 0;
+  recRaw = [];
   recLastAccuracy = null;
   recSave(true);
   recRender();
@@ -7260,6 +7341,8 @@ function toggleRecordingPause() {
     rec.pausedMs += Date.now() - rec.pausedAt;
     rec.pausedAt = null;
     rec.resumed = true;
+    rec.kcalAt = null;
+    recRaw = [];
     navRt.since = Date.now();
     recStartWatching();
     recRequestWakeLock();
