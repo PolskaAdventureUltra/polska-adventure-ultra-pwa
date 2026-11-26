@@ -57,6 +57,7 @@ const TRANSLATIONS = {
     labelTime: "Czas (min)",
     labelHr: "Śr. tętno (bpm)",
     labelSteps: "Kroki",
+    importNoTime: "\n⏱ Ten plik zawiera tylko trasę, bez czasu i tętna. Wpisz czas ręcznie (FIT z zegarka ma komplet danych).",
     importNoSteps: "\n👣 Ten plik nie zawiera kroków. Wyeksportuj trening jako FIT albo wpisz kroki ręcznie.",
     updateText: "🆕 Nowa wersja PAU w Sklepie Google Play. Twoje treningi zostają na telefonie.",
     updateNowBtn: "AKTUALIZUJ",
@@ -730,6 +731,7 @@ const TRANSLATIONS = {
     labelTime: "Time (min)",
     labelHr: "Avg. heart rate (bpm)",
     labelSteps: "Steps",
+    importNoTime: "\n⏱ This file has only the route, no time or heart rate. Enter the time manually (a FIT file from the watch has all the data).",
     importNoSteps: "\n👣 This file has no steps. Export the training as FIT or enter the steps manually.",
     updateText: "🆕 New PAU version on Google Play. Your trainings stay on your phone.",
     updateNowBtn: "UPDATE",
@@ -5988,7 +5990,7 @@ async function importTrainingFile(file) {
       }
       const isTcx = xml.getElementsByTagName("TrainingCenterDatabase").length > 0;
       const isKml = xml.documentElement && xml.documentElement.localName === "kml";
-      parsed = isTcx ? parseTcx(xml) : isKml ? parseKmlTraining(xml) : parseGpx(xml);
+      parsed = isTcx ? parseTcx(xml) : isKml ? parseKmlTraining(xml, file.name) : parseGpx(xml);
     }
 
     document.getElementById("date").value = parsed.date;
@@ -6004,7 +6006,7 @@ async function importTrainingFile(file) {
     updateTrainSaveRouteRow();
 
     const noSteps = STEP_DISCIPLINES.includes(parsed.disc) && !parsed.steps;
-    alert(t().importSuccess(parsed) + (noSteps ? t().importNoSteps : ""));
+    alert(t().importSuccess(parsed) + (parsed.noTime ? t().importNoTime : "") + (noSteps ? t().importNoSteps : ""));
   } catch (e) {
     alert(t().importError(e.message));
   }
@@ -6799,7 +6801,9 @@ function parseKmlRoute(xml) {
 
 // Trening z KML/KMZ (eksport z zegarka/aplikacji, Google Earth, Mapy.cz): trasa jak w parseKmlRoute,
 // czas z gx:Track <when> albo TimeSpan/TimeStamp; dyscyplina zgadywana z nazwy i opisu.
-function parseKmlTraining(xml) {
+// Suunto app eksportuje samą linię bez czasów - datę i dyscyplinę bierzemy wtedy z nazwy pliku
+// (np. „suuntoapp-Running-2026-11-25T14-04-45Z-route.kml”), czas trzeba wpisać ręcznie.
+function parseKmlTraining(xml, fileName) {
   const parsed = parseKmlRoute(xml);
   const track = parsed.track.filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lon) && Math.abs(p.lat) <= 90 && Math.abs(p.lon) <= 180);
   if (track.length < 2) throw new Error(t().navNoPoints);
@@ -6809,7 +6813,8 @@ function parseKmlTraining(xml) {
     .filter(Number.isFinite)
     .sort((a, b) => a - b);
   let timeMin = 0;
-  let date = new Date().toISOString().slice(0, 10);
+  const fileDate = String(fileName || "").match(/(20\d\d)-(\d\d)-(\d\d)/);
+  let date = fileDate ? fileDate.slice(1).join("-") : new Date().toISOString().slice(0, 10);
   if (times.length) {
     date = new Date(times[0]).toISOString().slice(0, 10);
     timeMin = (times[times.length - 1] - times[0]) / 60000;
@@ -6820,7 +6825,8 @@ function parseKmlTraining(xml) {
     dist: trackDistanceKm(track).toFixed(2),
     time: timeMin.toFixed(1),
     hr: "0",
-    disc: activityTypeToDisc(`${parsed.name} ${descr}`) || "Bieg",
+    disc: activityTypeToDisc(`${parsed.name} ${descr}`) || activityTypeToDisc(String(fileName || "").replace(/suunto\s*app/gi, "")) || "Bieg",
+    noTime: !times.length,
     route: downsampleRoute(track, 200),
   };
 }
