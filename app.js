@@ -6070,6 +6070,33 @@ function recAddKcal(disc, kmh, seconds) {
   rec.kcal = (rec.kcal || 0) + metFor(disc, kmh) * rec.weightKg * (seconds / 3600);
 }
 
+// Poniżej tej prędkości (km/h) uznajemy, że stoisz - bez kalorii. Bez tego „pływanie” GPS-u
+// nieruchomego telefonu (skoki po kilka metrów co sekundę) liczyło się jak bieg 20 km/h.
+const REC_STILL_KMH = { Bieg: 2, Trekking: 1.5, NordicWalking: 1.5, Rower: 3, Kajak: 1, WodyOtwarte: 0.5, Auto4x4: 3 };
+
+// Ostatnie surowe odczyty (ok. 30 s) - prędkość „z okna”, gdy telefon nie podaje prędkości z GPS.
+// Szum pozycji stojącego telefonu w 30 s to kilka-kilkanaście metrów (< 2 km/h), bieg to ~80 m.
+const REC_SPEED_WINDOW_MS = 30000;
+let recRaw = [];
+function recWindowKmh(lat, lon, ts) {
+  recRaw.push([lat, lon, ts]);
+  while (recRaw.length > 2 && recRaw[1][2] <= ts - REC_SPEED_WINDOW_MS) recRaw.shift();
+  const [lat0, lon0, ts0] = recRaw[0];
+  const span = (ts - ts0) / 1000;
+  return span >= 10 ? haversineKm(lat0, lon0, lat, lon) / (span / 3600) : null;
+}
+
+// Kalorie liczone od ostatniego odczytu (rec.kcalAt), osobno od dystansu, żeby czas stania
+// nie trafiał do następnego odcinka ruchu. kmh = prędkość z GPS (Doppler) albo z odcinka.
+function recKcalTick(ts, kmh) {
+  if (!rec) return;
+  const from = rec.kcalAt;
+  rec.kcalAt = ts;
+  if (!from || ts <= from) return;
+  if (!(kmh >= (REC_STILL_KMH[rec.disc] || 1.5))) return;
+  recAddKcal(rec.disc, kmh, (ts - from) / 1000);
+}
+
 let rec = null;            // { disc, startedAt, pausedMs, pausedAt, points: [[lat, lon, ele|null, t]], distKm, gaps }
 let recWatchId = null;
 let recTimer = null;
@@ -6243,17 +6270,33 @@ function recOnPosition(pos) {
   const point = [+c.latitude.toFixed(6), +c.longitude.toFixed(6), ele, ts];
   const last = rec.points[rec.points.length - 1];
 
+  // Prędkość z GPS (efekt Dopplera) - przy staniu bliska 0, w przeciwieństwie do skoków pozycji;
+  // gdy jej brak - średnia z ostatnich 30 s. null = jeszcze nie wiadomo (pierwsze sekundy).
+  const gpsKmh = Number.isFinite(c.speed) && c.speed >= 0 ? c.speed * 3.6 : null;
+  const fixGapS = recRaw.length ? (ts - recRaw[recRaw.length - 1][2]) / 1000 : 0; // od poprzedniego odczytu
+  const winKmh = recWindowKmh(point[0], point[1], ts);
+  const speedKmh = gpsKmh !== null ? gpsKmh : winKmh;
+  const stillKmh = REC_STILL_KMH[rec.disc] || 1.5;
+
   if (!last || rec.resumed) {
     // Pierwszy punkt albo pierwszy po pauzie: ruch w czasie pauzy się nie liczy.
     rec.points.push(point);
     rec.resumed = false;
+    rec.kcalAt = ts;
     recSetStatus(t().recGpsOk);
   } else {
     const d = haversineKm(last[0], last[1], point[0], point[1]);
     const dt = Math.max(1, (ts - last[3]) / 1000);
     const kmh = d / (dt / 3600);
     const maxKmh = REC_MAX_KMH[rec.disc] || 60;
-    if (d * 1000 < REC_MIN_STEP_M) { recRender(); return; }
+    // Szum GPS: drobny ruch albo stanie w miejscu (wg prędkości) - punkt pomijamy, bez dystansu i kalorii.
+    // Po długiej przerwie (tło, brak sygnału) prędkość chwilowa nic nie mówi o odcinku - decyduje dystans.
+    const still = fixGapS <= REC_GAP_S && speedKmh !== null && speedKmh < stillKmh;
+    if (d * 1000 < REC_MIN_STEP_M || still) {
+      if (speedKmh !== null) recKcalTick(ts, speedKmh); // jeszcze bez prędkości - czas doliczy następny odcinek
+      recRender();
+      return;
+    }
     if (dt <= REC_GAP_S && kmh > maxKmh) {
       // Skok GPS - pomijamy; po kilku z rzędu uznajemy nowe miejsce, ale bez doliczania dystansu.
       recRejects++;
@@ -6263,7 +6306,10 @@ function recOnPosition(pos) {
       if (dt > REC_GAP_S) rec.gaps = (rec.gaps || 0) + 1;
       if (kmh <= maxKmh) {
         rec.distKm += d;
-        recAddKcal(rec.disc, kmh, dt);
+        // Po długiej przerwie (tło, brak sygnału) - średnia z odcinka; inaczej prędkość z GPS, jeśli jest.
+        recKcalTick(ts, dt > REC_GAP_S || speedKmh === null ? kmh : speedKmh);
+      } else {
+        recKcalTick(ts, 0);
       }
       rec.points.push(point);
     }
@@ -7278,6 +7324,7 @@ function startRecording() {
     try { localStorage.setItem(BODY_WEIGHT_KEY, String(rec.weightKg)); } catch (e) { /* brak dostępu */ }
   }
   recRejects = 0;
+  recRaw = [];
   recLastAccuracy = null;
   recSave(true);
   recRender();
@@ -7294,6 +7341,8 @@ function toggleRecordingPause() {
     rec.pausedMs += Date.now() - rec.pausedAt;
     rec.pausedAt = null;
     rec.resumed = true;
+    rec.kcalAt = null;
+    recRaw = [];
     navRt.since = Date.now();
     recStartWatching();
     recRequestWakeLock();
