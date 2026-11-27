@@ -542,6 +542,8 @@ body.dark .mode-tile.active { box-shadow: 0 6px 16px rgba(255, 106, 43, 0.25); }
 .rec-pos-arrow { display: none; position: absolute; left: 10px; top: -4px; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 13px solid #D86C28; filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff); }
 .rec-pos.has-heading .rec-pos-arrow { display: block; }
 .rec-nav.nav-appr { border-left-color: #D86C28; }
+.rec-nav-route-btn { margin-top: 8px; }
+.rec-nav-route-hint { margin: 4px 0 0; font-size: 12px; }
 .rec-poi-pick { margin-top: 8px; }
 .rec-poi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .rec-poi-grid button { margin: 0; padding: 8px 4px; font-size: 22px; display: flex; flex-direction: column; align-items: center; gap: 2px; }

@@ -185,9 +185,14 @@ const TRANSLATIONS = {
     navRotateOff: "⬆ Północ u góry",
     navRotateTitle: "Obracanie mapy: kierunek jazdy u góry albo północ u góry",
     navApproach: (dist) => `🧭 Prowadzę do trasy — jeszcze ${dist}`,
-    navApproachStraight: (dist) => `🧭 Do trasy w linii prostej ${dist} (brak drogi z serwera)`,
+    navApproachStraight: (dist) => `🧭 Trasa jest ${dist} stąd (w linii prostej) — strzałka pokazuje kierunek`,
+    navApproachFailed: "⚠️ Nie udało się wyznaczyć drogi (brak internetu?) — została strzałka w linii prostej",
     navSayApproach: (dist) => `Prowadzę do trasy. ${dist}`,
-    navSayReroute: (dist) => `Wyznaczam drogę powrotną do trasy. ${dist}`,
+    navSayApproachStraight: (dist) => `Trasa jest ${dist} stąd. Strzałka pokazuje kierunek`,
+    navSayRouteFail: "Nie udało się wyznaczyć drogi. Strzałka pokazuje kierunek do trasy",
+    navRouteToBtn: "🧭 Prowadź do trasy (wyznacz drogę)",
+    navRouteToBusy: "⏳ Wyznaczam drogę…",
+    navRouteToHint: "Wyznaczy drogę po ścieżkach i drogach do najbliższego miejsca na trasie. Wysyła przy tym Twoją bieżącą pozycję i ten punkt na trasie do darmowego serwisu BRouter (brouter.de) — nic poza tym.",
     navSayJoined: "Jesteś na trasie. Prowadzę dalej",
     navToRoute: "do trasy",
     navBusy: "Trwa nagrywanie — prowadzenie wybierasz przed START.",
@@ -598,7 +603,7 @@ const TRANSLATIONS = {
           <li><b>📍 Punkty na trasie</b> (żywienie, przepak, nocleg, sklep, woda, ⚠️ niebezpieczne miejsce, inne): otwórz trasę (🗺), kliknij „📍 DODAJ PUNKT NA TRASIE” i dotknij miejsca na mapie — wybierasz rodzaj, nazwę i opis; kliknięcie ikony na mapie albo ✏️ na liście pozwala punkt poprawić lub usunąć. W nagrywaniu telefonem przycisk „📍 PUNKT TUTAJ” zapisuje punkt w miejscu, w którym jesteś (nazwę możesz od razu wpisać albo podyktować, a pod spodem jest lista dodanych punktów z ✏️ i 🗑); po zakończeniu zapiszesz przebytą trasę z punktami w zakładce Trasy (albo zaznacz przed START „🗺 Zapisz przebytą trasę”). Trasę z zegarka wczytasz „📂 WCZYTAJ TRASĘ Z PLIKU” i dodasz punkty potem. Punkty trafiają do pliku GPX (zegarek pokaże je jako punkty trasy), a przy prowadzeniu po trasie widać „Następny punkt: … za X km”, a głos uprzedza ok. 300 m wcześniej (przed niebezpiecznym miejscem 500 m wcześniej, z wibracją).</li>
           <li><b>🧭 Prowadzenie po trasie w telefonie</b>: „📂 WCZYTAJ TRASĘ Z PLIKU” (GPX / TCX / FIT / KML / KMZ, np. z Garmin Connect, Komoot, Strava, MAPS.ME) dodaje trasę do listy. Przycisk 🧭 przy trasie — albo pole „Prowadź po trasie” przed START w nagrywaniu telefonem — włącza prowadzenie: trasa jest na mapie, widać kilometry do końca, a gdy zboczysz o ok. 50 m (rower 60 m, kajak i pływanie 100 m), telefon zawibruje, pokaże czerwony komunikat i powie to głosem (głos wyłączysz polem „🔊 Komunikaty głosowe” albo przyciskiem 🔊 w trakcie); w aplikacji ze Sklepu Play przy zgaszonym ekranie dostaniesz powiadomienie. Przy słabym GPS ostrzeżenia są wstrzymane, żeby nie było fałszywych alarmów — trasa zostaje na mapie.</li>
           <li><b>↱ Skręty jak w nawigacji</b>: w trakcie prowadzenia nad mapą widać następny manewr i odległość do niego, a głos mówi „Za 100 metrów skręć w prawo” (na rowerze 200 m), przy samym skręcie „Skręć w prawo”, a za nim „Teraz prosto przez…”. Skręty są wyliczane z kształtu trasy, więc aplikacja nie zna nazw ulic ani skrzyżowań — na krętej ścieżce może zapowiedzieć ostry zakręt jako skręt. Przy kajaku i pływaniu komunikatów o skrętach nie ma. Na mapie strzałka pokazuje kierunek ruchu, przebyta część trasy robi się szara, a gdy przesuniesz mapę palcem, wrócisz do siebie przyciskiem „📍 Wróć do mnie”. Mapa obraca się kierunkiem jazdy do góry — przyciskiem „🧭 Kierunek jazdy / ⬆ Północ u góry” w rogu mapy przełączysz na północ u góry.</li>
-          <li><b>🧭 Prowadzenie do trasy</b>: gdy po START jesteś z dala od trasy (albo mocno z niej zboczysz), aplikacja wyznacza drogę po ścieżkach i drogach do najbliższego miejsca na trasie — nie musisz wracać na start: jeśli jesteś w połowie, dołączysz w połowie, a z dwóch podobnie bliskich miejsc wybierze to bliżej mety. Droga dojścia jest na mapie pomarańczową przerywaną linią, z komunikatami o skrętach; po dojściu usłyszysz „Jesteś na trasie”. Drogę liczy darmowy serwis BRouter (jak w planerze tras) — bez internetu zostaje strzałka i odległość w linii prostej.</li>
+          <li><b>🧭 Prowadzenie do trasy</b>: gdy po START jesteś z dala od trasy (albo mocno z niej zboczysz), aplikacja pokazuje strzałkę i odległość do najbliższego miejsca na trasie — nie musisz wracać na start: jeśli jesteś w połowie, dołączysz w połowie, a z dwóch podobnie bliskich miejsc wybierze to bliżej mety. Przycisk „🧭 Prowadź do trasy” wyznacza do tego miejsca drogę po ścieżkach i drogach (pomarańczowa przerywana linia, z komunikatami o skrętach); po dojściu usłyszysz „Jesteś na trasie”. Drogę liczy darmowy serwis BRouter (jak w planerze tras) — dostaje wtedy Twoją pozycję, dlatego tylko po dotknięciu przycisku.</li>
           <li>Wyznaczanie trasy po drogach wymaga internetu (darmowy serwis BRouter — wysyłane są wyłącznie współrzędne klikniętych punktów). Bez internetu odcinki będą liniami prostymi.</li>
         </ul>
       </details>
@@ -715,7 +720,7 @@ const TRANSLATIONS = {
     privacyHtml: (contact, community) => `
       ${contact ? `<p class="contact-box">✉️ Administrator danych / kontakt: <a href="mailto:${contact}">${contact}</a></p>` : ""}
       <p>Aplikacja domyślnie trzyma wszystkie dane (treningi, trasy, PIN) <b>tylko na Twoim telefonie</b>.</p>
-      <p><b>Usługi zewnętrzne:</b> podczas oglądania map telefon pobiera kafelki z serwerów OpenStreetMap, a przy wyznaczaniu trasy po drogach wysyła współrzędne klikniętych punktów do darmowego serwisu BRouter (brouter.de) — przy prowadzeniu po trasie, gdy jesteś z dala od niej, także Twoją bieżącą pozycję i punkt na trasie, do którego prowadzi aplikacja (bez żadnych innych danych). Serwery te, jak każda strona internetowa, widzą adres IP Twojego urządzenia. Nie są im przekazywane żadne inne dane.</p>
+      <p><b>Usługi zewnętrzne:</b> podczas oglądania map telefon pobiera kafelki z serwerów OpenStreetMap, a przy wyznaczaniu trasy po drogach wysyła współrzędne klikniętych punktów do darmowego serwisu BRouter (brouter.de) — a przy prowadzeniu po trasie, gdy dotkniesz „🧭 Prowadź do trasy”, także Twoją bieżącą pozycję i punkt na trasie, do którego ma prowadzić droga (bez żadnych innych danych). Bez tego przycisku Twoja pozycja nie jest nigdzie wysyłana. Serwery te, jak każda strona internetowa, widzą adres IP Twojego urządzenia. Nie są im przekazywane żadne inne dane.</p>
       ${community ? `<p>Na serwer aplikacji trafiają wyłącznie dane, na które się zgodzisz:</p>
       <ul>
         <li><b>Statystyki użytkowników</b> (tylko za zgodą): losowy identyfikator urządzenia i czas ostatniego użycia aplikacji. Cel: policzenie, ile osób korzysta z aplikacji (łącznie i w danym okresie). Liczymy tylko liczby — identyfikator nie jest powiązany z imieniem, nickiem ani treningami. Usuwany po 13 miesiącach braku aktywności lub od razu po wyłączeniu zgody.</li>
@@ -877,9 +882,14 @@ const TRANSLATIONS = {
     navRotateOff: "⬆ North up",
     navRotateTitle: "Map rotation: direction of travel up or north up",
     navApproach: (dist) => `🧭 Guiding you to the route — ${dist} to go`,
-    navApproachStraight: (dist) => `🧭 Route is ${dist} away in a straight line (no road route from the server)`,
+    navApproachStraight: (dist) => `🧭 The route is ${dist} away (straight line) — the arrow shows the direction`,
+    navApproachFailed: "⚠️ Could not find a way (no internet?) — showing the straight-line arrow",
     navSayApproach: (dist) => `Guiding you to the route. ${dist}`,
-    navSayReroute: (dist) => `Finding the way back to the route. ${dist}`,
+    navSayApproachStraight: (dist) => `The route is ${dist} away. The arrow shows the direction`,
+    navSayRouteFail: "Could not find a way. The arrow shows the direction to the route",
+    navRouteToBtn: "🧭 Guide me to the route (find a way)",
+    navRouteToBusy: "⏳ Finding a way…",
+    navRouteToHint: "Finds a way along paths and roads to the nearest place on the route. To do this it sends your current position and that point on the route to the free BRouter service (brouter.de) — nothing else.",
     navSayJoined: "You are on the route. Continuing guidance",
     navToRoute: "to the route",
     navBusy: "Recording in progress — choose a route before START.",
@@ -1290,7 +1300,7 @@ const TRANSLATIONS = {
           <li><b>📍 Points on the route</b> (food, drop bag, overnight, shop, water, ⚠️ dangerous spot, other): open a route (🗺), tap “📍 ADD A POINT ON THE ROUTE” and tap the place on the map — choose the type, name and description; tapping the icon on the map or ✏️ in the list lets you edit or delete it. In phone recording, “📍 POINT HERE” saves a point where you are (you can type or dictate a name right away; below there is a list of added points with ✏️ and 🗑); after finishing you can save the recorded route with the points in the Routes tab (or tick “🗺 Save the recorded route” before START). Load a watch route with “📂 LOAD ROUTE FROM FILE” and add points afterwards. Points go into the GPX file (the watch shows them as course points), and during route guidance you see “Next point: … in X km” and the voice warns about 300 m ahead (500 m ahead with vibration before a dangerous spot).</li>
           <li><b>🧭 Route guidance on the phone</b>: “📂 LOAD ROUTE FROM FILE” (GPX / TCX / FIT / KML / KMZ, e.g. from Garmin Connect, Komoot, Strava, MAPS.ME) adds a route to the list. The 🧭 button next to a route — or the “Follow a route” field before START in phone recording — turns on guidance: the route is on the map, you see the distance left, and when you go about 50 m off route (cycling 60 m, kayak and swimming 100 m) the phone vibrates, shows a red message and says it out loud (turn the voice off with the “🔊 Voice prompts” box or the 🔊 button while recording); in the Play Store app you get a notification while the screen is off. With weak GPS, warnings are paused to avoid false alarms — the route stays on the map.</li>
           <li><b>↱ Turn-by-turn prompts</b>: while following a route, the next manoeuvre and its distance are shown above the map, and the voice says “In 100 metres, turn right” (200 m on a bike), “Turn right” at the turn and then “Continue straight for…”. Turns are worked out from the shape of the route, so the app does not know street names or junctions — on a twisty path a sharp bend may be announced as a turn. There are no turn prompts for kayaking and swimming. On the map an arrow shows your direction, the part already covered turns grey, and if you move the map with your finger, “📍 Back to me” brings you back. The map turns so that your direction of travel is up — switch to north up with the “🧭 Heading up / ⬆ North up” button in the corner of the map.</li>
-          <li><b>🧭 Guidance to the route</b>: if after START you are away from the route (or go far off it), the app finds a way along paths and roads to the nearest place on the route — you don't have to go back to the start: if you are halfway, you join halfway, and of two similarly close places it picks the one nearer the finish. The way there is shown as an orange dashed line, with turn prompts; when you get there you hear “You are on the route”. The way is calculated by the free BRouter service (as in the route planner) — without internet you get an arrow and the straight-line distance.</li>
+          <li><b>🧭 Guidance to the route</b>: if after START you are away from the route (or go far off it), the app shows an arrow and the distance to the nearest place on the route — you don't have to go back to the start: if you are halfway, you join halfway, and of two similarly close places it picks the one nearer the finish. The “🧭 Guide me to the route” button finds a way there along paths and roads (orange dashed line, with turn prompts); when you get there you hear “You are on the route”. The way is calculated by the free BRouter service (as in the route planner), which then receives your position — that is why it only happens when you tap the button.</li>
           <li>Road routing needs internet (free BRouter service — only the coordinates of tapped points are sent). Offline, sections are straight lines.</li>
         </ul>
       </details>
@@ -1407,7 +1417,7 @@ const TRANSLATIONS = {
     privacyHtml: (contact, community) => `
       ${contact ? `<p class="contact-box">✉️ Data controller / contact: <a href="mailto:${contact}">${contact}</a></p>` : ""}
       <p>By default the app keeps all data (trainings, routes, PIN) <b>only on your phone</b>.</p>
-      <p><b>External services:</b> when viewing maps the phone downloads tiles from OpenStreetMap servers, and when routing along roads it sends the coordinates of tapped points to the free BRouter service (brouter.de) — during route guidance, when you are away from the route, also your current position and the point on the route it is guiding you to (no other data). Like any website, these servers see your device's IP address. No other data is shared with them.</p>
+      <p><b>External services:</b> when viewing maps the phone downloads tiles from OpenStreetMap servers, and when routing along roads it sends the coordinates of tapped points to the free BRouter service (brouter.de) — and during route guidance, when you tap “🧭 Guide me to the route”, also your current position and the point on the route the way should lead to (no other data). Without that button your position is not sent anywhere. Like any website, these servers see your device's IP address. No other data is shared with them.</p>
       ${community ? `<p>Only data you agree to is sent to the app's server:</p>
       <ul>
         <li><b>User statistics</b> (only with consent): a random device ID and the time of last use. Purpose: counting how many people use the app (in total and over a given period). Only numbers are counted — the ID is not linked to any name, nickname or training. Deleted after 13 months of inactivity or immediately when you withdraw consent.</li>
@@ -7213,10 +7223,12 @@ function navLocateOn(pts, cum, lat, lon, fromIdx) {
 // ---- Dojście do trasy: gdy jesteś z dala od niej (na starcie albo po dużym zboczeniu) ----
 // Cel = najbliższy punkt trasy, a spośród podobnie bliskich (np. trasa tam i z powrotem) ten bliżej mety;
 // ostatnie 10% trasy tylko wtedy, gdy nic innego nie ma (pętla: start i meta w tym samym miejscu).
-// Drogę liczy BRouter (jak w planerze); bez internetu - linia prosta i strzałka w stronę celu.
+// Sama aplikacja pokazuje tylko strzałkę w linii prostej (nic nie wysyła). Drogę po ścieżkach liczy BRouter
+// (jak w planerze) DOPIERO po dotknięciu „Prowadź do trasy” - pozycja idzie do serwisu zewnętrznego tylko
+// na wyraźną prośbę użytkownika (Google Play: wyjątek „akcja użytkownika”, RODO: świadomy wybór).
 const NAV_APPROACH_MIN_M = 80;     // dalej niż tyle od trasy na starcie = prowadzimy do niej
-const NAV_REROUTE_M = 200;         // zboczenie większe niż tyle = nowa droga do trasy
-const NAV_REROUTE_EVERY_MS = 60000;
+const NAV_REROUTE_EVERY_MS = 60000; // zejście z wyznaczonej drogi dojścia: po tylu ms wraca strzałka
+const NAV_STRAIGHT_RETARGET_MS = 30000; // strzałka: co tyle przeliczamy najbliższe miejsce trasy (lokalnie)
 const NAV_APPROACH_PROFILE = { Rower: "trekking", Auto4x4: "car-fast", Kajak: "straight", WodyOtwarte: "straight" };
 let navApprLine = null;
 let navApprSeq = 0;
@@ -7272,24 +7284,41 @@ function navSetApproach(pts, ok, target) {
   navDrawApproach();
 }
 
-async function navStartApproach(lat, lon, reroute) {
+// mode: "straight" - tylko strzałka (bez sieci), "route" - droga z BRoutera (na prośbę użytkownika).
+async function navStartApproach(lat, lon, mode, quiet) {
   const target = navPickJoin(lat, lon);
   const seq = ++navApprSeq;
-  navSetApproach([[lat, lon], [target.lat, target.lon]], false, target); // od razu linia prosta
+  navSetApproach([[lat, lon], [target.lat, target.lon]], false, target);
   navRt.off = false;
+  navRt.offCount = 0;
   navRt.idx = target.i;
   const dict = t();
   const profile = navApproachProfile();
-  let res = { points: [], ok: false };
-  if (profile !== "straight") res = await routeSegment({ lat, lon }, { lat: target.lat, lon: target.lon }, profile);
+  if (mode !== "route" || profile === "straight") {
+    if (!quiet) navSpeakAfter(dict.navSayApproachStraight(navSayDist(navRt.appr.totalKm)));
+    recRender();
+    return;
+  }
+  navRt.appr.pending = true;
+  recRender();
+  const res = await routeSegment({ lat, lon }, { lat: target.lat, lon: target.lon }, profile);
   if (seq !== navApprSeq || !rec || !navRt.appr) return; // w międzyczasie nowe wyznaczanie albo już na trasie
   if (res.ok && res.points.length >= 2) {
     const pts = navSimplify(res.points).map((p) => [+p.lat.toFixed(6), +p.lon.toFixed(6)]);
     navSetApproach(pts, true, target);
+    navSpeakAfter(dict.navSayApproach(navSayDist(navRt.appr.totalKm)));
+  } else {
+    navRt.appr.pending = false;
+    navRt.appr.failed = true;
+    navSpeakAfter(dict.navSayRouteFail);
   }
-  const dist = navSayDist(navRt.appr.totalKm);
-  navSpeakAfter(reroute ? dict.navSayReroute(dist) : dict.navSayApproach(dist));
   recRender();
+}
+
+// Przycisk „Prowadź do trasy” - jedyne miejsce, z którego pozycja idzie do BRoutera.
+function navRouteToRoute() {
+  if (!rec || !rec.nav || !recLivePos || (navRt.appr && navRt.appr.pending)) return;
+  navStartApproach(recLivePos[0], recLivePos[1], "route");
 }
 
 function navEndApproach() {
@@ -7316,9 +7345,16 @@ function navApproachFix(lat, lon, onRouteM) {
   const loc = navLocateOn(a.pts, a.cum, lat, lon, a.idx);
   a.idx = loc.i;
   a.progressKm = loc.km;
-  // Zszedłem z drogi dojścia - po minucie wyznaczamy ją od nowa.
-  if (loc.d > Math.max(100, limit * 2) && Date.now() - a.at > NAV_REROUTE_EVERY_MS) {
-    navStartApproach(lat, lon, true);
+  // Zszedłem z wyznaczonej drogi dojścia - wraca strzałka (nowej drogi nie pobieramy bez pytania).
+  if (a.ok && loc.d > Math.max(100, limit * 2) && Date.now() - a.at > NAV_REROUTE_EVERY_MS) {
+    navStartApproach(lat, lon, "straight");
+    return true;
+  }
+  // Strzałka: co jakiś czas cel = aktualnie najbliższe miejsce trasy (liczone w telefonie).
+  if (!a.ok && !a.pending && Date.now() - a.at > NAV_STRAIGHT_RETARGET_MS) {
+    const failed = a.failed;
+    navStartApproach(lat, lon, "straight", true);
+    if (navRt.appr) navRt.appr.failed = failed;
     return true;
   }
   if (a.ok) navCheckTurn(a, a.turns, a.totalKm);
@@ -7342,7 +7378,7 @@ function navOnFix(lat, lon, accuracy) {
   if (navRt.progressKm == null && accuracy <= NAV_GOOD_ACC_M * 2) {
     const join = navPickJoin(lat, lon);
     navRt.idx = join.i;
-    if (join.d > Math.max(NAV_APPROACH_MIN_M, navOffLimit() * 1.5)) navStartApproach(lat, lon, false);
+    if (join.d > Math.max(NAV_APPROACH_MIN_M, navOffLimit() * 1.5)) navStartApproach(lat, lon, "straight");
   }
   const loc = navLocate(lat, lon);
   navRt.idx = loc.i;
@@ -7354,12 +7390,6 @@ function navOnFix(lat, lon, accuracy) {
   navRt.lastGoodFixAt = now;
   const limit = navOffLimit();
   if (navApproachFix(lat, lon, loc.d)) return;
-  // Daleko od trasy i dłużej - wyznaczamy drogę powrotną (najwyżej raz na minutę).
-  if (navRt.off && loc.d > NAV_REROUTE_M && now - (navRt.rerouteAt || 0) > NAV_REROUTE_EVERY_MS) {
-    navRt.rerouteAt = now;
-    navStartApproach(lat, lon, true);
-    return;
-  }
   navRt.offCount = loc.d > limit ? navRt.offCount + 1 : 0;
   if (!navRt.off && navRt.offCount >= 2) {
     navRt.off = true;
@@ -7747,7 +7777,7 @@ function navRender() {
     const leftKm = a.ok ? Math.max(0, a.totalKm - a.progressKm)
       : haversineKm((recLivePos || a.pts[0])[0], (recLivePos || a.pts[0])[1], a.target.lat, a.target.lon);
     const dist = `${formatKm(leftKm)} km`;
-    status = a.ok ? dict.navApproach(dist) : dict.navApproachStraight(dist);
+    status = a.ok ? dict.navApproach(dist) : a.failed ? dict.navApproachFailed : dict.navApproachStraight(dist);
     cls = "nav-appr";
   } else if (navRt.off) { status = dict.navOff(Math.round(navRt.offM)); cls = "nav-off"; }
   else if (navRt.progressKm != null) status = dict.navOn;
@@ -7760,6 +7790,18 @@ function navRender() {
   box.classList.toggle("nav-off", cls === "nav-off");
   box.classList.toggle("nav-gps", cls === "nav-gps");
   box.classList.toggle("nav-appr", cls === "nav-appr");
+  // „Prowadź do trasy”: gdy pokazujemy tylko strzałkę albo gdy zboczyłeś z trasy.
+  const a = navRt.appr;
+  const showBtn = !rec.pausedAt && !navRt.finished && Boolean(recLivePos) &&
+    ((a && !a.ok) || (!a && navRt.off)) && navApproachProfile() !== "straight";
+  const btn = document.getElementById("recNavRouteBtn");
+  btn.hidden = !showBtn;
+  document.getElementById("recNavRouteHint").hidden = !showBtn;
+  if (showBtn) {
+    btn.disabled = Boolean(a && a.pending);
+    btn.textContent = a && a.pending ? dict.navRouteToBusy : dict.navRouteToBtn;
+    document.getElementById("recNavRouteHint").textContent = dict.navRouteToHint;
+  }
   navRenderTurn();
 }
 
@@ -7787,6 +7829,7 @@ function initNavigation() {
   voiceBox.checked = navVoiceOn();
   voiceBox.addEventListener("change", () => navSetVoice(voiceBox.checked));
   document.getElementById("recNavVoiceBtn").addEventListener("click", () => navSetVoice(!navVoiceOn()));
+  document.getElementById("recNavRouteBtn").addEventListener("click", navRouteToRoute);
   navRenderVoiceBtn();
   navRefreshSelect();
 }
