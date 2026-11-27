@@ -209,7 +209,12 @@
           <p class="rec-nav-status" id="recNavStatus" role="status" aria-live="polite"></p>
           <p class="rec-nav-next" id="recNavNext" hidden></p>
         </div>
-        <div id="recMap" class="rec-map"></div>
+        <div id="recMapWrap" class="rec-map">
+          <div id="recMap"></div>
+          <button type="button" class="rec-map-btn rec-rotate" id="recRotateBtn"></button>
+          <button type="button" class="rec-map-btn rec-recenter" id="recRecenterBtn" hidden></button>
+          <div class="rec-map-attr">&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></div>
+        </div>
         <div class="plan-actions">
           <button id="recPauseBtn">⏸ PAUZA</button>
           <button class="primary" id="recFinishBtn" data-i18n="recFinishBtn">■ ZAKOŃCZ</button>

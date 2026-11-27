@@ -181,6 +181,15 @@ const TRANSLATIONS = {
     navStraightLbl: "Prosto",
     navToFinish: "do mety",
     navRecenter: "📍 Wróć do mnie",
+    navRotateOn: "🧭 Kierunek jazdy",
+    navRotateOff: "⬆ Północ u góry",
+    navRotateTitle: "Obracanie mapy: kierunek jazdy u góry albo północ u góry",
+    navApproach: (dist) => `🧭 Prowadzę do trasy — jeszcze ${dist}`,
+    navApproachStraight: (dist) => `🧭 Do trasy w linii prostej ${dist} (brak drogi z serwera)`,
+    navSayApproach: (dist) => `Prowadzę do trasy. ${dist}`,
+    navSayReroute: (dist) => `Wyznaczam drogę powrotną do trasy. ${dist}`,
+    navSayJoined: "Jesteś na trasie. Prowadzę dalej",
+    navToRoute: "do trasy",
     navBusy: "Trwa nagrywanie — prowadzenie wybierasz przed START.",
     navRouteTitle: "Prowadź po tej trasie (nagrywanie telefonem)",
     routeImportBtn: "📂 WCZYTAJ TRASĘ Z PLIKU (GPX / TCX / FIT / KML)",
@@ -588,7 +597,8 @@ const TRANSLATIONS = {
           <li><b>Garmin</b>: Garmin Connect (www) → Trening → Trasy → Importuj → wyślij na zegarek. <b>Suunto</b>: otwórz plik GPX w Suunto app i zsynchronizuj zegarek. <b>Polar</b>: Polar Flow (www) → Ulubione → Trasy → Importuj → synchronizuj.</li>
           <li><b>📍 Punkty na trasie</b> (żywienie, przepak, nocleg, sklep, woda, ⚠️ niebezpieczne miejsce, inne): otwórz trasę (🗺), kliknij „📍 DODAJ PUNKT NA TRASIE” i dotknij miejsca na mapie — wybierasz rodzaj, nazwę i opis; kliknięcie ikony na mapie albo ✏️ na liście pozwala punkt poprawić lub usunąć. W nagrywaniu telefonem przycisk „📍 PUNKT TUTAJ” zapisuje punkt w miejscu, w którym jesteś (nazwę możesz od razu wpisać albo podyktować, a pod spodem jest lista dodanych punktów z ✏️ i 🗑); po zakończeniu zapiszesz przebytą trasę z punktami w zakładce Trasy (albo zaznacz przed START „🗺 Zapisz przebytą trasę”). Trasę z zegarka wczytasz „📂 WCZYTAJ TRASĘ Z PLIKU” i dodasz punkty potem. Punkty trafiają do pliku GPX (zegarek pokaże je jako punkty trasy), a przy prowadzeniu po trasie widać „Następny punkt: … za X km”, a głos uprzedza ok. 300 m wcześniej (przed niebezpiecznym miejscem 500 m wcześniej, z wibracją).</li>
           <li><b>🧭 Prowadzenie po trasie w telefonie</b>: „📂 WCZYTAJ TRASĘ Z PLIKU” (GPX / TCX / FIT / KML / KMZ, np. z Garmin Connect, Komoot, Strava, MAPS.ME) dodaje trasę do listy. Przycisk 🧭 przy trasie — albo pole „Prowadź po trasie” przed START w nagrywaniu telefonem — włącza prowadzenie: trasa jest na mapie, widać kilometry do końca, a gdy zboczysz o ok. 50 m (rower 60 m, kajak i pływanie 100 m), telefon zawibruje, pokaże czerwony komunikat i powie to głosem (głos wyłączysz polem „🔊 Komunikaty głosowe” albo przyciskiem 🔊 w trakcie); w aplikacji ze Sklepu Play przy zgaszonym ekranie dostaniesz powiadomienie. Przy słabym GPS ostrzeżenia są wstrzymane, żeby nie było fałszywych alarmów — trasa zostaje na mapie.</li>
-          <li><b>↱ Skręty jak w nawigacji</b>: w trakcie prowadzenia nad mapą widać następny manewr i odległość do niego, a głos mówi „Za 100 metrów skręć w prawo” (na rowerze 200 m), przy samym skręcie „Skręć w prawo”, a za nim „Teraz prosto przez…”. Skręty są wyliczane z kształtu trasy, więc aplikacja nie zna nazw ulic ani skrzyżowań — na krętej ścieżce może zapowiedzieć ostry zakręt jako skręt. Przy kajaku i pływaniu komunikatów o skrętach nie ma. Na mapie strzałka pokazuje kierunek ruchu, przebyta część trasy robi się szara, a gdy przesuniesz mapę palcem, wrócisz do siebie przyciskiem „📍 Wróć do mnie”.</li>
+          <li><b>↱ Skręty jak w nawigacji</b>: w trakcie prowadzenia nad mapą widać następny manewr i odległość do niego, a głos mówi „Za 100 metrów skręć w prawo” (na rowerze 200 m), przy samym skręcie „Skręć w prawo”, a za nim „Teraz prosto przez…”. Skręty są wyliczane z kształtu trasy, więc aplikacja nie zna nazw ulic ani skrzyżowań — na krętej ścieżce może zapowiedzieć ostry zakręt jako skręt. Przy kajaku i pływaniu komunikatów o skrętach nie ma. Na mapie strzałka pokazuje kierunek ruchu, przebyta część trasy robi się szara, a gdy przesuniesz mapę palcem, wrócisz do siebie przyciskiem „📍 Wróć do mnie”. Mapa obraca się kierunkiem jazdy do góry — przyciskiem „🧭 Kierunek jazdy / ⬆ Północ u góry” w rogu mapy przełączysz na północ u góry.</li>
+          <li><b>🧭 Prowadzenie do trasy</b>: gdy po START jesteś z dala od trasy (albo mocno z niej zboczysz), aplikacja wyznacza drogę po ścieżkach i drogach do najbliższego miejsca na trasie — nie musisz wracać na start: jeśli jesteś w połowie, dołączysz w połowie, a z dwóch podobnie bliskich miejsc wybierze to bliżej mety. Droga dojścia jest na mapie pomarańczową przerywaną linią, z komunikatami o skrętach; po dojściu usłyszysz „Jesteś na trasie”. Drogę liczy darmowy serwis BRouter (jak w planerze tras) — bez internetu zostaje strzałka i odległość w linii prostej.</li>
           <li>Wyznaczanie trasy po drogach wymaga internetu (darmowy serwis BRouter — wysyłane są wyłącznie współrzędne klikniętych punktów). Bez internetu odcinki będą liniami prostymi.</li>
         </ul>
       </details>
@@ -705,7 +715,7 @@ const TRANSLATIONS = {
     privacyHtml: (contact, community) => `
       ${contact ? `<p class="contact-box">✉️ Administrator danych / kontakt: <a href="mailto:${contact}">${contact}</a></p>` : ""}
       <p>Aplikacja domyślnie trzyma wszystkie dane (treningi, trasy, PIN) <b>tylko na Twoim telefonie</b>.</p>
-      <p><b>Usługi zewnętrzne:</b> podczas oglądania map telefon pobiera kafelki z serwerów OpenStreetMap, a przy wyznaczaniu trasy po drogach wysyła współrzędne klikniętych punktów do darmowego serwisu BRouter (brouter.de). Serwery te, jak każda strona internetowa, widzą adres IP Twojego urządzenia. Nie są im przekazywane żadne inne dane.</p>
+      <p><b>Usługi zewnętrzne:</b> podczas oglądania map telefon pobiera kafelki z serwerów OpenStreetMap, a przy wyznaczaniu trasy po drogach wysyła współrzędne klikniętych punktów do darmowego serwisu BRouter (brouter.de) — przy prowadzeniu po trasie, gdy jesteś z dala od niej, także Twoją bieżącą pozycję i punkt na trasie, do którego prowadzi aplikacja (bez żadnych innych danych). Serwery te, jak każda strona internetowa, widzą adres IP Twojego urządzenia. Nie są im przekazywane żadne inne dane.</p>
       ${community ? `<p>Na serwer aplikacji trafiają wyłącznie dane, na które się zgodzisz:</p>
       <ul>
         <li><b>Statystyki użytkowników</b> (tylko za zgodą): losowy identyfikator urządzenia i czas ostatniego użycia aplikacji. Cel: policzenie, ile osób korzysta z aplikacji (łącznie i w danym okresie). Liczymy tylko liczby — identyfikator nie jest powiązany z imieniem, nickiem ani treningami. Usuwany po 13 miesiącach braku aktywności lub od razu po wyłączeniu zgody.</li>
@@ -863,6 +873,15 @@ const TRANSLATIONS = {
     navStraightLbl: "Straight on",
     navToFinish: "to the finish",
     navRecenter: "📍 Back to me",
+    navRotateOn: "🧭 Heading up",
+    navRotateOff: "⬆ North up",
+    navRotateTitle: "Map rotation: direction of travel up or north up",
+    navApproach: (dist) => `🧭 Guiding you to the route — ${dist} to go`,
+    navApproachStraight: (dist) => `🧭 Route is ${dist} away in a straight line (no road route from the server)`,
+    navSayApproach: (dist) => `Guiding you to the route. ${dist}`,
+    navSayReroute: (dist) => `Finding the way back to the route. ${dist}`,
+    navSayJoined: "You are on the route. Continuing guidance",
+    navToRoute: "to the route",
     navBusy: "Recording in progress — choose a route before START.",
     navRouteTitle: "Follow this route (phone recording)",
     routeImportBtn: "📂 LOAD ROUTE FROM FILE (GPX / TCX / FIT / KML)",
@@ -1270,7 +1289,8 @@ const TRANSLATIONS = {
           <li><b>Garmin</b>: Garmin Connect (web) → Training → Courses → Import → send to device. <b>Suunto</b>: open the GPX file in the Suunto app and sync the watch. <b>Polar</b>: Polar Flow (web) → Favorites → Routes → Import → sync.</li>
           <li><b>📍 Points on the route</b> (food, drop bag, overnight, shop, water, ⚠️ dangerous spot, other): open a route (🗺), tap “📍 ADD A POINT ON THE ROUTE” and tap the place on the map — choose the type, name and description; tapping the icon on the map or ✏️ in the list lets you edit or delete it. In phone recording, “📍 POINT HERE” saves a point where you are (you can type or dictate a name right away; below there is a list of added points with ✏️ and 🗑); after finishing you can save the recorded route with the points in the Routes tab (or tick “🗺 Save the recorded route” before START). Load a watch route with “📂 LOAD ROUTE FROM FILE” and add points afterwards. Points go into the GPX file (the watch shows them as course points), and during route guidance you see “Next point: … in X km” and the voice warns about 300 m ahead (500 m ahead with vibration before a dangerous spot).</li>
           <li><b>🧭 Route guidance on the phone</b>: “📂 LOAD ROUTE FROM FILE” (GPX / TCX / FIT / KML / KMZ, e.g. from Garmin Connect, Komoot, Strava, MAPS.ME) adds a route to the list. The 🧭 button next to a route — or the “Follow a route” field before START in phone recording — turns on guidance: the route is on the map, you see the distance left, and when you go about 50 m off route (cycling 60 m, kayak and swimming 100 m) the phone vibrates, shows a red message and says it out loud (turn the voice off with the “🔊 Voice prompts” box or the 🔊 button while recording); in the Play Store app you get a notification while the screen is off. With weak GPS, warnings are paused to avoid false alarms — the route stays on the map.</li>
-          <li><b>↱ Turn-by-turn prompts</b>: while following a route, the next manoeuvre and its distance are shown above the map, and the voice says “In 100 metres, turn right” (200 m on a bike), “Turn right” at the turn and then “Continue straight for…”. Turns are worked out from the shape of the route, so the app does not know street names or junctions — on a twisty path a sharp bend may be announced as a turn. There are no turn prompts for kayaking and swimming. On the map an arrow shows your direction, the part already covered turns grey, and if you move the map with your finger, “📍 Back to me” brings you back.</li>
+          <li><b>↱ Turn-by-turn prompts</b>: while following a route, the next manoeuvre and its distance are shown above the map, and the voice says “In 100 metres, turn right” (200 m on a bike), “Turn right” at the turn and then “Continue straight for…”. Turns are worked out from the shape of the route, so the app does not know street names or junctions — on a twisty path a sharp bend may be announced as a turn. There are no turn prompts for kayaking and swimming. On the map an arrow shows your direction, the part already covered turns grey, and if you move the map with your finger, “📍 Back to me” brings you back. The map turns so that your direction of travel is up — switch to north up with the “🧭 Heading up / ⬆ North up” button in the corner of the map.</li>
+          <li><b>🧭 Guidance to the route</b>: if after START you are away from the route (or go far off it), the app finds a way along paths and roads to the nearest place on the route — you don't have to go back to the start: if you are halfway, you join halfway, and of two similarly close places it picks the one nearer the finish. The way there is shown as an orange dashed line, with turn prompts; when you get there you hear “You are on the route”. The way is calculated by the free BRouter service (as in the route planner) — without internet you get an arrow and the straight-line distance.</li>
           <li>Road routing needs internet (free BRouter service — only the coordinates of tapped points are sent). Offline, sections are straight lines.</li>
         </ul>
       </details>
@@ -1387,7 +1407,7 @@ const TRANSLATIONS = {
     privacyHtml: (contact, community) => `
       ${contact ? `<p class="contact-box">✉️ Data controller / contact: <a href="mailto:${contact}">${contact}</a></p>` : ""}
       <p>By default the app keeps all data (trainings, routes, PIN) <b>only on your phone</b>.</p>
-      <p><b>External services:</b> when viewing maps the phone downloads tiles from OpenStreetMap servers, and when routing along roads it sends the coordinates of tapped points to the free BRouter service (brouter.de). Like any website, these servers see your device's IP address. No other data is shared with them.</p>
+      <p><b>External services:</b> when viewing maps the phone downloads tiles from OpenStreetMap servers, and when routing along roads it sends the coordinates of tapped points to the free BRouter service (brouter.de) — during route guidance, when you are away from the route, also your current position and the point on the route it is guiding you to (no other data). Like any website, these servers see your device's IP address. No other data is shared with them.</p>
       ${community ? `<p>Only data you agree to is sent to the app's server:</p>
       <ul>
         <li><b>User statistics</b> (only with consent): a random device ID and the time of last use. Purpose: counting how many people use the app (in total and over a given period). Only numbers are counted — the ID is not linked to any name, nickname or training. Deleted after 13 months of inactivity or immediately when you withdraw consent.</li>
@@ -6128,7 +6148,11 @@ let recMap = null;
 let recLine = null;
 let recDot = null;          // znacznik pozycji (L.marker z ikoną - kropka albo strzałka w kierunku ruchu)
 let recFollow = true;       // mapa jedzie za pozycją; przesunięcie palcem wyłącza, „Wróć do mnie” włącza
-let recRecenterCtl = null;
+let recRotDeg = 0;          // bieżący obrót mapy (stopnie, „rozwinięty”, żeby nie kręciła się przez 360°)
+const MAP_ROTATE_KEY = "pau_map_rotate";
+function mapRotateOn() {
+  try { return localStorage.getItem(MAP_ROTATE_KEY) !== "0"; } catch (e) { return true; }
+}
 let recLivePos = null;      // ostatni dobry odczyt GPS [lat, lon] - także gdy stoimy (punkt nie trafia do trasy)
 let recHeading = null;      // kierunek ruchu w stopniach (0 = północ) albo null
 let recHeadingAnchor = null;
@@ -6225,7 +6249,7 @@ function recRender() {
 function recInitMap() {
   if (typeof L === "undefined") return;
   if (!recMap) {
-    recMap = L.map("recMap", { zoomControl: false, attributionControl: true });
+    recMap = L.map("recMap", { zoomControl: false, attributionControl: false, touchZoom: "center" }); // napis © OSM jest poza obracaną mapą
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
       attribution: "&copy; OpenStreetMap contributors",
@@ -6241,21 +6265,23 @@ function recInitMap() {
     });
     recMap.setView([52.07, 19.48], 6);
     // Przesunięcie mapy palcem = oglądam okolicę: mapa przestaje jechać za mną, pojawia się „Wróć do mnie”.
-    recMap.on("dragstart", () => { recFollow = false; recRenderRecenter(); });
-    const Recenter = L.Control.extend({
-      onAdd() {
-        const btn = L.DomUtil.create("button", "rec-recenter");
-        btn.type = "button";
-        L.DomEvent.disableClickPropagation(btn);
-        L.DomEvent.on(btn, "click", (e) => { L.DomEvent.stop(e); recFollow = true; recRenderRecenter(); recUpdatePos(true); });
-        return btn;
-      },
+    // Przesunięcie mapy palcem = oglądam okolicę: mapa przestaje jechać za mną i wraca północą do góry.
+    recMap.on("dragstart", () => { recFollow = false; recRenderRecenter(); recApplyRotation(); });
+    document.getElementById("recRecenterBtn").addEventListener("click", () => {
+      recFollow = true;
+      recRenderRecenter();
+      recApplyRotation();
+      recUpdatePos(true);
     });
-    recRecenterCtl = new Recenter({ position: "bottomright" }).addTo(recMap);
+    document.getElementById("recRotateBtn").addEventListener("click", () => {
+      try { localStorage.setItem(MAP_ROTATE_KEY, mapRotateOn() ? "0" : "1"); } catch (e) { /* brak storage */ }
+      recRenderRecenter();
+      recApplyRotation();
+    });
   }
-  document.getElementById("recMap").classList.toggle("nav-map", Boolean(rec && rec.nav));
+  document.getElementById("recMapWrap").classList.toggle("nav-map", Boolean(rec && rec.nav));
   recRenderRecenter();
-  requestAnimationFrame(() => recMap.invalidateSize());
+  requestAnimationFrame(() => { recMap.invalidateSize(); recApplyRotation(); });
   navDraw();
   recUpdateMap(true);
 }
@@ -6288,14 +6314,52 @@ function recUpdatePos(moveView) {
     el.classList.toggle("has-heading", recHeading != null);
     if (arrow) arrow.style.transform = recHeading != null ? `rotate(${Math.round(recHeading)}deg)` : "";
   }
+  recApplyRotation();
   if (moveView && recFollow) recMap.setView(pos, Math.max(recMap.getZoom(), 16), { animate: true });
 }
 
 function recRenderRecenter() {
-  if (!recRecenterCtl) return;
-  const btn = recRecenterCtl.getContainer();
-  btn.textContent = t().navRecenter;
-  btn.style.display = recFollow ? "none" : "";
+  const dict = t();
+  const btn = document.getElementById("recRecenterBtn");
+  if (btn) { btn.textContent = dict.navRecenter; btn.hidden = recFollow; }
+  const rot = document.getElementById("recRotateBtn");
+  if (rot) {
+    rot.textContent = mapRotateOn() ? dict.navRotateOn : dict.navRotateOff;
+    rot.title = dict.navRotateTitle;
+    rot.setAttribute("aria-pressed", mapRotateOn() ? "true" : "false");
+  }
+}
+
+// Obracanie mapy kierunkiem jazdy do góry: obracamy cały kontener mapy (Leaflet 1.x sam nie obraca).
+// Kontener jest wtedy kwadratem o boku = przekątna okienka, żeby w rogach nie było pustych miejsc.
+// Obracamy tylko, gdy mapa jedzie za mną i znamy kierunek; przesunięcie palcem wraca do północy.
+function recApplyRotation() {
+  if (!recMap) return;
+  const wrap = document.getElementById("recMapWrap");
+  const el = document.getElementById("recMap");
+  if (!wrap || !el) return;
+  const want = mapRotateOn() && recFollow && recHeading != null && rec && !rec.pausedAt;
+  const w = wrap.clientWidth, h = wrap.clientHeight;
+  const big = want && w > 0 && h > 0;
+  const size = big ? Math.ceil(Math.sqrt(w * w + h * h)) : 0;
+  const sig = big ? `${size}:${w}:${h}` : "";
+  if (el.dataset.sig !== sig) {
+    el.dataset.sig = sig;
+    if (big) {
+      el.style.width = el.style.height = size + "px";
+      el.style.left = Math.round((w - size) / 2) + "px";
+      el.style.top = Math.round((h - size) / 2) + "px";
+    } else {
+      el.style.width = el.style.height = "";
+      el.style.left = el.style.top = "";
+    }
+    recMap.invalidateSize({ pan: true, animate: false });
+  }
+  const target = want ? -recHeading : 0;
+  recRotDeg += ((target - recRotDeg + 540) % 360) - 180;
+  if (!want && Math.abs(recRotDeg) >= 360) recRotDeg %= 360;
+  el.style.transform = recRotDeg ? `rotate(${recRotDeg.toFixed(1)}deg)` : "";
+  wrap.classList.toggle("rotated", Boolean(want));
 }
 
 function bearingDeg(lat1, lon1, lat2, lon2) {
@@ -7116,8 +7180,11 @@ function navCumulative() {
 // Najbliższy punkt trasy: najpierw okno wokół ostatniej pozycji (trasy tam i z powrotem / pętle),
 // a gdy w oknie nic blisko - cała trasa. Zwraca { i, d (m), km (przebyte wzdłuż trasy) }.
 function navLocate(lat, lon) {
-  const pts = rec.nav.pts;
-  const cum = navCumulative();
+  return navLocateOn(rec.nav.pts, navCumulative(), lat, lon, navRt.idx);
+}
+
+// Najbliższy punkt linii pts (z oknem wokół fromIdx). Zwraca { i, u, d (m), km }.
+function navLocateOn(pts, cum, lat, lon, fromIdx) {
   const kx = 111320 * Math.cos(lat * Math.PI / 180);
   const ky = 110540;
   const scan = (from, to) => {
@@ -7135,7 +7202,7 @@ function navLocate(lat, lon) {
     }
     return best;
   };
-  let best = scan(Math.max(0, navRt.idx - 30), navRt.idx + 300);
+  let best = scan(Math.max(0, (fromIdx || 0) - 30), (fromIdx || 0) + 300);
   if (best.d > 150) {
     const all = scan(0, pts.length - 2);
     if (all.d < best.d - 20) best = all;
@@ -7143,9 +7210,140 @@ function navLocate(lat, lon) {
   return best;
 }
 
+// ---- Dojście do trasy: gdy jesteś z dala od niej (na starcie albo po dużym zboczeniu) ----
+// Cel = najbliższy punkt trasy, a spośród podobnie bliskich (np. trasa tam i z powrotem) ten bliżej mety;
+// ostatnie 10% trasy tylko wtedy, gdy nic innego nie ma (pętla: start i meta w tym samym miejscu).
+// Drogę liczy BRouter (jak w planerze); bez internetu - linia prosta i strzałka w stronę celu.
+const NAV_APPROACH_MIN_M = 80;     // dalej niż tyle od trasy na starcie = prowadzimy do niej
+const NAV_REROUTE_M = 200;         // zboczenie większe niż tyle = nowa droga do trasy
+const NAV_REROUTE_EVERY_MS = 60000;
+const NAV_APPROACH_PROFILE = { Rower: "trekking", Auto4x4: "car-fast", Kajak: "straight", WodyOtwarte: "straight" };
+let navApprLine = null;
+let navApprSeq = 0;
+
+function navPickJoin(lat, lon) {
+  const pts = rec.nav.pts;
+  const cum = navCumulative();
+  const kx = 111320 * Math.cos(lat * Math.PI / 180);
+  const ky = 110540;
+  const segs = [];
+  let minD = Infinity;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const ax = (pts[i][1] - lon) * kx, ay = (pts[i][0] - lat) * ky;
+    const dx = (pts[i + 1][1] - pts[i][1]) * kx, dy = (pts[i + 1][0] - pts[i][0]) * ky;
+    const len2 = dx * dx + dy * dy;
+    const u = len2 ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / len2)) : 0;
+    const d = Math.hypot(ax + u * dx, ay + u * dy);
+    segs.push({ i, u, d, km: cum[i] + u * (cum[i + 1] - cum[i]) });
+    if (d < minD) minD = d;
+  }
+  const total = cum[cum.length - 1];
+  // Miejsca „podobnie blisko”: ciągłe kawałki trasy w zasięgu minD + 25% (min. 30 m); z każdego kawałka
+  // jego najbliższy punkt, a z nich ten najdalej wzdłuż trasy (najbliżej mety).
+  const reach = minD + Math.max(30, minD * 0.25);
+  const spots = [];
+  let run = null;
+  segs.forEach((x) => {
+    if (x.d <= reach) {
+      if (!run || x.d < run.d) run = x;
+    } else if (run) { spots.push(run); run = null; }
+  });
+  if (run) spots.push(run);
+  const early = spots.filter((x) => x.km < total * 0.9);
+  const pool = early.length ? early : spots;
+  const best = pool.reduce((a, b) => (b.km > a.km ? b : a));
+  const p = navPointAtKm(pts, cum, best.km);
+  return { ...best, lat: p[0], lon: p[1] };
+}
+
+function navApproachProfile() {
+  return NAV_APPROACH_PROFILE[rec.disc] || "hiking-mountain";
+}
+
+function navSetApproach(pts, ok, target) {
+  const cum = [0];
+  for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + haversineKm(pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1]));
+  const routed = ok && navApproachProfile() !== "straight";
+  navRt.appr = {
+    pts, cum, totalKm: cum[cum.length - 1], ok: routed, target, at: Date.now(),
+    turns: routed && !NAV_TURN_OFF_DISC.includes(rec.disc) ? navComputeTurns(pts, cum) : [],
+    idx: 0, progressKm: 0, turnSaid: {}, lastTurnNow: null, straightFor: null,
+  };
+  navDrawApproach();
+}
+
+async function navStartApproach(lat, lon, reroute) {
+  const target = navPickJoin(lat, lon);
+  const seq = ++navApprSeq;
+  navSetApproach([[lat, lon], [target.lat, target.lon]], false, target); // od razu linia prosta
+  navRt.off = false;
+  navRt.idx = target.i;
+  const dict = t();
+  const profile = navApproachProfile();
+  let res = { points: [], ok: false };
+  if (profile !== "straight") res = await routeSegment({ lat, lon }, { lat: target.lat, lon: target.lon }, profile);
+  if (seq !== navApprSeq || !rec || !navRt.appr) return; // w międzyczasie nowe wyznaczanie albo już na trasie
+  if (res.ok && res.points.length >= 2) {
+    const pts = navSimplify(res.points).map((p) => [+p.lat.toFixed(6), +p.lon.toFixed(6)]);
+    navSetApproach(pts, true, target);
+  }
+  const dist = navSayDist(navRt.appr.totalKm);
+  navSpeakAfter(reroute ? dict.navSayReroute(dist) : dict.navSayApproach(dist));
+  recRender();
+}
+
+function navEndApproach() {
+  navRt.appr = null;
+  navApprSeq++;
+  navDrawApproach();
+}
+
+// Odczyt GPS w trakcie dojścia. Zwraca true, gdy dojście trwa (wtedy nie oceniamy zboczenia z trasy).
+function navApproachFix(lat, lon, onRouteM) {
+  const a = navRt.appr;
+  if (!a) return false;
+  const limit = navOffLimit();
+  if (onRouteM <= limit) {
+    navRt.joinCount = (navRt.joinCount || 0) + 1;
+    if (navRt.joinCount >= 2) {
+      navEndApproach();
+      navRt.joinCount = 0;
+      navRt.offCount = 0;
+      navSpeakAfter(t().navSayJoined);
+      return false;
+    }
+  } else navRt.joinCount = 0;
+  const loc = navLocateOn(a.pts, a.cum, lat, lon, a.idx);
+  a.idx = loc.i;
+  a.progressKm = loc.km;
+  // Zszedłem z drogi dojścia - po minucie wyznaczamy ją od nowa.
+  if (loc.d > Math.max(100, limit * 2) && Date.now() - a.at > NAV_REROUTE_EVERY_MS) {
+    navStartApproach(lat, lon, true);
+    return true;
+  }
+  if (a.ok) navCheckTurn(a, a.turns, a.totalKm);
+  return true;
+}
+
+function navDrawApproach() {
+  if (!recMap || typeof L === "undefined") return;
+  if (!navApprLine) navApprLine = L.polyline([], { color: "#D86C28", weight: 5, opacity: 0.9, dashArray: "8 8" });
+  const a = navRt.appr;
+  if (a) {
+    navApprLine.setLatLngs(a.pts);
+    if (!recMap.hasLayer(navApprLine)) navApprLine.addTo(recMap);
+  } else if (recMap.hasLayer(navApprLine)) navApprLine.remove();
+}
+
 function navOnFix(lat, lon, accuracy) {
   if (!rec || !rec.nav || rec.pausedAt) return;
   const now = Date.now();
+  // Pierwszy odczyt: dołączamy w najlepszym miejscu trasy (nie zawsze na starcie), a gdy trasa daleko - prowadzimy do niej.
+  if (navRt.progressKm == null && accuracy <= NAV_GOOD_ACC_M * 2) {
+    const join = navPickJoin(lat, lon);
+    navRt.idx = join.i;
+    if (join.d > Math.max(NAV_APPROACH_MIN_M, navOffLimit() * 1.5)) navStartApproach(lat, lon, false);
+  }
   const loc = navLocate(lat, lon);
   navRt.idx = loc.i;
   navRt.u = loc.u || 0;
@@ -7155,6 +7353,13 @@ function navOnFix(lat, lon, accuracy) {
   if (accuracy > NAV_GOOD_ACC_M) return; // za słaby GPS, żeby oceniać zboczenie
   navRt.lastGoodFixAt = now;
   const limit = navOffLimit();
+  if (navApproachFix(lat, lon, loc.d)) return;
+  // Daleko od trasy i dłużej - wyznaczamy drogę powrotną (najwyżej raz na minutę).
+  if (navRt.off && loc.d > NAV_REROUTE_M && now - (navRt.rerouteAt || 0) > NAV_REROUTE_EVERY_MS) {
+    navRt.rerouteAt = now;
+    navStartApproach(lat, lon, true);
+    return;
+  }
   navRt.offCount = loc.d > limit ? navRt.offCount + 1 : 0;
   if (!navRt.off && navRt.offCount >= 2) {
     navRt.off = true;
@@ -7165,7 +7370,7 @@ function navOnFix(lat, lon, accuracy) {
   } else if (navRt.off && now - navRt.lastAlertAt > NAV_REPEAT_MS) {
     navAlert("off", loc.d);
   }
-  if (!navRt.off && !navCheckTurn()) navCheckPoi(); // skręt ważniejszy - punkt powie przy następnym odczycie
+  if (!navRt.off && !navCheckTurn(navRt, navTurns(), rec.nav.totalKm)) navCheckPoi(); // skręt ważniejszy - punkt powie przy następnym odczycie
   const total = rec.nav.totalKm;
   if (!navRt.finished && !navRt.off && total - loc.km < 0.1 && rec.distKm >= total * 0.5) {
     navRt.finished = true;
@@ -7245,8 +7450,10 @@ function navWebSpeak(text) {
     window.speechSynthesis.speak(u);
   } catch (e) { /* brak syntezy mowy */ }
 }
+let navSpeechBusyUntil = 0; // przybliżony koniec czytania bieżącego komunikatu
 function navSpeak(text) {
   if (!text || !navVoiceOn()) return;
+  navSpeechBusyUntil = Date.now() + 1200 + text.length * 70;
   if (isNativeApp()) {
     try {
       // queueStrategy 0 = przerwij poprzedni komunikat
@@ -7256,6 +7463,11 @@ function navSpeak(text) {
     } catch (e) { /* brak wtyczki - spróbuj mowy przeglądarki */ }
   }
   navWebSpeak(text);
+}
+// Komunikat po skończeniu bieżącego (żeby go nie przerwać).
+function navSpeakAfter(text) {
+  const wait = navSpeechBusyUntil - Date.now();
+  if (wait > 0) setTimeout(() => navSpeak(text), wait); else navSpeak(text);
 }
 // Kilka komunikatów po kolei: navSpeak przerywa poprzedni, więc kolejny dopiero po przybliżonym czasie czytania.
 function navSpeakQueue(texts) {
@@ -7314,6 +7526,7 @@ function navDraw() {
   navLine.setLatLngs(pts);
   navDoneLine.setLatLngs([]);
   navDrawProgress();
+  navDrawApproach();
   [navStartMarker, navEndMarker].forEach((m) => { if (recMap.hasLayer(m)) m.remove(); });
   if (pts.length >= 2) {
     navStartMarker.setLatLng(pts[0]).addTo(recMap);
@@ -7400,10 +7613,9 @@ function navTurns() {
   return navTurnsCache;
 }
 
-function navNextTurnIndex() {
-  const turns = navTurns();
-  if (navRt.progressKm == null) return -1;
-  return turns.findIndex((tr) => tr.km > navRt.progressKm + 0.005);
+function navNextTurnIndex(st, turns) {
+  if (st.progressKm == null) return -1;
+  return turns.findIndex((tr) => tr.km > st.progressKm + 0.005);
 }
 
 // Odległość do powiedzenia: metry (zaokrąglone) albo kilometry z odmianą.
@@ -7422,47 +7634,48 @@ function navCapitalize(text) {
 
 // Komunikaty o skrętach: „Za 100 metrów skręć w prawo”, przy skręcie „Skręć w prawo”,
 // a po skręcie „Teraz prosto przez 1,2 kilometra”. Zwraca true, gdy coś powiedziała.
-function navCheckTurn() {
-  const turns = navTurns();
-  if (!turns.length || navRt.progressKm == null) return false;
+// st = stan prowadzenia (navRt dla trasy albo navRt.appr dla dojścia do trasy).
+function navCheckTurn(st, turns, totalKm) {
+  if (!turns.length || st.progressKm == null) return false;
   const dict = t();
-  if (!navRt.turnSaid) navRt.turnSaid = {};
-  const idx = navNextTurnIndex();
+  if (!st.turnSaid) st.turnSaid = {};
+  const idx = navNextTurnIndex(st, turns);
   const near = NAV_TURN_NEAR_M[rec.disc] || 20;
   // Po minięciu skrętu: ile prosto do następnego (albo do mety). Dopiero kawałek za skrętem,
   // żeby nie przerwać komunikatu „Skręć…” (nowy komunikat przerywa poprzedni).
-  const lastNow = navRt.lastTurnNow;
-  if (lastNow != null && idx !== lastNow && navRt.straightFor !== lastNow &&
-      navRt.progressKm >= turns[lastNow].km + Math.max(0.03, (near * 2) / 1000)) {
-    navRt.straightFor = navRt.lastTurnNow;
-    const toKm = idx >= 0 ? turns[idx].km : rec.nav.totalKm;
-    if (toKm - navRt.progressKm >= NAV_STRAIGHT_SAY_KM) {
-      navSpeak(dict.navSayStraight(navSayDist(toKm - navRt.progressKm)));
+  const lastNow = st.lastTurnNow;
+  const busy = Date.now() < navSpeechBusyUntil; // „za 100 m” i „prosto” czekają, aż skończy się poprzedni komunikat
+  if (!busy && lastNow != null && idx !== lastNow && st.straightFor !== lastNow &&
+      st.progressKm >= turns[lastNow].km + Math.max(0.03, (near * 2) / 1000)) {
+    st.straightFor = st.lastTurnNow;
+    const toKm = idx >= 0 ? turns[idx].km : totalKm;
+    if (toKm - st.progressKm >= NAV_STRAIGHT_SAY_KM) {
+      navSpeak(dict.navSayStraight(navSayDist(toKm - st.progressKm)));
       return true;
     }
   }
   if (idx < 0) return false;
   const turn = turns[idx];
-  const leftM = (turn.km - navRt.progressKm) * 1000;
+  const leftM = (turn.km - st.progressKm) * 1000;
   const far = NAV_TURN_FAR_M[rec.disc] || 100;
-  const said = navRt.turnSaid[idx] || "";
+  const said = st.turnSaid[idx] || "";
   const what = dict.turnWhat[turn.kind];
   if (leftM <= near && said !== "now") {
-    navRt.turnSaid[idx] = "now";
-    navRt.lastTurnNow = idx;
+    st.turnSaid[idx] = "now";
+    st.lastTurnNow = idx;
     const next = turns[idx + 1];
     let text = navCapitalize(what);
     if (next && (next.km - turn.km) * 1000 <= 60) {
       text = dict.navSayTurnThen(text, dict.turnWhat[next.kind]);
-      navRt.turnSaid[idx + 1] = "now"; // oba skręty powiedziane naraz
-      navRt.lastTurnNow = idx + 1;
+      st.turnSaid[idx + 1] = "now"; // oba skręty powiedziane naraz
+      st.lastTurnNow = idx + 1;
     }
     navVibrate([150, 100, 150]);
     navSpeak(text);
     return true;
   }
-  if (leftM <= far + 15 && leftM > near * 2 && !said) {
-    navRt.turnSaid[idx] = "far";
+  if (!busy && leftM <= far + 15 && leftM > near * 2 && !said) {
+    st.turnSaid[idx] = "far";
     const m = leftM >= 100 ? Math.round(leftM / 50) * 50 : Math.max(near * 2, Math.round(leftM / 10) * 10);
     navSpeak(dict.navSayTurnIn(m, what));
     return true;
@@ -7479,19 +7692,33 @@ function navArrowSvg(angle) {
 function navRenderTurn() {
   const el = document.getElementById("recNavTurn");
   if (!el) return;
-  const show = rec && rec.nav && !rec.pausedAt && !navRt.finished && !navRt.off && navRt.progressKm != null && !NAV_TURN_OFF_DISC.includes(rec.disc);
+  const a = navRt.appr;
+  const show = rec && rec.nav && !rec.pausedAt && !navRt.finished && navRt.progressKm != null &&
+    (a ? true : !navRt.off && !NAV_TURN_OFF_DISC.includes(rec.disc));
   el.hidden = !show;
   if (!show) return;
   const dict = t();
-  const turns = navTurns();
-  const idx = navNextTurnIndex();
-  const toKm = (idx >= 0 ? turns[idx].km : rec.nav.totalKm) - navRt.progressKm;
   let html;
-  if (idx < 0 || toKm > 1) {
-    html = `${navArrowSvg(0)}<span><b>${escapeXml(dict.navStraightLbl)}</b> · ${formatKm(Math.max(0, toKm))} km${idx < 0 ? " " + escapeXml(dict.navToFinish) : ""}</span>`;
+  if (a && !a.ok) {
+    // Bez drogi z serwera: strzałka w stronę celu względem kierunku ruchu.
+    const pos = recLivePos || a.pts[0];
+    const brg = bearingDeg(pos[0], pos[1], a.target.lat, a.target.lon);
+    const rel = recHeading != null ? ((brg - recHeading + 540) % 360) - 180 : 0;
+    const km = haversineKm(pos[0], pos[1], a.target.lat, a.target.lon);
+    html = `${navArrowSvg(rel)}<span><b>${formatKm(km)} km</b> ${escapeXml(dict.navToRoute)}</span>`;
   } else {
-    const m = toKm * 1000 >= 100 ? Math.round(toKm * 20) * 50 : Math.max(0, Math.round(toKm * 100) * 10);
-    html = `${navArrowSvg(turns[idx].angle)}<span><b>${m} m</b> · ${escapeXml(navCapitalize(dict.turnWhat[turns[idx].kind]))}</span>`;
+    const st = a || navRt;
+    const turns = a ? a.turns : navTurns();
+    const total = a ? a.totalKm : rec.nav.totalKm;
+    const idx = navNextTurnIndex(st, turns);
+    const toKm = (idx >= 0 ? turns[idx].km : total) - st.progressKm;
+    const tail = idx < 0 ? " " + escapeXml(a ? dict.navToRoute : dict.navToFinish) : "";
+    if (idx < 0 || toKm > 1) {
+      html = `${navArrowSvg(0)}<span><b>${escapeXml(dict.navStraightLbl)}</b> · ${formatKm(Math.max(0, toKm))} km${tail}</span>`;
+    } else {
+      const m = toKm * 1000 >= 100 ? Math.round(toKm * 20) * 50 : Math.max(0, Math.round(toKm * 100) * 10);
+      html = `${navArrowSvg(turns[idx].angle)}<span><b>${m} m</b> · ${escapeXml(navCapitalize(dict.turnWhat[turns[idx].kind]))}</span>`;
+    }
   }
   if (el.dataset.html !== html) { el.innerHTML = html; el.dataset.html = html; }
 }
@@ -7515,6 +7742,13 @@ function navRender() {
   else if (noFix) {
     status = !navRt.lastGoodFixAt && now - navRt.since < NAV_NO_FIX_MS * 2 ? dict.navWaiting : dict.navNoGps;
     cls = "nav-gps";
+  } else if (navRt.appr) {
+    const a = navRt.appr;
+    const leftKm = a.ok ? Math.max(0, a.totalKm - a.progressKm)
+      : haversineKm((recLivePos || a.pts[0])[0], (recLivePos || a.pts[0])[1], a.target.lat, a.target.lon);
+    const dist = `${formatKm(leftKm)} km`;
+    status = a.ok ? dict.navApproach(dist) : dict.navApproachStraight(dist);
+    cls = "nav-appr";
   } else if (navRt.off) { status = dict.navOff(Math.round(navRt.offM)); cls = "nav-off"; }
   else if (navRt.progressKm != null) status = dict.navOn;
   else status = dict.navWaiting;
@@ -7525,6 +7759,7 @@ function navRender() {
   if (next) nextEl.textContent = dict.navNextPoi(`${POI_ICONS[next.type] || POI_ICONS.other} ${next.name || poiLabel(next.type)}`, formatKm(next.km - navRt.progressKm));
   box.classList.toggle("nav-off", cls === "nav-off");
   box.classList.toggle("nav-gps", cls === "nav-gps");
+  box.classList.toggle("nav-appr", cls === "nav-appr");
   navRenderTurn();
 }
 
@@ -7584,6 +7819,7 @@ function startRecording() {
   recLiveSync = { km: 0, at: Date.now() };
   document.getElementById("recSaveRoute").checked = false;
   navReset();
+  navEndApproach();
   navTurnsCache = null;
   recLivePos = null;
   recHeading = null;
