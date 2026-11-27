@@ -405,6 +405,7 @@ const TRANSLATIONS = {
     eventsTitle: "📅 Wydarzenia",
     eventsHint: "Wspólne treningi, spływy i rajdy. Kliknij „Biorę udział”, żeby organizator wiedział, ilu osób się spodziewać.",
     noEvents: "Brak zaplanowanych wydarzeń — zajrzyj później.",
+    eventTestBadge: "🧪 Wydarzenie testowe — widzą je tylko organizatorzy",
     optMulti: "Multisport",
     eventFormTitle: "Nowe wydarzenie",
     eventTitleLabel: "Nazwa",
@@ -1102,6 +1103,7 @@ const TRANSLATIONS = {
     eventsTitle: "📅 Events",
     eventsHint: "Group trainings, kayak trips and races. Tap “I'm going” so the organiser knows how many people to expect.",
     noEvents: "No events planned — check back later.",
+    eventTestBadge: "🧪 Test event — visible to organizers only",
     optMulti: "Multisport",
     eventFormTitle: "New event",
     eventTitleLabel: "Name",
@@ -1509,7 +1511,7 @@ function toggleLanguage() {
 // Przy KAŻDYM wydaniu podbij APP_BUILD tutaj i PAU_PAGE_BUILD w index.html (razem z CACHE_NAME).
 // Gdy się różnią, kasujemy tylko pamięć plików aplikacji (NIE dane - treningi są w localStorage)
 // i przeładowujemy raz, żeby pobrać spójną wersję.
-const APP_BUILD = "122";
+const APP_BUILD = "123";
 window.PAU_APP_BUILD = APP_BUILD;
 (function healMixedVersions() {
   if (window.PAU_PAGE_BUILD === APP_BUILD) return;
@@ -5048,12 +5050,22 @@ async function fetchDeletableEventIds() {
   }
 }
 
+// Organizator dostaje też wydarzenia testowe (dodane kluczem recenzentów Google) - zwykli użytkownicy ich nie widzą.
+// list_events_v3 może jeszcze nie istnieć w bazie (SQL niewklejony) - wtedy wracamy do v2.
+async function fetchEventsList() {
+  try {
+    return await rpc("list_events_v3", { p_admin_key: getAdminKey() || null });
+  } catch (e) {
+    return rpc("list_events_v2");
+  }
+}
+
 async function refreshEvents() {
   const listEl = document.getElementById("eventsList");
   const dict = t();
   listEl.innerHTML = `<p>${dict.loading}</p>`;
   try {
-    eventsCache = (await rpc("list_events_v2")) || [];
+    eventsCache = (await fetchEventsList()) || [];
     deletableEventIds = await fetchDeletableEventIds();
     renderEvents();
     syncAllEventResults();
@@ -5113,6 +5125,7 @@ function eventItemHtml(ev, index, ctx) {
   return `<div class="event-item${isDone ? " event-done" : ""}${active ? "" : " event-past"}">` +
     `<div class="event-date">📅 ${escapeXml(when)}${active ? `<span class="event-countdown">${eventCountdown(start)}</span>` : ""}</div>` +
     `<div class="event-title"><b>${escapeXml(ev.title)}</b> · ${dict.discNames[ev.disc] || escapeXml(ev.disc)}</div>` +
+    (ev.is_test ? `<div class="event-test-badge">${dict.eventTestBadge}</div>` : "") +
     `<div class="hint-text">📍 ${escapeXml(ev.place)}</div>` +
     (isDone ? eventResultLine(ev.id, doneMap[ev.id], dict) : "") +
     (active && ev.description ? `<div class="event-desc">${escapeXml(ev.description)}</div>` : "") +
