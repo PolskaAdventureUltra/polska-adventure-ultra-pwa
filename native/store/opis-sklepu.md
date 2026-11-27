@@ -52,6 +52,9 @@ Privacy: your trainings, routes and PIN are stored only on your phone. Only what
 - Czy użytkownik może poprosić o usunięcie danych? **Tak** (w aplikacji: Prywatność → usuń udostępnienia; lub e-mail).
 - **Lokalizacja — dokładna**: zbierana (udostępnione aktywności/trasy), **opcjonalna**, cel: *Funkcje aplikacji*; nie udostępniana firmom trzecim.
   (Nagrywanie GPS zostaje w telefonie — w Google „zbieranie” = wysłanie poza urządzenie; dotyczy tylko udostępnionych tras.)
+  BRouter (brouter.de, wyznaczanie drogi): dostaje współrzędne TYLKO po akcji użytkownika — kliknięte punkty w planerze
+  i przycisk „🧭 Prowadź do trasy” w prowadzeniu (od wersji 122). To wyjątek Google „transfer na wyraźną akcję użytkownika,
+  której się spodziewa” → nie deklarujemy jako „udostępnianie”. NIE dodawać automatycznych zapytań z pozycją bez zmiany tej deklaracji.
 - **Informacje o aplikacji i wydajności / Identyfikatory urządzenia**: losowy identyfikator do anonimowych statystyk, **opcjonalny** (zgoda), cel: *Statystyki*.
 - **Imię/nick** (Dane osobowe → Imię): nick przy udostępnianiu, **opcjonalny**, cel: *Funkcje aplikacji*.
 - **Zdrowie i fitness → Fitness**: dystans/czas/kroki udostępnionych treningów, **opcjonalne**, cel: *Funkcje aplikacji*.
