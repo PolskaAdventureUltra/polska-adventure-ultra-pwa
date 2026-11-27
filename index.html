@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "121";
+  window.PAU_PAGE_BUILD = "122";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -205,10 +205,18 @@
         <p class="hint-text"><span data-i18n="recGpsLbl">Dokładność GPS</span>: <b id="recGps">–</b></p>
         <div class="rec-nav" id="recNav" hidden>
           <div class="rec-nav-head"><span id="recNavName"></span><b id="recNavLeft"></b><button type="button" class="rec-nav-voice" id="recNavVoiceBtn"></button></div>
+          <div class="rec-nav-turn" id="recNavTurn" hidden></div>
           <p class="rec-nav-status" id="recNavStatus" role="status" aria-live="polite"></p>
           <p class="rec-nav-next" id="recNavNext" hidden></p>
+          <button type="button" class="rec-nav-route-btn" id="recNavRouteBtn" hidden></button>
+          <p class="hint-text rec-nav-route-hint" id="recNavRouteHint" hidden></p>
         </div>
-        <div id="recMap" class="rec-map"></div>
+        <div id="recMapWrap" class="rec-map">
+          <div id="recMap"></div>
+          <button type="button" class="rec-map-btn rec-rotate" id="recRotateBtn"></button>
+          <button type="button" class="rec-map-btn rec-recenter" id="recRecenterBtn" hidden></button>
+          <div class="rec-map-attr">&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></div>
+        </div>
         <div class="plan-actions">
           <button id="recPauseBtn">⏸ PAUZA</button>
           <button class="primary" id="recFinishBtn" data-i18n="recFinishBtn">■ ZAKOŃCZ</button>
