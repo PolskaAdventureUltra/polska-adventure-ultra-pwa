@@ -7,7 +7,7 @@
 <title>Polska Adventure Ultra</title>
 <script>
   // Wersja strony - app.js porównuje ją ze swoją; różne = pliki z dwóch wersji (patrz app.js, APP_BUILD).
-  window.PAU_PAGE_BUILD = "121";
+  window.PAU_PAGE_BUILD = "122";
   // Diagnostyka: błędy JS zbierane od samego początku i pokazywane na ekranie logowania (#bootInfo).
   window.PAU_ERRORS = [];
   window.addEventListener("error", function (e) {
@@ -205,6 +205,7 @@
         <p class="hint-text"><span data-i18n="recGpsLbl">Dokładność GPS</span>: <b id="recGps">–</b></p>
         <div class="rec-nav" id="recNav" hidden>
           <div class="rec-nav-head"><span id="recNavName"></span><b id="recNavLeft"></b><button type="button" class="rec-nav-voice" id="recNavVoiceBtn"></button></div>
+          <div class="rec-nav-turn" id="recNavTurn" hidden></div>
           <p class="rec-nav-status" id="recNavStatus" role="status" aria-live="polite"></p>
           <p class="rec-nav-next" id="recNavNext" hidden></p>
         </div>

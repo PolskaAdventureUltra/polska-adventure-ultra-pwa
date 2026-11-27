@@ -524,6 +524,17 @@ body.dark .mode-tile.active { box-shadow: 0 6px 16px rgba(255, 106, 43, 0.25); }
 .poi-text { flex: 1 1 auto; font-size: 14px; overflow-wrap: anywhere; }
 .poi-item .poi-edit { width: auto; margin: 0; padding: 2px 8px; background: transparent; border: 0; font-size: 16px; }
 .rec-nav-next { margin: 4px 0 0; font-size: 14px; }
+/* Prowadzenie: następny manewr, większa mapa, strzałka pozycji, „Wróć do mnie” */
+.rec-nav-turn { display: flex; align-items: center; gap: 10px; margin-top: 8px; font-size: 18px; line-height: 1.2; }
+.rec-nav-turn svg { flex: none; color: var(--accent); transition: transform .3s; }
+.rec-nav-turn b { font-family: var(--display); font-size: 22px; }
+.rec-map.nav-map { height: 55vh; min-height: 260px; max-height: 560px; }
+.rec-pos { background: none; border: none; }
+.rec-pos-in { position: relative; width: 34px; height: 34px; transition: transform .4s; }
+.rec-pos-dot { position: absolute; left: 8px; top: 8px; width: 18px; height: 18px; border-radius: 50%; background: #D86C28; border: 3px solid #fff; box-sizing: border-box; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+.rec-pos-arrow { display: none; position: absolute; left: 10px; top: -4px; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 13px solid #D86C28; filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff); }
+.rec-pos.has-heading .rec-pos-arrow { display: block; }
+.rec-recenter { width: auto; margin: 0; padding: 8px 12px; font-size: 14px; font-weight: 600; border-radius: 20px; border: none; background: #fff; color: #142640; box-shadow: 0 2px 6px rgba(0,0,0,.35); cursor: pointer; }
 .rec-poi-pick { margin-top: 8px; }
 .rec-poi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .rec-poi-grid button { margin: 0; padding: 8px 4px; font-size: 22px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
